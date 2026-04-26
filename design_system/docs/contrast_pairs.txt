@@ -1,0 +1,25 @@
+; Wanted Montage 명암비 검증 페어
+; 형식: fg_hex,bg_hex,label,min_ratio
+; 주석은 ; 로 시작
+
+; --- Light 모드 ---
+#171719,#FFFFFF,text/label/normal on background/normal/normal (Light) AAA,7.0
+#000000,#FFFFFF,text/label/strong on background/normal/normal (Light) AAA,7.0
+#37383C,#FFFFFF,text/label/alternative (no alpha) on background/normal/normal (Light) AAA-large,4.5
+#FFFFFF,#0066FF,white text on primary/normal (Light) AA,4.5
+#0066FF,#FFFFFF,primary/normal text on background (Light) AA,4.5
+#171719,#F7F7F8,text/label/normal on background/normal/alternative (Light) AAA,7.0
+
+; --- Dark 모드 ---
+#F7F7F8,#1B1C1E,text/label/normal on background/normal/normal (Dark) AAA,7.0
+#FFFFFF,#1B1C1E,text/label/strong on background/normal/normal (Dark) AAA,7.0
+#FFFFFF,#3385FF,white text on primary/normal Dark = blue/60 AA,4.5
+#3385FF,#1B1C1E,primary/normal Dark text on bg AA-large,4.5
+
+; --- Status colors used as foreground (text/icon/border) only ---
+; wds에서 status.*는 solid 배경으로 거의 사용되지 않음 — addOpacity(color, 5~28%)로 미세 배경 + 같은 색 텍스트 패턴.
+; 따라서 status 색 자체의 surface 위 명암비를 검증 (text on background, not white on status).
+#FF4242,#FFFFFF,status/negative text on surface/1 (Light) AA-large,3.0
+#00BF40,#FFFFFF,status/positive text on surface/1 (Light) AA-large,3.0
+#FF9200,#FFFFFF,status/cautionary text on surface/1 (Light) AA-large,3.0
+#FF6363,#1B1C1E,status/negative text on surface/1 (Dark) AA-large,3.0
