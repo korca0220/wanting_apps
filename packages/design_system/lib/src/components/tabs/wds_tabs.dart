@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 
 import '../../foundations/wds_radius.dart';
 import '../../foundations/wds_spacing.dart';
@@ -21,10 +22,11 @@ class WdsTabItem<T> {
 /// Selection is controlled (`value` / `onChanged`). Panel rendering is the
 /// caller's responsibility — the harness provides only the strip.
 ///
-/// NOTE: continuous slide indicator is not implemented; underline draws a
-/// per-tab bottom border that snaps on selection change. Tracked as a
-/// follow-up if motion fidelity becomes important.
-class WdsTabs<T> extends StatelessWidget {
+/// The active indicator slides between tabs: underline draws a single 2px
+/// bar that animates between the selected tab's bounds; pills moves the
+/// elevated background pill the same way. Tab widths can be variable —
+/// positions are measured each frame after layout via post-frame callback.
+class WdsTabs<T> extends StatefulWidget {
   const WdsTabs({
     super.key,
     required this.value,
@@ -43,8 +45,55 @@ class WdsTabs<T> extends StatelessWidget {
   final bool scrollable;
 
   @override
+  State<WdsTabs<T>> createState() => _WdsTabsState<T>();
+}
+
+class _WdsTabsState<T> extends State<WdsTabs<T>> {
+  final GlobalKey _stripKey = GlobalKey();
+  List<GlobalKey> _tabKeys = const [];
+  Rect? _indicatorRect;
+
+  @override
+  void initState() {
+    super.initState();
+    _rebuildKeys();
+  }
+
+  @override
+  void didUpdateWidget(WdsTabs<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.tabs.length != widget.tabs.length) {
+      _rebuildKeys();
+    }
+    SchedulerBinding.instance.addPostFrameCallback((_) => _updateIndicator());
+  }
+
+  void _rebuildKeys() {
+    _tabKeys = List.generate(widget.tabs.length, (_) => GlobalKey());
+  }
+
+  void _updateIndicator() {
+    if (!mounted) return;
+    final idx = widget.tabs.indexWhere((t) => t.value == widget.value);
+    if (idx < 0 || idx >= _tabKeys.length) return;
+    final tabCtx = _tabKeys[idx].currentContext;
+    final stripCtx = _stripKey.currentContext;
+    if (tabCtx == null || stripCtx == null) return;
+    final tabBox = tabCtx.findRenderObject();
+    final stripBox = stripCtx.findRenderObject();
+    if (tabBox is! RenderBox || stripBox is! RenderBox) return;
+    if (!tabBox.hasSize || !stripBox.hasSize) return;
+    final offset = tabBox.localToGlobal(Offset.zero, ancestor: stripBox);
+    final next = offset & tabBox.size;
+    if (_indicatorRect != next) {
+      setState(() => _indicatorRect = next);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return variant == WdsTabsVariant.underline
+    SchedulerBinding.instance.addPostFrameCallback((_) => _updateIndicator());
+    return widget.variant == WdsTabsVariant.underline
         ? _underline(context)
         : _pills(context);
   }
@@ -52,23 +101,37 @@ class WdsTabs<T> extends StatelessWidget {
   Widget _underline(BuildContext context) {
     final colors = context.wdsColors;
 
-    final children = <Widget>[
-      for (final t in tabs) _underlineTab(context, t),
+    final tabs = <Widget>[
+      for (var i = 0; i < widget.tabs.length; i++)
+        KeyedSubtree(
+          key: _tabKeys[i],
+          child: _underlineTab(context, widget.tabs[i]),
+        ),
     ];
 
-    Widget strip;
-    if (scrollable) {
-      strip = SingleChildScrollView(
+    Widget row;
+    if (widget.scrollable) {
+      row = SingleChildScrollView(
         scrollDirection: Axis.horizontal,
-        child: Row(children: children),
+        child: Row(children: tabs),
       );
-    } else if (fullWidth) {
-      strip = Row(
-        children: [for (final c in children) Expanded(child: c)],
-      );
+    } else if (widget.fullWidth) {
+      row = Row(children: [for (final t in tabs) Expanded(child: t)]);
     } else {
-      strip = Row(mainAxisSize: MainAxisSize.min, children: children);
+      row = Row(mainAxisSize: MainAxisSize.min, children: tabs);
     }
+
+    final indicatorAnimated = _indicatorRect == null
+        ? const SizedBox.shrink()
+        : AnimatedPositioned(
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeOut,
+            left: _indicatorRect!.left,
+            top: _indicatorRect!.bottom - 2,
+            width: _indicatorRect!.width,
+            height: 2,
+            child: Container(color: colors.primaryNormal),
+          );
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -76,13 +139,19 @@ class WdsTabs<T> extends StatelessWidget {
           bottom: BorderSide(color: colors.lineNormalNeutral, width: 1),
         ),
       ),
-      child: strip,
+      child: Stack(
+        key: _stripKey,
+        children: [
+          row,
+          indicatorAnimated,
+        ],
+      ),
     );
   }
 
   Widget _underlineTab(BuildContext context, WdsTabItem<T> item) {
     final colors = context.wdsColors;
-    final active = item.value == value;
+    final active = item.value == widget.value;
     final disabled = item.disabled;
 
     final fg = disabled
@@ -96,18 +165,10 @@ class WdsTabs<T> extends StatelessWidget {
       button: true,
       enabled: !disabled,
       child: InkWell(
-        onTap: disabled ? null : () => onChanged(item.value),
+        onTap: disabled ? null : () => widget.onChanged(item.value),
         child: Container(
           padding: const EdgeInsets.symmetric(
             horizontal: WdsSpacing.s16, vertical: WdsSpacing.s10),
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(
-                color: active ? colors.primaryNormal : Colors.transparent,
-                width: 2,
-              ),
-            ),
-          ),
           alignment: Alignment.center,
           child: Text(
             item.label,
@@ -125,13 +186,35 @@ class WdsTabs<T> extends StatelessWidget {
     final colors = context.wdsColors;
     final shadows = context.wdsShadows;
 
-    final children = <Widget>[
-      for (final t in tabs) _pillTab(context, t, colors, shadows.normalXSmall),
+    final tabs = <Widget>[
+      for (var i = 0; i < widget.tabs.length; i++)
+        KeyedSubtree(
+          key: _tabKeys[i],
+          child: _pillTab(context, widget.tabs[i], colors),
+        ),
     ];
 
-    final inner = fullWidth
-        ? Row(children: [for (final c in children) Expanded(child: c)])
-        : Row(mainAxisSize: MainAxisSize.min, children: children);
+    final inner = widget.fullWidth
+        ? Row(children: [for (final t in tabs) Expanded(child: t)])
+        : Row(mainAxisSize: MainAxisSize.min, children: tabs);
+
+    final pill = _indicatorRect == null
+        ? const SizedBox.shrink()
+        : AnimatedPositioned(
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeOut,
+            left: _indicatorRect!.left,
+            top: _indicatorRect!.top,
+            width: _indicatorRect!.width,
+            height: _indicatorRect!.height,
+            child: Container(
+              decoration: BoxDecoration(
+                color: colors.backgroundElevatedNormal,
+                borderRadius: WdsRadius.brSm,
+                boxShadow: shadows.normalXSmall,
+              ),
+            ),
+          );
 
     return Container(
       decoration: BoxDecoration(
@@ -139,7 +222,13 @@ class WdsTabs<T> extends StatelessWidget {
         borderRadius: WdsRadius.brMd,
       ),
       padding: const EdgeInsets.all(WdsSpacing.s4),
-      child: inner,
+      child: Stack(
+        key: _stripKey,
+        children: [
+          pill,
+          inner,
+        ],
+      ),
     );
   }
 
@@ -147,9 +236,8 @@ class WdsTabs<T> extends StatelessWidget {
     BuildContext context,
     WdsTabItem<T> item,
     WdsColorScheme colors,
-    List<BoxShadow> activeShadow,
   ) {
-    final active = item.value == value;
+    final active = item.value == widget.value;
     final disabled = item.disabled;
 
     final fg = disabled
@@ -167,16 +255,10 @@ class WdsTabs<T> extends StatelessWidget {
         borderRadius: WdsRadius.brSm,
         child: InkWell(
           borderRadius: WdsRadius.brSm,
-          onTap: disabled ? null : () => onChanged(item.value),
+          onTap: disabled ? null : () => widget.onChanged(item.value),
           child: Container(
             padding: const EdgeInsets.symmetric(
               horizontal: WdsSpacing.s14, vertical: WdsSpacing.s6),
-            decoration: BoxDecoration(
-              color:
-                  active ? colors.backgroundElevatedNormal : Colors.transparent,
-              borderRadius: WdsRadius.brSm,
-              boxShadow: active ? activeShadow : null,
-            ),
             alignment: Alignment.center,
             child: Text(
               item.label,

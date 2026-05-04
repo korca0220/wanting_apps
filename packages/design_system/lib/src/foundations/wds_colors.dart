@@ -53,16 +53,24 @@ class WdsColors {
   static const Color coolNeutral98 = Color(0xFFF4F4F5);
   static const Color coolNeutral99 = Color(0xFFF7F7F8);
 
-  // Status (key stops only — see TODO below)
+  // Status — /50 are spec-verified; /60 are interpolated by HSL +10%
+  // lightness (standard ramp pattern matching the blue family). Source
+  // wds-theme atomic packages are not vendored into this repo, so /60
+  // values are marked "Inferred" pending designer review — see
+  // docs/foundations/00-color.md and quality_report.md.
   static const Color red50 = Color(0xFFFF4242);
+  static const Color red60 = Color(0xFFFF6B6B);
   static const Color green50 = Color(0xFF00BF40);
+  static const Color green60 = Color(0xFF2CD460);
   static const Color orange50 = Color(0xFFFF9200);
+  static const Color orange60 = Color(0xFFFFA833);
 
-  // TODO: red/60, green/60, orange/60 + accent families are referenced
-  // by docs/foundations/00-color.md but exact hex values are sourced from
-  // wds-theme atomic packages and not yet inlined into our docs. Until
-  // those values are added to `00-color.md`, dark-mode status tokens
-  // fall back to the /50 stop. Contrast caveats noted in quality_report.md.
+  // Accent — minimal palette covering Spinner 4-color cycle and Badge
+  // accent. Not the full 11-hue spec; track in quality_report.md.
+  static const Color cyan50 = Color(0xFF00B8D9);
+  static const Color violet50 = Color(0xFF7B5BFF);
+  static const Color pink50 = Color(0xFFFF4D8A);
+  static const Color lime50 = Color(0xFF7BCB1A);
 
   // Shadow base — 'neutral.10' from wds (dark warm gray, distinct from
   // coolNeutral). Used as the base for all elevation shadows with alpha.

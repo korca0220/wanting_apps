@@ -38,5 +38,11 @@ void main() {
       // dark-mode primary button can hit AA contrast.
       expect(s.onPrimary, WdsColors.coolNeutral10);
     });
+
+    test('status family shifts to /60 stops in dark mode', () {
+      expect(s.statusPositive, WdsColors.green60);
+      expect(s.statusCautionary, WdsColors.orange60);
+      expect(s.statusNegative, WdsColors.red60);
+    });
   });
 }

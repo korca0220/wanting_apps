@@ -51,6 +51,33 @@ void main() {
     expect(find.byIcon(Icons.info), findsOneWidget);
   });
 
+  testWidgets('WdsTooltip click mode toggles bubble on tap', (tester) async {
+    await tester.pumpWidget(_wrap(
+      const WdsTooltip(
+        message: 'Saved',
+        mode: WdsTooltipMode.click,
+        child: Icon(Icons.bookmark),
+      ),
+    ));
+    expect(find.text('Saved'), findsNothing);
+    await tester.tap(find.byIcon(Icons.bookmark));
+    await tester.pumpAndSettle();
+    expect(find.text('Saved'), findsOneWidget);
+  });
+
+  testWidgets('WdsTooltip always mode is visible after first frame',
+      (tester) async {
+    await tester.pumpWidget(_wrap(
+      const WdsTooltip(
+        message: 'Pinned',
+        mode: WdsTooltipMode.always,
+        child: Icon(Icons.push_pin),
+      ),
+    ));
+    await tester.pumpAndSettle();
+    expect(find.text('Pinned'), findsOneWidget);
+  });
+
   testWidgets('WdsModal.showPopup displays slot content', (tester) async {
     late BuildContext ctx;
     await tester.pumpWidget(MaterialApp(

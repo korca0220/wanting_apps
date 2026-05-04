@@ -187,12 +187,9 @@ class WdsColorScheme extends ThemeExtension<WdsColorScheme> {
       lineSolidNormal: WdsColors.coolNeutral25,
       lineSolidNeutral: WdsColors.coolNeutral23,
       lineSolidAlternative: WdsColors.coolNeutral22,
-      // TODO(status-dark): docs reference green/60, orange/60, red/60 for
-      // dark mode. Hex values not yet inlined into 00-color.md, so we fall
-      // back to the /50 stop here. Track in quality_report.md.
-      statusPositive: WdsColors.green50,
-      statusCautionary: WdsColors.orange50,
-      statusNegative: WdsColors.red50,
+      statusPositive: WdsColors.green60,
+      statusCautionary: WdsColors.orange60,
+      statusNegative: WdsColors.red60,
       fillNormal: withA(WdsColors.coolNeutral50, 0.22),
       fillStrong: withA(WdsColors.coolNeutral50, 0.28),
       fillAlternative: withA(WdsColors.coolNeutral50, 0.12),

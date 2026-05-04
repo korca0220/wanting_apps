@@ -34,5 +34,18 @@ void main() {
       expect(argb(WdsColors.green50), 0xFF00BF40);
       expect(argb(WdsColors.orange50), 0xFFFF9200);
     });
+
+    test('status /60 inferred ramp (HSL +10% lightness)', () {
+      expect(argb(WdsColors.red60), 0xFFFF6B6B);
+      expect(argb(WdsColors.green60), 0xFF2CD460);
+      expect(argb(WdsColors.orange60), 0xFFFFA833);
+    });
+
+    test('accent palette (subset)', () {
+      expect(argb(WdsColors.cyan50), 0xFF00B8D9);
+      expect(argb(WdsColors.violet50), 0xFF7B5BFF);
+      expect(argb(WdsColors.pink50), 0xFFFF4D8A);
+      expect(argb(WdsColors.lime50), 0xFF7BCB1A);
+    });
   });
 }

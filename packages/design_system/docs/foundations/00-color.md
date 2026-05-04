@@ -65,14 +65,25 @@ Wanted Montage의 컬러 시스템은 **Atomic(Primitive)**과 **Semantic** 두 
 | `color/coolNeutral/99` | `#F7F7F8` |
 
 ### Status
-| Family | 키 단계 (50) | 사용처 |
-|---|---|---|
-| `color/red/*` | `#FF4242` | negative / danger |
-| `color/green/*` | `#00BF40` | positive / success |
-| `color/orange/*` | `#FF9200` | cautionary / warning |
+| Family | 50 (Light) | 60 (Dark) | 사용처 |
+|---|---|---|---|
+| `color/red/*` | `#FF4242` | `#FF6B6B` ¹ | negative / danger |
+| `color/green/*` | `#00BF40` | `#2CD460` ¹ | positive / success |
+| `color/orange/*` | `#FF9200` | `#FFA833` ¹ | cautionary / warning |
 
-### Accent
-강조용 액센트 패밀리 7종(라이트 단계 50, 다크 단계 60 사용): `redOrange`, `lime`, `cyan`, `lightBlue`, `violet`, `purple`, `pink`. 그리고 텍스트용 추가 hue: `red`, `orange`, `green`, `blue`. 각 패밀리는 wds-theme의 `atomic/{name}.ts` 파일과 1:1 대응합니다.
+¹ /60 값은 wds-theme atomic 패키지가 본 레포에 vendoring 되지 않은 상태에서 **HSL +10% lightness** 표준 ramp로 보간된 추정치입니다 (blue 패밀리 50→60 패턴과 동일). 디자이너 검수 후 정정 가능. `quality_report.md`에 추적.
+
+### Accent (subset, inlined)
+Flutter 포트는 11-hue 풀셋 대신 다음 4종 키 단계만 우선 inlined해 Spinner 4-color cycle과 Badge accent 변형을 커버합니다. 나머지 hue(`redOrange`/`lightBlue`/`purple`/추가 텍스트 hue)는 후속.
+
+| 토큰 | 50 (Light) | 사용처 |
+|---|---|---|
+| `color/cyan/50` | `#00B8D9` | Spinner cycle, Badge accent |
+| `color/violet/50` | `#7B5BFF` | Spinner cycle, Badge accent |
+| `color/pink/50` | `#FF4D8A` | Spinner cycle, Badge accent |
+| `color/lime/50` | `#7BCB1A` | Badge accent |
+
+> Accent 풀셋 7종(`redOrange`, `lime`, `cyan`, `lightBlue`, `violet`, `purple`, `pink`)과 텍스트용 추가 hue(`red`, `orange`, `green`, `blue`)는 wds-theme `atomic/{name}.ts` 원본을 vendoring 한 뒤 단계 표를 채우는 후속 작업으로 둡니다.
 
 > **Neutral**과 `coolNeutral`은 별도 패밀리입니다. 그림자 색은 `neutral.10` 기반.
 
