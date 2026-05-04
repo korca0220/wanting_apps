@@ -48,3 +48,11 @@ export 'src/components/switch/wds_switch.dart';
 export 'src/components/text_field/wds_text_field.dart';
 export 'src/components/textarea/wds_textarea.dart';
 export 'src/components/tooltip/wds_tooltip.dart';
+
+// Components (Tier 2)
+export 'src/components/bottom_navigation/wds_bottom_navigation.dart';
+export 'src/components/chip/wds_chip.dart';
+export 'src/components/image_uploader/wds_image_uploader.dart';
+export 'src/components/list_item/wds_list_item.dart';
+export 'src/components/tabs/wds_tabs.dart';
+export 'src/components/top_navigation/wds_top_navigation.dart';

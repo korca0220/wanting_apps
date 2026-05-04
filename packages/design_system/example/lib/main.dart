@@ -124,6 +124,7 @@ class ShowcaseHome extends StatelessWidget {
           const _PhaseBSections(),
           const _PhaseCSections(),
           const _PhaseDSections(),
+          const _Tier2Sections(),
           const SizedBox(height: 24),
           Container(
             padding: const EdgeInsets.all(16),
@@ -607,6 +608,220 @@ class _PhaseCSectionsState extends State<_PhaseCSections> {
               ],
               onChanged: (v) => setState(() => _selected = v ?? 'flutter'),
             ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _Tier2Sections extends StatefulWidget {
+  const _Tier2Sections();
+
+  @override
+  State<_Tier2Sections> createState() => _Tier2SectionsState();
+}
+
+class _Tier2SectionsState extends State<_Tier2Sections> {
+  bool _chipActive = true;
+  int _navIndex = 0;
+  bool _switchOn = true;
+  String _tab = 'overview';
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _Section(
+          title: 'Chip',
+          child: Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              WdsChip(
+                label: 'Solid Inactive',
+                onTap: () {},
+              ),
+              WdsChip(
+                label: 'Solid Active',
+                active: _chipActive,
+                onTap: () => setState(() => _chipActive = !_chipActive),
+              ),
+              const WdsChip(
+                label: 'Outlined',
+                variant: WdsChipVariant.outlined,
+              ),
+              const WdsChip(
+                label: 'Outlined Active',
+                variant: WdsChipVariant.outlined,
+                active: true,
+              ),
+              const WdsChip(label: 'Disabled', disabled: true),
+              const WdsChip(label: 'XSmall', size: WdsChipSize.xsmall),
+              const WdsChip(label: 'Large', size: WdsChipSize.large),
+            ],
+          ),
+        ),
+        _Section(
+          title: 'TopNavigation',
+          child: Column(
+            children: [
+              WdsTopNavigation(
+                leading: WdsIconButton(
+                  onPressed: () {},
+                  icon: const Icon(Icons.arrow_back),
+                  semanticLabel: 'Back',
+                  size: WdsIconButtonSize.small,
+                ),
+                title: const Text('Settings'),
+                trailing: WdsIconButton(
+                  onPressed: () {},
+                  icon: const Icon(Icons.more_vert),
+                  semanticLabel: 'More',
+                  size: WdsIconButtonSize.small,
+                ),
+              ),
+              const SizedBox(height: 12),
+              const WdsTopNavigation(
+                title: Text('Inbox'),
+                variant: WdsTopNavigationVariant.emphasized,
+              ),
+            ],
+          ),
+        ),
+        _Section(
+          title: 'Tabs',
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              WdsTabs<String>(
+                value: _tab,
+                onChanged: (v) => setState(() => _tab = v),
+                tabs: const [
+                  WdsTabItem(value: 'overview', label: 'Overview'),
+                  WdsTabItem(value: 'activity', label: 'Activity'),
+                  WdsTabItem(value: 'settings', label: 'Settings'),
+                ],
+              ),
+              const SizedBox(height: 12),
+              WdsTabs<String>(
+                value: _tab,
+                onChanged: (v) => setState(() => _tab = v),
+                variant: WdsTabsVariant.pills,
+                fullWidth: true,
+                tabs: const [
+                  WdsTabItem(value: 'overview', label: 'Overview'),
+                  WdsTabItem(value: 'activity', label: 'Activity'),
+                  WdsTabItem(value: 'settings', label: 'Settings'),
+                ],
+              ),
+            ],
+          ),
+        ),
+        _Section(
+          title: 'ListItem',
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: context.wdsColors.backgroundElevatedNormal,
+              borderRadius: const BorderRadius.all(Radius.circular(12)),
+              border: Border.all(
+                color: context.wdsColors.lineNormalAlternative,
+              ),
+            ),
+            child: Column(
+              children: [
+                WdsListItem(
+                  leading: const Icon(Icons.notifications_outlined),
+                  content: const WdsListItemContent(
+                    title: WdsListItemTitle('Notifications'),
+                    caption: WdsListItemCaption('Push, email, SMS'),
+                  ),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () {},
+                ),
+                Divider(
+                  height: 1,
+                  color: context.wdsColors.lineNormalAlternative,
+                ),
+                WdsListItem(
+                  leading: const Icon(Icons.dark_mode_outlined),
+                  content: const WdsListItemContent(
+                    title: WdsListItemTitle('Dark mode'),
+                  ),
+                  trailing: WdsSwitch(
+                    value: _switchOn,
+                    onChanged: (v) => setState(() => _switchOn = v),
+                  ),
+                ),
+                Divider(
+                  height: 1,
+                  color: context.wdsColors.lineNormalAlternative,
+                ),
+                WdsListItem(
+                  leading: const Icon(Icons.bookmark_outline),
+                  content: const WdsListItemContent(
+                    title: WdsListItemTitle('Selected row'),
+                    caption: WdsListItemCaption('aria-current = true'),
+                  ),
+                  selected: true,
+                  onTap: () {},
+                ),
+              ],
+            ),
+          ),
+        ),
+        _Section(
+          title: 'BottomNavigation',
+          child: WdsBottomNavigation(
+            currentIndex: _navIndex,
+            onTap: (i) => setState(() => _navIndex = i),
+            items: const [
+              WdsBottomNavigationItem(
+                icon: Icon(Icons.home_outlined),
+                activeIcon: Icon(Icons.home),
+                label: 'Home',
+              ),
+              WdsBottomNavigationItem(
+                icon: Icon(Icons.search),
+                label: 'Search',
+              ),
+              WdsBottomNavigationItem(
+                icon: Icon(Icons.favorite_border),
+                activeIcon: Icon(Icons.favorite),
+                label: 'Saved',
+              ),
+              WdsBottomNavigationItem(
+                icon: Icon(Icons.person_outline),
+                activeIcon: Icon(Icons.person),
+                label: 'Me',
+              ),
+            ],
+          ),
+        ),
+        _Section(
+          title: 'ImageUploader',
+          child: Row(
+            children: [
+              SizedBox(
+                width: 160,
+                child: WdsImageUploader(
+                  onTap: () {},
+                  hint: 'Add cover',
+                  subhint: 'JPEG · PNG',
+                ),
+              ),
+              const SizedBox(width: 16),
+              SizedBox(
+                width: 160,
+                child: WdsImageUploader(
+                  aspect: WdsImageUploaderAspect.fourThree,
+                  image: const NetworkImage(
+                      'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=400&q=60'),
+                  onRemove: () {},
+                ),
+              ),
+            ],
           ),
         ),
       ],
