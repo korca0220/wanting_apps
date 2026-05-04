@@ -90,6 +90,13 @@ Wanted Montage의 컬러 시스템은 **Atomic(Primitive)**과 **Semantic** 두 
 | `color/primary/heavy` | `blue/40` | `blue/50` | Active/Pressed |
 | `color/primary/subtle` | `blue/95` | `blue/20` | 선택 상태 배경, 강조 칩 배경 (텍스트는 `color/primary/normal`로) |
 
+### On-Primary (Primary 위 전경색)
+| 토큰 | Light | Dark | 사용처 |
+|---|---|---|---|
+| `color/onPrimary` | `common/100` | `coolNeutral/10` | Solid Primary 위에 올라가는 텍스트/아이콘 색 |
+
+> **Why this exists:** wds 원본은 다크 모드에서도 `color: white`을 `primary/normal`(blue/60) 위에 사용해 명암비 3.54:1로 AA 미달이었습니다 (`quality_report.md` 외부 결함). 본 인스턴스는 `color/onPrimary`를 신설해 다크에서 검은 톤으로 전환, AA 통과. `01-button.md` Solid Primary 텍스트는 이 토큰을 참조합니다.
+
 ### Label (텍스트)
 | 토큰 | Light | Dark |
 |---|---|---|

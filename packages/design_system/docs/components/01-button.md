@@ -47,7 +47,7 @@
 | 토큰 | 값 |
 |---|---|
 | 배경 | `color/primary/normal` |
-| 텍스트 | `color/static/white` |
+| 텍스트 | `color/onPrimary` (Light=white, Dark=coolNeutral/10 — AA 통과) |
 | 보더 | 없음 |
 
 ### Solid Assistive (보조 액션)
@@ -93,6 +93,31 @@
 - 최소 터치 영역 44×44px — small 사이즈는 모바일 터치 영역에서 검토 필요.
 
 ---
+
+## API (Flutter)
+
+`packages/design_system/lib/src/components/button/wds_button.dart` 구현.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `onPressed` | `VoidCallback?` | — | `null`이면 disabled. loading 중에는 무시. |
+| `child` | `Widget` | — | 버튼 내부 콘텐츠 (텍스트 권장). `DefaultTextStyle`이 사이즈/weight 자동 적용. |
+| `variant` | `WdsButtonVariant` | `solid` | `solid` \| `outlined` |
+| `color` | `WdsButtonColor` | `primary` | `primary` \| `assistive` |
+| `size` | `WdsButtonSize` | `medium` | `small` \| `medium` \| `large` |
+| `loading` | `bool` | `false` | spinner 중앙 + child hidden(maintainSize) |
+| `iconLeading` | `Widget?` | `null` | child 앞 아이콘 |
+| `iconTrailing` | `Widget?` | `null` | child 뒤 아이콘 |
+| `iconOnly` | `bool` | `false` | 정사각 padding (icon-only 모드) |
+| `focusNode` | `FocusNode?` | `null` | 외부 포커스 제어 |
+
+### Flutter-specific 매핑
+
+- 기반 위젯: `solid` → `FilledButton`, `outlined` → `OutlinedButton` + custom `ButtonStyle`.
+- Hover/Pressed/Focus 상태는 `WidgetStateProperty.resolveWith`로 토큰 색을 매핑. `motion/transition/colors`(`durationBase` 200ms)는 `ButtonStyle.animationDuration`에 연결.
+- 웹의 `inset 0 0 0 1px line/normal/neutral`은 Flutter `BorderSide(width:1)`로 동등 표현 (`OutlinedBorder.side`).
+- 최소 터치 영역(WCAG 44×44)은 호출자가 `Padding` 또는 `SizedBox`로 보장 — Button 자체는 토큰 기준 패딩만 적용.
+- 접근성: `Semantics(button: true)`는 Material 래퍼가 자동 제공. `aria-disabled` 동등은 `onPressed: null`로 처리.
 
 ## Figma Make 프롬프트
 
