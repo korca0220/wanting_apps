@@ -123,6 +123,7 @@ class ShowcaseHome extends StatelessWidget {
           ),
           const _PhaseBSections(),
           const _PhaseCSections(),
+          const _PhaseDSections(),
           const SizedBox(height: 24),
           Container(
             padding: const EdgeInsets.all(16),
@@ -605,6 +606,175 @@ class _PhaseCSectionsState extends State<_PhaseCSections> {
                 WdsSelectOption(value: 'svelte', label: 'Svelte'),
               ],
               onChanged: (v) => setState(() => _selected = v ?? 'flutter'),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _PhaseDSections extends StatefulWidget {
+  const _PhaseDSections();
+
+  @override
+  State<_PhaseDSections> createState() => _PhaseDSectionsState();
+}
+
+class _PhaseDSectionsState extends State<_PhaseDSections> {
+  final _ctrl = TextEditingController();
+  final _textareaCtrl = TextEditingController();
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    _textareaCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _Section(
+          title: 'TextField',
+          child: Column(
+            children: [
+              WdsTextField(
+                controller: _ctrl,
+                label: 'Email',
+                placeholder: 'name@example.com',
+                helperText: 'We will never share your email.',
+                clearable: true,
+              ),
+              const SizedBox(height: 12),
+              const WdsTextField(
+                placeholder: 'Invalid example',
+                invalid: true,
+                errorText: 'Required',
+              ),
+              const SizedBox(height: 12),
+              const WdsTextField(
+                placeholder: 'Disabled',
+                disabled: true,
+                initialValue: 'cannot edit',
+              ),
+            ],
+          ),
+        ),
+        _Section(
+          title: 'Textarea',
+          child: WdsTextarea(
+            controller: _textareaCtrl,
+            label: 'Notes',
+            placeholder: 'Type a few lines...',
+            minLines: 3,
+            maxLines: 6,
+          ),
+        ),
+        const _Section(
+          title: 'Tooltip',
+          child: Wrap(
+            spacing: 16,
+            runSpacing: 12,
+            children: [
+              WdsTooltip(
+                message: 'Hover or long-press',
+                child: Icon(Icons.info_outline),
+              ),
+              WdsTooltip(
+                message: 'Copy to clipboard',
+                shortcut: '⌘C',
+                size: WdsTooltipSize.medium,
+                child: Icon(Icons.copy),
+              ),
+            ],
+          ),
+        ),
+        _Section(
+          title: 'Modal',
+          child: Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              WdsButton(
+                onPressed: () => WdsModal.showPopup<void>(
+                  context: context,
+                  builder: (ctx) => Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const WdsModalNavigation(title: 'Popup modal'),
+                      const WdsModalContent(
+                        child: Text('A centred dialog. Tap outside or close to dismiss.'),
+                      ),
+                      WdsModalActionArea(actions: [
+                        WdsButton(
+                          onPressed: () => Navigator.of(ctx).pop(),
+                          variant: WdsButtonVariant.outlined,
+                          color: WdsButtonColor.assistive,
+                          size: WdsButtonSize.small,
+                          child: const Text('Close'),
+                        ),
+                      ]),
+                    ],
+                  ),
+                ),
+                size: WdsButtonSize.small,
+                child: const Text('Popup'),
+              ),
+              WdsButton(
+                onPressed: () => WdsModal.showBottom<void>(
+                  context: context,
+                  builder: (ctx) => Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const WdsCardTitle('Bottom sheet'),
+                        const SizedBox(height: 8),
+                        const WdsCardCaption(
+                          'Drag down to dismiss, or tap outside.',
+                        ),
+                        const SizedBox(height: 16),
+                        WdsButton(
+                          onPressed: () => Navigator.of(ctx).pop(),
+                          size: WdsButtonSize.small,
+                          child: const Text('Got it'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                variant: WdsButtonVariant.outlined,
+                size: WdsButtonSize.small,
+                child: const Text('Bottom sheet'),
+              ),
+            ],
+          ),
+        ),
+        _Section(
+          title: 'Card',
+          child: WdsCard(
+            child: WdsCardContent(
+              children: [
+                WdsCardThumbnail(
+                  aspectRatio: 16 / 9,
+                  trailingOverlay: const WdsBadge(
+                    label: 'NEW',
+                    size: WdsBadgeSize.xsmall,
+                  ),
+                  child: Container(
+                    color: context.wdsColors.fillAlternative,
+                    child: const Center(child: Icon(Icons.image, size: 40)),
+                  ),
+                ),
+                const WdsCardTitle('A composable card'),
+                const WdsCardCaption(
+                  'Compose Thumbnail / Title / Caption / Content slots into rich layouts.',
+                ),
+              ],
             ),
           ),
         ),
