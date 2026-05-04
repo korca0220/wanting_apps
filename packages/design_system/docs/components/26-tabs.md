@@ -150,3 +150,23 @@ States:
 
 네이밍: Tabs / Underline, Tabs / Pills, Tab / Active, Tab / Inactive
 ```
+
+---
+
+## API (Flutter)
+
+`WdsTabs`는 제네릭 `T`로 식별되는 탭 그룹입니다.
+
+| Prop | 타입 | 기본값 | 설명 |
+|---|---|---|---|
+| `value` | `T` | required | 현재 선택된 탭의 식별자. |
+| `onChanged` | `ValueChanged<T>` | required | 선택 변경 콜백. 패널 렌더는 호출자 책임. |
+| `tabs` | `List<WdsTabItem<T>>` | required | 각 탭의 `value`/`label`/`disabled`. |
+| `variant` | `WdsTabsVariant` | `underline` | `underline` / `pills`. |
+| `fullWidth` | `bool` | `false` | 탭이 컨테이너 너비를 균등 분할. |
+| `scrollable` | `bool` | `false` | 가로 스크롤(주로 underline). |
+
+구현 메모:
+- 활성 인디케이터(underline 2px 바, pills elevated 배경)는 `GlobalKey`로 선택 탭의 RenderBox 위치를 측정 후 `AnimatedPositioned`로 200ms slide.
+- 첫 프레임에는 인디케이터가 그려지지 않을 수 있음 (post-frame measure 후 setState로 표시).
+- 키보드 ←/→ 자동 이동은 미구현 — 표준 Tab/Enter만 동작. 후속.

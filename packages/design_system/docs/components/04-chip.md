@@ -94,3 +94,19 @@ leading/trailing slots (아이콘): gap 4px
 
 네이밍: Chip / Solid / Medium / Inactive, Chip / Outlined / Large / Active
 ```
+
+---
+
+## API (Flutter)
+
+| Prop | 타입 | 기본값 | 설명 |
+|---|---|---|---|
+| `label` | `String` | required | Chip 텍스트. |
+| `onTap` | `VoidCallback?` | `null` | 탭 콜백. `null`이면 비인터랙티브. |
+| `active` | `bool` | `false` | 토글 상태(선택됨). 그룹 단일/다중 선택 로직은 부모 책임. |
+| `size` | `WdsChipSize` | `medium` | `xsmall`/`small`/`medium`/`large`. 폰트·패딩이 변동, radius는 항상 full. |
+| `variant` | `WdsChipVariant` | `solid` | `solid`/`outlined`. |
+| `leading` / `trailing` | `Widget?` | `null` | Icon/Avatar 슬롯. 14px IconTheme이 자동 적용. |
+| `disabled` | `bool` | `false` | 비활성. solid는 `interactionDisable`, outlined는 `lineNormalAlternative` 보더. |
+
+선택 그룹은 `Wrap` + 부모 state로 구성 권장. 본 컴포넌트는 단일 칩의 토글 상태만 시각화.

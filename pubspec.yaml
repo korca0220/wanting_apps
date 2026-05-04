@@ -30,6 +30,14 @@ melos:
       description: Run flutter test in all packages with tests
       run: melos exec -c 1 --flutter --dir-exists=test -- "flutter test"
 
+    test:golden:
+      description: Run only golden tests (host-platform-rendered baselines)
+      run: melos exec -c 1 --scope=design_system -- "flutter test --tags golden"
+
+    test:golden-update:
+      description: Regenerate golden baselines (after intentional visual changes)
+      run: melos exec -c 1 --scope=design_system -- "flutter test --update-goldens --tags golden"
+
     clean:
       description: Clean all packages
       run: melos exec -c 1 --flutter -- "flutter clean"

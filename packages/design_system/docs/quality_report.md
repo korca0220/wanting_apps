@@ -13,7 +13,7 @@
 | Design Quality | **3 / 3** | 키 컬러 단일(#0066FF), coolNeutral과 brand가 같은 차가운 hue family. 다크 모드 1급 시민. |
 | Originality | **3 / 3** | Pretendard JP, body1-reading variant 분리, elevation 3종×5단계, material/dimmer, blur(32px) text-field backdrop. |
 | Craft | **3 / 3** | spacing 그리드 정합 ✓, focus 명세 ✓. 폰트 19단계 의도성을 typography foundation에 명문화 ✓. 명암비 검증으로 wds 결함 정확 포착(우리 결함 아님). |
-| Functionality | **3 / 3** | Tier 1 21/21, Tier 2 5/12 (Chip/BottomNav/ListItem/TopNav/Tabs). 컨테이너 명시적 상태 표 ✓, 폼 Error 상태 ✓, Modal/Alert 접근성 완비. |
+| Functionality | **3 / 3** | Tier 1 21/21, Tier 2 6/12 (Chip/BottomNav/ListItem/TopNav/Tabs/ImageUploader). 컨테이너 명시적 상태 표 ✓, 폼 Error 상태 ✓, Modal/Alert 접근성 완비. |
 | **합계** | **12 / 12** | 합격선 모두 통과 ✅ |
 
 ---
@@ -23,7 +23,7 @@
 | Tier | 진행 | 비율 |
 |---|---|---|
 | Tier 1 | 21 / 21 | **100%** ✅ |
-| Tier 2 | 5 / 12 (Chip, BottomNav, ListItem, TopNav, Tabs) | 42% |
+| Tier 2 | 6 / 12 (Chip, BottomNav, ListItem, TopNav, Tabs, ImageUploader) | 50% |
 | Tier 3 | 일부 ⏳, 일부 ⛔ N/A | — |
 
 **종합 등급**: **High** (Tier 1 100% + Tier 2 가중치 50% 적용 시 ~71%, Tier 1만 보면 Full)
@@ -107,17 +107,28 @@
 
 ## 개선 권고 (잔존)
 
-### 외부 결함 (wds 원본 권고 — 우리 일 아님)
-1. **Dark mode Primary 위 텍스트 색** — wds Button solid primary가 다크에서 white on blue/60 (3.54:1 < 4.5)을 사용. PR 제안 후보.
-2. **Status 색 위 텍스트** — wds SectionMessage가 status/positive/cautionary 텍스트 사용 시 흰 배경 명암비 부족. 큰 텍스트 한정 또는 어두운 톤 변경.
+### 외부 결함 (wds 원본)
+1. ~~**Dark mode Primary 위 텍스트 색**~~ ✅ **본 Flutter 포트에서 해결**: `color/onPrimary` semantic 신설 (Light=`common/100`, Dark=`coolNeutral/10`)으로 다크 명암비 AA 통과. `00-color.md` "On-Primary" 섹션 + `01-button.md` API 표 참조. 원본 wds에는 미반영 — 후속 PR 제안 후보.
+2. **Status 색 위 텍스트** — wds SectionMessage가 status/positive/cautionary 텍스트 사용 시 흰 배경 명암비 부족. 큰 텍스트 한정 또는 어두운 톤 변경. (Flutter 포트 미사용 — 컴포넌트 레벨에서 토큰 조합 시 명시적 검토 필요.)
 
 ### 내부 보강 (이미 완료)
 - ~~**폰트 단계 19개 의도성 명문화**~~ ✅ typography foundation에 추가
 - ~~**ListItem / TopNavigation / Tabs**~~ ✅ Tier 2에 추가
 - ~~**foundations 누락 토큰**~~ ✅ `color/primary/subtle`, `color/fill/alternative`, `color/inverse/*`, `color/material/dimmer` 정식 추가
+- ~~**onPrimary 명암비 결함**~~ ✅ Flutter 포트에서 `color/onPrimary` semantic 추가
+- ~~**Status family /60 다크 단계**~~ ✅ Flutter 포트에서 HSL +10% lightness ramp로 inline (`red60`/`green60`/`orange60`); 디자이너 검수 필요
+- ~~**Spinner 4-color 사이클**~~ ✅ Flutter 포트에서 `WdsSpinner.wanted`로 구현 (primary → cyan/violet/pink)
+- ~~**Tabs 연속 slide indicator**~~ ✅ Flutter 포트에서 GlobalKey 기반 위치 측정 + AnimatedPositioned로 구현
+- ~~**Tooltip click/always 모드**~~ ✅ Flutter 포트에서 OverlayPortal 기반으로 구현
+- ~~**골든 테스트 회귀 잠금**~~ ✅ Button/Card/TextField/Modal × light/dark 8 baselines (`test/components/golden/`)
+
+### Flutter 포트 잔존 (블로커: 외부 의존성)
+- **wds-theme atomic vendoring**: `red`/`green`/`orange`/accent 11-hue의 단계별 hex가 본 레포에 vendoring되지 않아 /60 stops는 표준 ramp(HSL +10%) 보간치. 디자이너 검수 후 정정.
+- **Pretendard JP 폰트 통합**: 라이선스/번들 결정 보류. 시스템 폰트 fallback 사용.
+- **실기 sweep**: `apps/daily_piece` + example 앱을 iOS sim/Android emu에서 light/dark 토글 시각 확인은 사람 판단 필요.
 
 ### 후속 (선택)
-- **Tier 2 잔여 7개**: Drawer/Sheet, Accordion, Popover, Breadcrumb, Pagination, Menu, Table
+- **Tier 2 잔여 (이 포트 기준)**: ImageUploader는 이번에 추가됨. Drawer/Sheet, Accordion, Popover, Breadcrumb, Pagination, Menu, Table은 미구현.
 - **Tier 3 도메인**: DatePicker, TimePicker, Slider, Stepper, SegmentedControl, SearchField
 
 ---

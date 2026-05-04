@@ -1,0 +1,7 @@
+tags:
+  golden:
+    description: >-
+      Golden / pixel-comparison tests. Baselines are macOS-host-rendered;
+      results may differ on other platforms. Run with
+      `flutter test --update-goldens test/components/golden` to refresh
+      baselines after intentional visual changes.

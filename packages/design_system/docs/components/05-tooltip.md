@@ -98,3 +98,20 @@ Animation:
 
 네이밍: Tooltip / Small / Top, Tooltip / Medium / Bottom
 ```
+
+---
+
+## API (Flutter)
+
+| Prop | 타입 | 기본값 | 설명 |
+|---|---|---|---|
+| `message` | `String` | required | 본문 텍스트. shortcut 사용 시 `richMessage`로 합성. |
+| `child` | `Widget` | required | 툴팁이 가리키는 트리거. |
+| `mode` | `WdsTooltipMode` | `hover` | `hover`: 데스크톱 hover/모바일 long-press(Flutter Tooltip 위임). `click`: 탭 토글, outside-tap 시 닫힘. `always`: 마운트되는 동안 고정. |
+| `size` | `WdsTooltipSize` | `medium` | `small`은 `caption1` + 6/4 패딩, `medium`은 `label2` + 10/6 패딩. |
+| `placement` | `WdsTooltipPlacement` | `top` | 트리거 기준 상/하. (auto-flip 미지원 — 후속.) |
+| `shortcut` | `String?` | `null` | 본문 뒤에 가벼운 키 표기. `richMessage`로 묶여 단일 패널에 표시. |
+
+구현 메모:
+- `hover` 모드는 Flutter `Tooltip` 위에 토큰 스타일만 입혀 사용. `click`/`always`는 `OverlayPortal` + `CompositedTransformTarget`/`Follower`로 직접 띄움.
+- 풍선 화살표(arrow)는 미구현. 토큰 결정 시 `CustomPainter`로 추가 가능.
