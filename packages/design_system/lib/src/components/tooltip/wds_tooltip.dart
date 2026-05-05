@@ -59,8 +59,7 @@ class _WdsTooltipState extends State<WdsTooltip> {
   void initState() {
     super.initState();
     if (widget.mode == WdsTooltipMode.always) {
-      WidgetsBinding.instance
-          .addPostFrameCallback((_) => _portal.show());
+      WidgetsBinding.instance.addPostFrameCallback((_) => _portal.show());
     }
   }
 
@@ -191,29 +190,33 @@ class _WdsTooltipState extends State<WdsTooltip> {
     final followerOffset = aboveTarget
         ? const Offset(0, -8)
         : const Offset(0, 8);
-    final targetAnchor =
-        aboveTarget ? Alignment.topCenter : Alignment.bottomCenter;
-    final followerAnchor =
-        aboveTarget ? Alignment.bottomCenter : Alignment.topCenter;
+    final targetAnchor = aboveTarget
+        ? Alignment.topCenter
+        : Alignment.bottomCenter;
+    final followerAnchor = aboveTarget
+        ? Alignment.bottomCenter
+        : Alignment.topCenter;
 
-    return Stack(children: [
-      // Outside-tap dismiss for click mode (always mode stays pinned).
-      if (widget.mode == WdsTooltipMode.click)
-        Positioned.fill(
-          child: GestureDetector(
-            behavior: HitTestBehavior.translucent,
-            onTap: () => _portal.hide(),
+    return Stack(
+      children: [
+        // Outside-tap dismiss for click mode (always mode stays pinned).
+        if (widget.mode == WdsTooltipMode.click)
+          Positioned.fill(
+            child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: () => _portal.hide(),
+            ),
           ),
+        CompositedTransformFollower(
+          link: _link,
+          offset: followerOffset,
+          targetAnchor: targetAnchor,
+          followerAnchor: followerAnchor,
+          showWhenUnlinked: false,
+          child: bubble,
         ),
-      CompositedTransformFollower(
-        link: _link,
-        offset: followerOffset,
-        targetAnchor: targetAnchor,
-        followerAnchor: followerAnchor,
-        showWhenUnlinked: false,
-        child: bubble,
-      ),
-    ]);
+      ],
+    );
   }
 }
 

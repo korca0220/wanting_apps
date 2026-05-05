@@ -3,7 +3,12 @@ import 'package:flutter/material.dart';
 import '../../foundations/wds_spacing.dart';
 import '../../theme/wds_theme_ext.dart';
 
-enum WdsTopNavigationVariant { defaultCentered, leading, emphasized, transparent }
+enum WdsTopNavigationVariant {
+  defaultCentered,
+  leading,
+  emphasized,
+  transparent,
+}
 
 /// Top header bar — `docs/components/25-top-navigation.md`.
 ///
@@ -38,13 +43,17 @@ class WdsTopNavigation extends StatelessWidget {
 
     final titleStyle = isEmphasized
         ? type.title3.copyWith(
-            color: colors.labelStrong, fontWeight: FontWeight.w700)
+            color: colors.labelStrong,
+            fontWeight: FontWeight.w700,
+          )
         : type.headline2.copyWith(
-            color: colors.labelNormal, fontWeight: FontWeight.w700);
+            color: colors.labelNormal,
+            fontWeight: FontWeight.w700,
+          );
 
-    final reservedSlotWidth = 48.0;
+    const reservedSlotWidth = 48.0;
 
-    Widget titleArea = title == null
+    final Widget titleArea = title == null
         ? const SizedBox.shrink()
         : DefaultTextStyle.merge(
             style: titleStyle,
@@ -77,8 +86,9 @@ class WdsTopNavigation extends StatelessWidget {
     return Semantics(
       header: true,
       child: Material(
-        color:
-            isTransparent ? Colors.transparent : colors.backgroundElevatedNormal,
+        color: isTransparent
+            ? Colors.transparent
+            : colors.backgroundElevatedNormal,
         child: SafeArea(
           bottom: false,
           child: DecoratedBox(
@@ -86,8 +96,10 @@ class WdsTopNavigation extends StatelessWidget {
               border: isTransparent
                   ? null
                   : Border(
-                      bottom:
-                          BorderSide(color: colors.lineNormalNeutral, width: 1),
+                      bottom: BorderSide(
+                        color: colors.lineNormalNeutral,
+                        width: 1,
+                      ),
                     ),
             ),
             child: SizedBox(

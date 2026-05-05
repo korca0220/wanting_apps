@@ -40,18 +40,18 @@ class WdsRadiusTheme extends ThemeExtension<WdsRadiusTheme> {
   final double pill;
 
   factory WdsRadiusTheme.standard() => const WdsRadiusTheme(
-        button: WdsRadius.md,
-        buttonMd: WdsRadius.btnMd,
-        buttonLg: WdsRadius.lg,
-        input: WdsRadius.md,
-        badge: WdsRadius.md,
-        tooltip: WdsRadius.sm,
-        card: WdsRadius.lg,
-        thumbnail: WdsRadius.lg,
-        modal: WdsRadius.xl,
-        modalLarge: WdsRadius.xl2,
-        pill: WdsRadius.full,
-      );
+    button: WdsRadius.md,
+    buttonMd: WdsRadius.btnMd,
+    buttonLg: WdsRadius.lg,
+    input: WdsRadius.md,
+    badge: WdsRadius.md,
+    tooltip: WdsRadius.sm,
+    card: WdsRadius.lg,
+    thumbnail: WdsRadius.lg,
+    modal: WdsRadius.xl,
+    modalLarge: WdsRadius.xl2,
+    pill: WdsRadius.full,
+  );
 
   @override
   WdsRadiusTheme copyWith({

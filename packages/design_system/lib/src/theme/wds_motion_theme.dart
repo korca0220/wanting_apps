@@ -34,18 +34,18 @@ class WdsMotionTheme extends ThemeExtension<WdsMotionTheme> {
   final Curve easingSharp;
 
   factory WdsMotionTheme.standard() => const WdsMotionTheme(
-        durationInstant: WdsMotion.durationInstant,
-        durationFast: WdsMotion.durationFast,
-        durationBase: WdsMotion.durationBase,
-        durationSlow: WdsMotion.durationSlow,
-        durationPage: WdsMotion.durationPage,
-        easingStandard: WdsMotion.easingStandard,
-        easingDecelerate: WdsMotion.easingDecelerate,
-        easingAccelerate: WdsMotion.easingAccelerate,
-        easingInOut: WdsMotion.easingInOut,
-        easingSpring: WdsMotion.easingSpring,
-        easingSharp: WdsMotion.easingSharp,
-      );
+    durationInstant: WdsMotion.durationInstant,
+    durationFast: WdsMotion.durationFast,
+    durationBase: WdsMotion.durationBase,
+    durationSlow: WdsMotion.durationSlow,
+    durationPage: WdsMotion.durationPage,
+    easingStandard: WdsMotion.easingStandard,
+    easingDecelerate: WdsMotion.easingDecelerate,
+    easingAccelerate: WdsMotion.easingAccelerate,
+    easingInOut: WdsMotion.easingInOut,
+    easingSpring: WdsMotion.easingSpring,
+    easingSharp: WdsMotion.easingSharp,
+  );
 
   @override
   WdsMotionTheme copyWith({

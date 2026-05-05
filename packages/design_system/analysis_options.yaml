@@ -1,4 +1,2 @@
-include: package:flutter_lints/flutter.yaml
-
-# Additional information about this file can be found at
-# https://dart.dev/guides/language/analysis-options
+# Inherits the repo-wide baseline. Add package-specific overrides below.
+include: ../../analysis_options.yaml

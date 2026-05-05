@@ -28,16 +28,16 @@ class WdsSpacingTheme extends ThemeExtension<WdsSpacingTheme> {
   final double layoutXl;
 
   factory WdsSpacingTheme.standard() => const WdsSpacingTheme(
-        componentXs: WdsSpacing.s4,
-        componentSm: WdsSpacing.s8,
-        componentMd: WdsSpacing.s12,
-        componentLg: WdsSpacing.s16,
-        componentXl: WdsSpacing.s24,
-        layoutSm: WdsSpacing.s32,
-        layoutMd: WdsSpacing.s48,
-        layoutLg: WdsSpacing.s64,
-        layoutXl: WdsSpacing.s80,
-      );
+    componentXs: WdsSpacing.s4,
+    componentSm: WdsSpacing.s8,
+    componentMd: WdsSpacing.s12,
+    componentLg: WdsSpacing.s16,
+    componentXl: WdsSpacing.s24,
+    layoutSm: WdsSpacing.s32,
+    layoutMd: WdsSpacing.s48,
+    layoutLg: WdsSpacing.s64,
+    layoutXl: WdsSpacing.s80,
+  );
 
   @override
   WdsSpacingTheme copyWith({

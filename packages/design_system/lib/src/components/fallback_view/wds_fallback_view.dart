@@ -52,11 +52,7 @@ class WdsFallbackView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             if (image != null) ...[
-              SizedBox(
-                width: _imageSize,
-                height: _imageSize,
-                child: image,
-              ),
+              SizedBox(width: _imageSize, height: _imageSize, child: image),
               const SizedBox(height: 16),
             ],
             ConstrainedBox(
@@ -81,10 +77,7 @@ class WdsFallbackView extends StatelessWidget {
                 ],
               ),
             ),
-            if (action != null) ...[
-              const SizedBox(height: 24),
-              action!,
-            ],
+            if (action != null) ...[const SizedBox(height: 24), action!],
           ],
         ),
       ),

@@ -1,0 +1,50 @@
+# Repo-wide lint baseline for wanting_apps.
+#
+# Each package's analysis_options.yaml extends this via `include:` so the
+# rule set is consistent across DS + apps + example.
+#
+# Conservative baseline: flutter_lints + safe additions that the existing
+# codebase already follows (or trivially can). Strict / opinionated rules
+# (public_member_api_docs, lines_longer_than_80_chars, etc.) are deferred
+# to per-package tightening.
+
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  language:
+    strict-casts: true
+    strict-inference: true
+  errors:
+    # Make some warnings errors so CI surfaces them clearly.
+    invalid_annotation_target: ignore
+    todo: ignore
+
+linter:
+  rules:
+    # Const-correctness — already followed in DS code.
+    prefer_const_constructors: true
+    prefer_const_constructors_in_immutables: true
+    prefer_const_declarations: true
+    prefer_const_literals_to_create_immutables: true
+
+    # Immutability hygiene.
+    prefer_final_fields: true
+    prefer_final_locals: true
+    prefer_final_in_for_each: true
+
+    # Async safety.
+    unawaited_futures: true
+
+    # Style consistency with the existing codebase.
+    prefer_single_quotes: true
+    sort_pub_dependencies: false  # pubspec ordering is intentional, not alphabetical
+
+    # Readability.
+    # avoid_redundant_argument_values is intentionally OFF — the existing
+    # codebase frequently passes default values explicitly for clarity at
+    # call sites; flipping the rule would create churn without value.
+    cascade_invocations: false  # noisy, low-value
+    use_super_parameters: true
+
+    # Print statements should not ship.
+    avoid_print: true

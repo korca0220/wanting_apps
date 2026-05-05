@@ -104,8 +104,9 @@ class WdsImageUploader extends StatelessWidget {
           const SizedBox(height: WdsSpacing.s6),
           Text(
             error!,
-            style: WdsTypographyTokens.caption1
-                .copyWith(color: colors.statusNegative),
+            style: WdsTypographyTokens.caption1.copyWith(
+              color: colors.statusNegative,
+            ),
           ),
         ],
       ),
@@ -119,8 +120,9 @@ class WdsImageUploader extends StatelessWidget {
   Widget _empty(BuildContext context) {
     final colors = context.wdsColors;
     final hasError = error != null;
-    final borderColor =
-        hasError ? colors.statusNegative : colors.lineNormalNeutral;
+    final borderColor = hasError
+        ? colors.statusNegative
+        : colors.lineNormalNeutral;
 
     final iconWidget = Icon(
       icon ?? Icons.camera_alt_outlined,
@@ -166,8 +168,9 @@ class WdsImageUploader extends StatelessWidget {
                     Text(
                       subhint!,
                       textAlign: TextAlign.center,
-                      style: WdsTypographyTokens.body2
-                          .copyWith(color: colors.labelAlternative),
+                      style: WdsTypographyTokens.body2.copyWith(
+                        color: colors.labelAlternative,
+                      ),
                     ),
                   ],
                 ],
@@ -200,8 +203,7 @@ class WdsImageUploader extends StatelessWidget {
               child: Center(
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
-                  valueColor:
-                      AlwaysStoppedAnimation<Color>(colors.staticWhite),
+                  valueColor: AlwaysStoppedAnimation<Color>(colors.staticWhite),
                 ),
               ),
             ),
@@ -211,10 +213,7 @@ class WdsImageUploader extends StatelessWidget {
         Positioned(
           top: WdsSpacing.s8,
           right: WdsSpacing.s8,
-          child: _RemoveButton(
-            onTap: onRemove!,
-            label: removeSemanticLabel,
-          ),
+          child: _RemoveButton(onTap: onRemove!, label: removeSemanticLabel),
         ),
     ];
 

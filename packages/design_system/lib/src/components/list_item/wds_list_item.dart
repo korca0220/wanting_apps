@@ -35,20 +35,21 @@ class WdsListItem extends StatelessWidget {
 
     final padding = dense
         ? const EdgeInsets.symmetric(
-            horizontal: WdsSpacing.s12, vertical: WdsSpacing.s8)
+            horizontal: WdsSpacing.s12,
+            vertical: WdsSpacing.s8,
+          )
         : const EdgeInsets.symmetric(
-            horizontal: WdsSpacing.s16, vertical: WdsSpacing.s12);
+            horizontal: WdsSpacing.s16,
+            vertical: WdsSpacing.s12,
+          );
 
     final minHeight = dense ? 48.0 : 56.0;
 
-    Widget row = Row(
+    final Widget row = Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         if (leading != null) ...[
-          Opacity(
-            opacity: disabled ? 0.4 : 1,
-            child: leading,
-          ),
+          Opacity(opacity: disabled ? 0.4 : 1, child: leading),
           const SizedBox(width: WdsSpacing.s12),
         ],
         Expanded(
@@ -61,28 +62,20 @@ class WdsListItem extends StatelessWidget {
         ),
         if (trailing != null) ...[
           const SizedBox(width: WdsSpacing.s12),
-          Opacity(
-            opacity: disabled ? 0.4 : 1,
-            child: trailing,
-          ),
+          Opacity(opacity: disabled ? 0.4 : 1, child: trailing),
         ],
       ],
     );
 
     final background = selected ? colors.primarySubtle : Colors.transparent;
     final selectedBorder = selected
-        ? Border(
-            left: BorderSide(color: colors.primaryNormal, width: 4),
-          )
+        ? Border(left: BorderSide(color: colors.primaryNormal, width: 4))
         : null;
 
     final body = ConstrainedBox(
       constraints: BoxConstraints(minHeight: minHeight),
       child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: background,
-          border: selectedBorder,
-        ),
+        decoration: BoxDecoration(color: background, border: selectedBorder),
         child: Padding(padding: padding, child: row),
       ),
     );
@@ -154,7 +147,9 @@ class WdsListItemCaption extends StatelessWidget {
     final colors = context.wdsColors;
     return Text(
       text,
-      style: WdsTypographyTokens.label2.copyWith(color: colors.labelAlternative),
+      style: WdsTypographyTokens.label2.copyWith(
+        color: colors.labelAlternative,
+      ),
       maxLines: maxLines,
       overflow: TextOverflow.ellipsis,
     );

@@ -21,12 +21,7 @@ Future<void> _loadPretendard() async {
   if (!fontsDir.existsSync()) return;
 
   final loader = FontLoader('Pretendard');
-  for (final weight in const [
-    'Regular',
-    'Medium',
-    'SemiBold',
-    'Bold',
-  ]) {
+  for (final weight in const ['Regular', 'Medium', 'SemiBold', 'Bold']) {
     final file = File('fonts/Pretendard-$weight.otf');
     if (!file.existsSync()) continue;
     final bytes = await file.readAsBytes();

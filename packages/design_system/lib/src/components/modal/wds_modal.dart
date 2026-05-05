@@ -85,22 +85,15 @@ class WdsModal {
     required BuildContext context,
     required Widget Function(BuildContext) builder,
   }) {
-    return Navigator.of(context).push<T>(
-      MaterialPageRoute<T>(
-        fullscreenDialog: true,
-        builder: builder,
-      ),
-    );
+    return Navigator.of(
+      context,
+    ).push<T>(MaterialPageRoute<T>(fullscreenDialog: true, builder: builder));
   }
 }
 
 /// Top navigation bar for modals — title + close button.
 class WdsModalNavigation extends StatelessWidget {
-  const WdsModalNavigation({
-    super.key,
-    required this.title,
-    this.onClose,
-  });
+  const WdsModalNavigation({super.key, required this.title, this.onClose});
 
   final String title;
 

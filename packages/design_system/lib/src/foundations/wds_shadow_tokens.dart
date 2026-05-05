@@ -11,7 +11,8 @@ import 'wds_colors.dart';
 class WdsShadowTokens {
   const WdsShadowTokens._();
 
-  static Color _base(double a) => WdsColors.neutralShadowBase.withValues(alpha: a);
+  static Color _base(double a) =>
+      WdsColors.neutralShadowBase.withValues(alpha: a);
 
   static final List<BoxShadow> normalXSmall = [
     BoxShadow(
@@ -84,18 +85,10 @@ class WdsShadowTokens {
 
   // Spread-style shadows (single shadow, large blur).
   static final List<BoxShadow> spreadSmall = [
-    BoxShadow(
-      color: _base(0.10),
-      offset: Offset.zero,
-      blurRadius: 60,
-    ),
+    BoxShadow(color: _base(0.10), offset: Offset.zero, blurRadius: 60),
   ];
 
   static final List<BoxShadow> spreadMedium = [
-    BoxShadow(
-      color: _base(0.16),
-      offset: const Offset(0, 15),
-      blurRadius: 75,
-    ),
+    BoxShadow(color: _base(0.16), offset: const Offset(0, 15), blurRadius: 75),
   ];
 }

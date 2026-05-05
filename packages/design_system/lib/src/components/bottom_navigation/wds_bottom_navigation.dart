@@ -33,8 +33,10 @@ class WdsBottomNavigation extends StatelessWidget {
     required this.currentIndex,
     required this.onTap,
     this.variant = WdsBottomNavigationVariant.withLabel,
-  })  : assert(items.length >= 2 && items.length <= 5,
-            '2–5 items per docs/components/23-bottom-navigation.md');
+  }) : assert(
+         items.length >= 2 && items.length <= 5,
+         '2–5 items per docs/components/23-bottom-navigation.md',
+       );
 
   final List<WdsBottomNavigationItem> items;
   final int currentIndex;

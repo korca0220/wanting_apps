@@ -96,9 +96,7 @@ class WdsIconButton extends StatelessWidget {
       foregroundColor: WidgetStateProperty.resolveWith(resolvedFg),
       iconColor: WidgetStateProperty.resolveWith(resolvedFg),
       overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-      shape: const WidgetStatePropertyAll<OutlinedBorder>(
-        CircleBorder(),
-      ),
+      shape: const WidgetStatePropertyAll<OutlinedBorder>(CircleBorder()),
       side: WidgetStateProperty.resolveWith(resolvedBorder),
       padding: const WidgetStatePropertyAll<EdgeInsetsGeometry>(
         EdgeInsets.zero,
@@ -120,7 +118,9 @@ class WdsIconButton extends StatelessWidget {
           focusNode: focusNode,
           style: style,
           icon: IconTheme(
-            data: IconThemeData(size: size == WdsIconButtonSize.small ? 16 : 20),
+            data: IconThemeData(
+              size: size == WdsIconButtonSize.small ? 16 : 20,
+            ),
             child: icon,
           ),
         ),

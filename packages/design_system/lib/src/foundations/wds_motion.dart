@@ -28,6 +28,5 @@ class WdsMotion {
   static Duration respectReducedMotion(
     Duration duration, {
     required bool reducedMotion,
-  }) =>
-      reducedMotion ? Duration.zero : duration;
+  }) => reducedMotion ? Duration.zero : duration;
 }

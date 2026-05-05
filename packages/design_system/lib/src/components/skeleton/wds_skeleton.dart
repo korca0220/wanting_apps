@@ -87,24 +87,20 @@ class _WdsSkeletonState extends State<WdsSkeleton>
       );
     }
 
-    return Semantics(
-      liveRegion: true,
-      label: 'Loading',
-      child: content,
-    );
+    return Semantics(liveRegion: true, label: 'Loading', child: content);
   }
 
   double get _defaultWidth => switch (widget.variant) {
-        WdsSkeletonVariant.text => 120,
-        WdsSkeletonVariant.circle => 40,
-        WdsSkeletonVariant.rectangle => 120,
-      };
+    WdsSkeletonVariant.text => 120,
+    WdsSkeletonVariant.circle => 40,
+    WdsSkeletonVariant.rectangle => 120,
+  };
 
   double get _defaultHeight => switch (widget.variant) {
-        WdsSkeletonVariant.text => 14,
-        WdsSkeletonVariant.circle => 40,
-        WdsSkeletonVariant.rectangle => 80,
-      };
+    WdsSkeletonVariant.text => 14,
+    WdsSkeletonVariant.circle => 40,
+    WdsSkeletonVariant.rectangle => 80,
+  };
 
   BorderRadius _defaultRadius(double w, double h) {
     switch (widget.variant) {

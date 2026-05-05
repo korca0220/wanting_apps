@@ -36,11 +36,8 @@ class WdsAlert extends StatelessWidget {
       context: context,
       barrierDismissible: barrierDismissible,
       barrierColor: dimmer,
-      builder: (_) => WdsAlert(
-        title: title,
-        description: description,
-        actions: actions,
-      ),
+      builder: (_) =>
+          WdsAlert(title: title, description: description, actions: actions),
     );
   }
 
@@ -149,9 +146,7 @@ class _NegativeAlertAction extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
         minimumSize: Size.zero,
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
       child: Text(label),
     );

@@ -16,8 +16,8 @@ class _ShowcaseAppState extends State<ShowcaseApp> {
   ThemeMode _mode = ThemeMode.light;
 
   void _toggle() => setState(
-        () => _mode = _mode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light,
-      );
+    () => _mode = _mode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -177,12 +177,12 @@ class _ButtonRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget btn(WdsButtonSize size, String label) => WdsButton(
-          onPressed: () {},
-          variant: variant,
-          color: color,
-          size: size,
-          child: Text(label),
-        );
+      onPressed: () {},
+      variant: variant,
+      color: color,
+      size: size,
+      child: Text(label),
+    );
     return Wrap(
       spacing: 12,
       runSpacing: 12,
@@ -345,19 +345,13 @@ class _PhaseBSectionsState extends State<_PhaseBSections> {
                 Expanded(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Text('A'),
-                      WdsDivider(),
-                      Text('B'),
-                    ],
+                    children: [Text('A'), WdsDivider(), Text('B')],
                   ),
                 ),
                 SizedBox(width: 16),
                 WdsDivider(vertical: true),
                 SizedBox(width: 16),
-                Expanded(
-                  child: Center(child: Text('Vertical divider →')),
-                ),
+                Expanded(child: Center(child: Text('Vertical divider →'))),
               ],
             ),
           ),
@@ -523,17 +517,13 @@ class _PhaseCSectionsState extends State<_PhaseCSections> {
                 spacing: 8,
                 children: [
                   WdsButton(
-                    onPressed: _step > 0
-                        ? () => setState(() => _step--)
-                        : null,
+                    onPressed: _step > 0 ? () => setState(() => _step--) : null,
                     variant: WdsButtonVariant.outlined,
                     size: WdsButtonSize.small,
                     child: const Text('Prev'),
                   ),
                   WdsButton(
-                    onPressed: _step < 3
-                        ? () => setState(() => _step++)
-                        : null,
+                    onPressed: _step < 3 ? () => setState(() => _step++) : null,
                     size: WdsButtonSize.small,
                     child: const Text('Next'),
                   ),
@@ -639,10 +629,7 @@ class _Tier2SectionsState extends State<_Tier2Sections> {
             spacing: 8,
             runSpacing: 8,
             children: [
-              WdsChip(
-                label: 'Solid Inactive',
-                onTap: () {},
-              ),
+              WdsChip(label: 'Solid Inactive', onTap: () {}),
               WdsChip(
                 label: 'Solid Active',
                 active: _chipActive,
@@ -817,7 +804,8 @@ class _Tier2SectionsState extends State<_Tier2Sections> {
                 child: WdsImageUploader(
                   aspect: WdsImageUploaderAspect.fourThree,
                   image: const NetworkImage(
-                      'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=400&q=60'),
+                    'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=400&q=60',
+                  ),
                   onRemove: () {},
                 ),
               ),
@@ -921,17 +909,21 @@ class _PhaseDSectionsState extends State<_PhaseDSections> {
                     children: [
                       const WdsModalNavigation(title: 'Popup modal'),
                       const WdsModalContent(
-                        child: Text('A centred dialog. Tap outside or close to dismiss.'),
-                      ),
-                      WdsModalActionArea(actions: [
-                        WdsButton(
-                          onPressed: () => Navigator.of(ctx).pop(),
-                          variant: WdsButtonVariant.outlined,
-                          color: WdsButtonColor.assistive,
-                          size: WdsButtonSize.small,
-                          child: const Text('Close'),
+                        child: Text(
+                          'A centred dialog. Tap outside or close to dismiss.',
                         ),
-                      ]),
+                      ),
+                      WdsModalActionArea(
+                        actions: [
+                          WdsButton(
+                            onPressed: () => Navigator.of(ctx).pop(),
+                            variant: WdsButtonVariant.outlined,
+                            color: WdsButtonColor.assistive,
+                            size: WdsButtonSize.small,
+                            child: const Text('Close'),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),

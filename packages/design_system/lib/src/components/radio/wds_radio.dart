@@ -47,9 +47,7 @@ class WdsRadio<T> extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         border: Border.all(color: borderColor(), width: _selected ? 2 : 1),
-        color: _selected && _enabled
-            ? colors.staticWhite
-            : Colors.transparent,
+        color: _selected && _enabled ? colors.staticWhite : Colors.transparent,
       ),
       child: _selected && _enabled
           ? Center(

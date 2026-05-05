@@ -80,10 +80,7 @@ class WdsButton extends StatelessWidget {
       iconOnly: iconOnly,
       loading: loading,
       spinnerColor: _foreground(colors),
-      child: DefaultTextStyle.merge(
-        style: fontStyle,
-        child: child,
-      ),
+      child: DefaultTextStyle.merge(style: fontStyle, child: child),
     );
 
     if (variant == WdsButtonVariant.outlined) {
@@ -172,8 +169,7 @@ class WdsButton extends StatelessWidget {
   }
 
   Color _foreground(WdsColorScheme colors) {
-    if (variant == WdsButtonVariant.solid &&
-        color == WdsButtonColor.primary) {
+    if (variant == WdsButtonVariant.solid && color == WdsButtonColor.primary) {
       return colors.onPrimary;
     }
     if (variant == WdsButtonVariant.solid &&
@@ -269,10 +265,7 @@ class _Content extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (iconLeading != null) ...[
-                iconLeading!,
-                SizedBox(width: gap),
-              ],
+              if (iconLeading != null) ...[iconLeading!, SizedBox(width: gap)],
               Flexible(child: child),
               if (iconTrailing != null) ...[
                 SizedBox(width: gap),

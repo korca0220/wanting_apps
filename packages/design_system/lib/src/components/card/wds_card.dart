@@ -130,8 +130,7 @@ class WdsCardCaption extends StatelessWidget {
     final type = context.wdsType;
     return Text(
       text,
-      style: style ??
-          type.body2.copyWith(color: colors.labelAlternative),
+      style: style ?? type.body2.copyWith(color: colors.labelAlternative),
       maxLines: maxLines,
       overflow: TextOverflow.ellipsis,
     );

@@ -69,46 +69,46 @@ class _StepCell extends StatelessWidget {
 
     final indicator = switch (state) {
       _StepState.incomplete => Container(
-          width: indicatorSize,
-          height: indicatorSize,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: colors.backgroundNormalNormal,
-            border: Border.all(color: colors.lineNormalNeutral, width: 1),
-          ),
+        width: indicatorSize,
+        height: indicatorSize,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: colors.backgroundNormalNormal,
+          border: Border.all(color: colors.lineNormalNeutral, width: 1),
         ),
+      ),
       _StepState.active => Container(
-          width: indicatorSize,
-          height: indicatorSize,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: colors.backgroundNormalNormal,
-            border: Border.all(color: colors.primaryNormal, width: 2),
-          ),
-          child: Center(
-            child: Container(
-              width: indicatorSize * 0.33,
-              height: indicatorSize * 0.33,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: colors.primaryNormal,
-              ),
+        width: indicatorSize,
+        height: indicatorSize,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: colors.backgroundNormalNormal,
+          border: Border.all(color: colors.primaryNormal, width: 2),
+        ),
+        child: Center(
+          child: Container(
+            width: indicatorSize * 0.33,
+            height: indicatorSize * 0.33,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: colors.primaryNormal,
             ),
           ),
         ),
+      ),
       _StepState.complete => Container(
-          width: indicatorSize,
-          height: indicatorSize,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: colors.primaryNormal,
-          ),
-          child: Icon(
-            Icons.check,
-            size: indicatorSize * 0.7,
-            color: colors.staticWhite,
-          ),
+        width: indicatorSize,
+        height: indicatorSize,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: colors.primaryNormal,
         ),
+        child: Icon(
+          Icons.check,
+          size: indicatorSize * 0.7,
+          color: colors.staticWhite,
+        ),
+      ),
     };
 
     final labelColor = state == _StepState.incomplete

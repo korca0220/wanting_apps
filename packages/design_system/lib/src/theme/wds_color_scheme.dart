@@ -264,7 +264,8 @@ class WdsColorScheme extends ThemeExtension<WdsColorScheme> {
           backgroundElevatedAlternative ?? this.backgroundElevatedAlternative,
       backgroundTransparentNormal:
           backgroundTransparentNormal ?? this.backgroundTransparentNormal,
-      backgroundTransparentAlternative: backgroundTransparentAlternative ??
+      backgroundTransparentAlternative:
+          backgroundTransparentAlternative ??
           this.backgroundTransparentAlternative,
       interactionInactive: interactionInactive ?? this.interactionInactive,
       interactionDisable: interactionDisable ?? this.interactionDisable,
@@ -306,29 +307,47 @@ class WdsColorScheme extends ThemeExtension<WdsColorScheme> {
       labelAlternative: lerpC(labelAlternative, other.labelAlternative),
       labelAssistive: lerpC(labelAssistive, other.labelAssistive),
       labelDisable: lerpC(labelDisable, other.labelDisable),
-      backgroundNormalNormal:
-          lerpC(backgroundNormalNormal, other.backgroundNormalNormal),
+      backgroundNormalNormal: lerpC(
+        backgroundNormalNormal,
+        other.backgroundNormalNormal,
+      ),
       backgroundNormalAlternative: lerpC(
-          backgroundNormalAlternative, other.backgroundNormalAlternative),
-      backgroundElevatedNormal:
-          lerpC(backgroundElevatedNormal, other.backgroundElevatedNormal),
+        backgroundNormalAlternative,
+        other.backgroundNormalAlternative,
+      ),
+      backgroundElevatedNormal: lerpC(
+        backgroundElevatedNormal,
+        other.backgroundElevatedNormal,
+      ),
       backgroundElevatedAlternative: lerpC(
-          backgroundElevatedAlternative, other.backgroundElevatedAlternative),
+        backgroundElevatedAlternative,
+        other.backgroundElevatedAlternative,
+      ),
       backgroundTransparentNormal: lerpC(
-          backgroundTransparentNormal, other.backgroundTransparentNormal),
+        backgroundTransparentNormal,
+        other.backgroundTransparentNormal,
+      ),
       backgroundTransparentAlternative: lerpC(
-          backgroundTransparentAlternative,
-          other.backgroundTransparentAlternative),
-      interactionInactive: lerpC(interactionInactive, other.interactionInactive),
+        backgroundTransparentAlternative,
+        other.backgroundTransparentAlternative,
+      ),
+      interactionInactive: lerpC(
+        interactionInactive,
+        other.interactionInactive,
+      ),
       interactionDisable: lerpC(interactionDisable, other.interactionDisable),
       lineNormalNormal: lerpC(lineNormalNormal, other.lineNormalNormal),
       lineNormalNeutral: lerpC(lineNormalNeutral, other.lineNormalNeutral),
-      lineNormalAlternative:
-          lerpC(lineNormalAlternative, other.lineNormalAlternative),
+      lineNormalAlternative: lerpC(
+        lineNormalAlternative,
+        other.lineNormalAlternative,
+      ),
       lineSolidNormal: lerpC(lineSolidNormal, other.lineSolidNormal),
       lineSolidNeutral: lerpC(lineSolidNeutral, other.lineSolidNeutral),
-      lineSolidAlternative:
-          lerpC(lineSolidAlternative, other.lineSolidAlternative),
+      lineSolidAlternative: lerpC(
+        lineSolidAlternative,
+        other.lineSolidAlternative,
+      ),
       statusPositive: lerpC(statusPositive, other.statusPositive),
       statusCautionary: lerpC(statusCautionary, other.statusCautionary),
       statusNegative: lerpC(statusNegative, other.statusNegative),

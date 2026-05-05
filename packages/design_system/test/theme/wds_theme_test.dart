@@ -27,8 +27,9 @@ void main() {
     expect(theme.brightness, Brightness.light);
   });
 
-  testWidgets('WdsTheme.dark sets brightness and dark on-primary',
-      (tester) async {
+  testWidgets('WdsTheme.dark sets brightness and dark on-primary', (
+    tester,
+  ) async {
     late BuildContext capturedContext;
     await tester.pumpWidget(
       MaterialApp(

@@ -47,14 +47,22 @@ class WdsChip extends StatelessWidget {
     };
 
     final padding = switch (size) {
-      WdsChipSize.xsmall =>
-        const EdgeInsets.symmetric(horizontal: WdsSpacing.s8, vertical: WdsSpacing.s2),
-      WdsChipSize.small =>
-        const EdgeInsets.symmetric(horizontal: WdsSpacing.s10, vertical: WdsSpacing.s4),
-      WdsChipSize.medium =>
-        const EdgeInsets.symmetric(horizontal: WdsSpacing.s12, vertical: WdsSpacing.s6),
-      WdsChipSize.large =>
-        const EdgeInsets.symmetric(horizontal: WdsSpacing.s14, vertical: WdsSpacing.s8),
+      WdsChipSize.xsmall => const EdgeInsets.symmetric(
+        horizontal: WdsSpacing.s8,
+        vertical: WdsSpacing.s2,
+      ),
+      WdsChipSize.small => const EdgeInsets.symmetric(
+        horizontal: WdsSpacing.s10,
+        vertical: WdsSpacing.s4,
+      ),
+      WdsChipSize.medium => const EdgeInsets.symmetric(
+        horizontal: WdsSpacing.s12,
+        vertical: WdsSpacing.s6,
+      ),
+      WdsChipSize.large => const EdgeInsets.symmetric(
+        horizontal: WdsSpacing.s14,
+        vertical: WdsSpacing.s8,
+      ),
     };
 
     final Color background;
@@ -66,8 +74,9 @@ class WdsChip extends StatelessWidget {
           ? colors.interactionDisable
           : Colors.transparent;
       foreground = colors.labelDisable;
-      borderColor =
-          variant == WdsChipVariant.outlined ? colors.lineNormalAlternative : null;
+      borderColor = variant == WdsChipVariant.outlined
+          ? colors.lineNormalAlternative
+          : null;
     } else if (variant == WdsChipVariant.solid) {
       background = active ? colors.primaryNormal : colors.fillNormal;
       foreground = active ? colors.onPrimary : colors.labelNormal;
@@ -118,10 +127,7 @@ class WdsChip extends StatelessWidget {
             onTap: disabled ? null : onTap,
             child: Padding(
               padding: padding,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: content,
-              ),
+              child: Row(mainAxisSize: MainAxisSize.min, children: content),
             ),
           ),
         ),

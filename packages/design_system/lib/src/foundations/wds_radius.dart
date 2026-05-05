@@ -23,8 +23,7 @@ class WdsRadius {
   // BorderRadius helpers
   static const BorderRadius brSm = BorderRadius.all(Radius.circular(sm));
   static const BorderRadius brMd = BorderRadius.all(Radius.circular(md));
-  static const BorderRadius brBtnMd =
-      BorderRadius.all(Radius.circular(btnMd));
+  static const BorderRadius brBtnMd = BorderRadius.all(Radius.circular(btnMd));
   static const BorderRadius brLg = BorderRadius.all(Radius.circular(lg));
   static const BorderRadius brXl = BorderRadius.all(Radius.circular(xl));
   static const BorderRadius brXl2 = BorderRadius.all(Radius.circular(xl2));

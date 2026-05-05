@@ -122,9 +122,9 @@ class _WdsTextFieldState extends State<WdsTextField> {
     }
 
     OutlineInputBorder border(Color c, {double w = 1}) => OutlineInputBorder(
-          borderRadius: BorderRadius.circular(radii.input),
-          borderSide: BorderSide(color: c, width: w),
-        );
+      borderRadius: BorderRadius.circular(radii.input),
+      borderSide: BorderSide(color: c, width: w),
+    );
 
     Widget? trailing = widget.trailing;
     if (widget.clearable && _controller.text.isNotEmpty && !widget.readOnly) {
@@ -157,8 +157,11 @@ class _WdsTextFieldState extends State<WdsTextField> {
               children: [icon, const SizedBox(width: 4), trailing],
             );
     } else if (widget.positive) {
-      final icon = Icon(Icons.check_circle,
-          color: colors.statusPositive, size: 18);
+      final icon = Icon(
+        Icons.check_circle,
+        color: colors.statusPositive,
+        size: 18,
+      );
       trailing = trailing == null
           ? icon
           : Row(
@@ -187,10 +190,9 @@ class _WdsTextFieldState extends State<WdsTextField> {
         hintText: widget.placeholder,
         helperText: widget.errorText ?? widget.helperText,
         helperStyle: type.caption1.copyWith(
-          color:
-              widget.errorText != null || widget.invalid
-                  ? colors.statusNegative
-                  : colors.labelAlternative,
+          color: widget.errorText != null || widget.invalid
+              ? colors.statusNegative
+              : colors.labelAlternative,
         ),
         labelStyle: type.label1.copyWith(color: colors.labelNeutral),
         hintStyle: type.body1.copyWith(color: colors.labelAssistive),

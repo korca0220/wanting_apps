@@ -29,9 +29,9 @@ class WdsSelect<T> extends StatelessWidget {
     final radii = context.wdsRadius;
 
     OutlineInputBorder border(Color c, {double w = 1}) => OutlineInputBorder(
-          borderRadius: BorderRadius.circular(radii.input),
-          borderSide: BorderSide(color: c, width: w),
-        );
+      borderRadius: BorderRadius.circular(radii.input),
+      borderSide: BorderSide(color: c, width: w),
+    );
 
     return DropdownButtonFormField<T>(
       initialValue: value,
@@ -43,10 +43,7 @@ class WdsSelect<T> extends StatelessWidget {
       borderRadius: BorderRadius.circular(radii.card),
       items: [
         for (final opt in items)
-          DropdownMenuItem<T>(
-            value: opt.value,
-            child: Text(opt.label),
-          ),
+          DropdownMenuItem<T>(value: opt.value, child: Text(opt.label)),
       ],
       decoration: InputDecoration(
         labelText: label,

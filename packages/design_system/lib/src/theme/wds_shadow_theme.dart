@@ -24,14 +24,14 @@ class WdsShadowsTheme extends ThemeExtension<WdsShadowsTheme> {
   final List<BoxShadow> spreadMedium;
 
   factory WdsShadowsTheme.standard() => WdsShadowsTheme(
-        normalXSmall: WdsShadowTokens.normalXSmall,
-        normalSmall: WdsShadowTokens.normalSmall,
-        normalMedium: WdsShadowTokens.normalMedium,
-        normalLarge: WdsShadowTokens.normalLarge,
-        normalXLarge: WdsShadowTokens.normalXLarge,
-        spreadSmall: WdsShadowTokens.spreadSmall,
-        spreadMedium: WdsShadowTokens.spreadMedium,
-      );
+    normalXSmall: WdsShadowTokens.normalXSmall,
+    normalSmall: WdsShadowTokens.normalSmall,
+    normalMedium: WdsShadowTokens.normalMedium,
+    normalLarge: WdsShadowTokens.normalLarge,
+    normalXLarge: WdsShadowTokens.normalXLarge,
+    spreadSmall: WdsShadowTokens.spreadSmall,
+    spreadMedium: WdsShadowTokens.spreadMedium,
+  );
 
   @override
   WdsShadowsTheme copyWith({

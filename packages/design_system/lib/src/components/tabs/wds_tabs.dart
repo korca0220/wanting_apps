@@ -10,7 +10,11 @@ import '../../theme/wds_theme_ext.dart';
 enum WdsTabsVariant { underline, pills }
 
 class WdsTabItem<T> {
-  const WdsTabItem({required this.value, required this.label, this.disabled = false});
+  const WdsTabItem({
+    required this.value,
+    required this.label,
+    this.disabled = false,
+  });
 
   final T value;
   final String label;
@@ -139,13 +143,7 @@ class _WdsTabsState<T> extends State<WdsTabs<T>> {
           bottom: BorderSide(color: colors.lineNormalNeutral, width: 1),
         ),
       ),
-      child: Stack(
-        key: _stripKey,
-        children: [
-          row,
-          indicatorAnimated,
-        ],
-      ),
+      child: Stack(key: _stripKey, children: [row, indicatorAnimated]),
     );
   }
 
@@ -157,8 +155,8 @@ class _WdsTabsState<T> extends State<WdsTabs<T>> {
     final fg = disabled
         ? colors.labelDisable
         : active
-            ? colors.primaryNormal
-            : colors.labelAlternative;
+        ? colors.primaryNormal
+        : colors.labelAlternative;
 
     return Semantics(
       selected: active,
@@ -168,7 +166,9 @@ class _WdsTabsState<T> extends State<WdsTabs<T>> {
         onTap: disabled ? null : () => widget.onChanged(item.value),
         child: Container(
           padding: const EdgeInsets.symmetric(
-            horizontal: WdsSpacing.s16, vertical: WdsSpacing.s10),
+            horizontal: WdsSpacing.s16,
+            vertical: WdsSpacing.s10,
+          ),
           alignment: Alignment.center,
           child: Text(
             item.label,
@@ -222,13 +222,7 @@ class _WdsTabsState<T> extends State<WdsTabs<T>> {
         borderRadius: WdsRadius.brMd,
       ),
       padding: const EdgeInsets.all(WdsSpacing.s4),
-      child: Stack(
-        key: _stripKey,
-        children: [
-          pill,
-          inner,
-        ],
-      ),
+      child: Stack(key: _stripKey, children: [pill, inner]),
     );
   }
 
@@ -243,8 +237,8 @@ class _WdsTabsState<T> extends State<WdsTabs<T>> {
     final fg = disabled
         ? colors.labelDisable
         : active
-            ? colors.labelNormal
-            : colors.labelAlternative;
+        ? colors.labelNormal
+        : colors.labelAlternative;
 
     return Semantics(
       selected: active,
@@ -258,7 +252,9 @@ class _WdsTabsState<T> extends State<WdsTabs<T>> {
           onTap: disabled ? null : () => widget.onChanged(item.value),
           child: Container(
             padding: const EdgeInsets.symmetric(
-              horizontal: WdsSpacing.s14, vertical: WdsSpacing.s6),
+              horizontal: WdsSpacing.s14,
+              vertical: WdsSpacing.s6,
+            ),
             alignment: Alignment.center,
             child: Text(
               item.label,

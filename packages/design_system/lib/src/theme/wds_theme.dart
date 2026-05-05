@@ -15,15 +15,11 @@ import 'wds_typography.dart';
 class WdsTheme {
   const WdsTheme._();
 
-  static ThemeData light() => _build(
-        brightness: Brightness.light,
-        colors: WdsColorScheme.light(),
-      );
+  static ThemeData light() =>
+      _build(brightness: Brightness.light, colors: WdsColorScheme.light());
 
-  static ThemeData dark() => _build(
-        brightness: Brightness.dark,
-        colors: WdsColorScheme.dark(),
-      );
+  static ThemeData dark() =>
+      _build(brightness: Brightness.dark, colors: WdsColorScheme.dark());
 
   static ThemeData _build({
     required Brightness brightness,

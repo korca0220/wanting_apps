@@ -22,21 +22,20 @@ Widget _surface({required ThemeMode mode, required Widget child}) {
     theme: WdsTheme.light(),
     darkTheme: WdsTheme.dark(),
     themeMode: mode,
-    home: Builder(builder: (context) {
-      return MediaQuery(
-        // Disable animations so async curves don't perturb the snapshot.
-        data: MediaQuery.of(context).copyWith(disableAnimations: true),
-        child: Scaffold(
-          backgroundColor: Theme.of(context)
-              .extension<WdsColorScheme>()!
-              .backgroundNormalNormal,
-          body: Padding(
-            padding: const EdgeInsets.all(16),
-            child: child,
+    home: Builder(
+      builder: (context) {
+        return MediaQuery(
+          // Disable animations so async curves don't perturb the snapshot.
+          data: MediaQuery.of(context).copyWith(disableAnimations: true),
+          child: Scaffold(
+            backgroundColor: Theme.of(
+              context,
+            ).extension<WdsColorScheme>()!.backgroundNormalNormal,
+            body: Padding(padding: const EdgeInsets.all(16), child: child),
           ),
-        ),
-      );
-    }),
+        );
+      },
+    ),
   );
 }
 
@@ -64,22 +63,19 @@ Future<void> _pumpFixed(
 }
 
 Widget _buttonMatrix() {
-  Widget cell(Widget c) => Padding(
-        padding: const EdgeInsets.all(6),
-        child: c,
-      );
+  Widget cell(Widget c) => Padding(padding: const EdgeInsets.all(6), child: c);
 
   Row row({required String label, required List<Widget> children}) => Row(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          SizedBox(
-            width: 140,
-            child: Text(label, style: const TextStyle(fontSize: 13)),
-          ),
-          ...children.map(cell),
-        ],
-      );
+    mainAxisSize: MainAxisSize.min,
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      SizedBox(
+        width: 140,
+        child: Text(label, style: const TextStyle(fontSize: 13)),
+      ),
+      ...children.map(cell),
+    ],
+  );
 
   Widget btn({
     required String text,
@@ -111,40 +107,43 @@ Widget _buttonMatrix() {
     mainAxisSize: MainAxisSize.min,
     children: [
       for (final (label, variant, color) in variants)
-        row(label: label, children: [
-          btn(
-            text: 'S',
-            variant: variant,
-            color: color,
-            size: WdsButtonSize.small,
-          ),
-          btn(
-            text: 'Medium',
-            variant: variant,
-            color: color,
-            size: WdsButtonSize.medium,
-          ),
-          btn(
-            text: 'Large action',
-            variant: variant,
-            color: color,
-            size: WdsButtonSize.large,
-          ),
-          btn(
-            text: 'Disabled',
-            variant: variant,
-            color: color,
-            size: WdsButtonSize.medium,
-            disabled: true,
-          ),
-          btn(
-            text: 'Loading',
-            variant: variant,
-            color: color,
-            size: WdsButtonSize.medium,
-            loading: true,
-          ),
-        ]),
+        row(
+          label: label,
+          children: [
+            btn(
+              text: 'S',
+              variant: variant,
+              color: color,
+              size: WdsButtonSize.small,
+            ),
+            btn(
+              text: 'Medium',
+              variant: variant,
+              color: color,
+              size: WdsButtonSize.medium,
+            ),
+            btn(
+              text: 'Large action',
+              variant: variant,
+              color: color,
+              size: WdsButtonSize.large,
+            ),
+            btn(
+              text: 'Disabled',
+              variant: variant,
+              color: color,
+              size: WdsButtonSize.medium,
+              disabled: true,
+            ),
+            btn(
+              text: 'Loading',
+              variant: variant,
+              color: color,
+              size: WdsButtonSize.medium,
+              loading: true,
+            ),
+          ],
+        ),
     ],
   );
 }
@@ -172,15 +171,12 @@ Widget _cardSample() {
 }
 
 Widget _textFieldSample() {
-  return SizedBox(
+  return const SizedBox(
     width: 320,
     child: Column(
       mainAxisSize: MainAxisSize.min,
-      children: const [
-        WdsTextField(
-          label: 'Email',
-          placeholder: 'name@example.com',
-        ),
+      children: [
+        WdsTextField(label: 'Email', placeholder: 'name@example.com'),
         SizedBox(height: 12),
         WdsTextField(
           label: 'Password',
@@ -229,10 +225,7 @@ Widget _modalSample() {
                   color: WdsButtonColor.assistive,
                   child: const Text('Cancel'),
                 ),
-                WdsButton(
-                  onPressed: () {},
-                  child: const Text('Delete'),
-                ),
+                WdsButton(onPressed: () {}, child: const Text('Delete')),
               ],
             ),
           ],
@@ -263,7 +256,10 @@ void main() {
     testWidgets('Card composition · $modeName', (tester) async {
       await _pumpFixed(
         tester,
-        _surface(mode: mode, child: Center(child: _cardSample())),
+        _surface(
+          mode: mode,
+          child: Center(child: _cardSample()),
+        ),
         size: const Size(420, 460),
       );
       await expectLater(
@@ -275,7 +271,10 @@ void main() {
     testWidgets('TextField states · $modeName', (tester) async {
       await _pumpFixed(
         tester,
-        _surface(mode: mode, child: Center(child: _textFieldSample())),
+        _surface(
+          mode: mode,
+          child: Center(child: _textFieldSample()),
+        ),
         size: const Size(420, 600),
       );
       await expectLater(

@@ -35,28 +35,37 @@ class WdsBadge extends StatelessWidget {
   final WdsBadgeAccent accent;
 
   EdgeInsets get _padding => switch (size) {
-        WdsBadgeSize.xsmall => const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-        WdsBadgeSize.small => const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-        WdsBadgeSize.medium => const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      };
+    WdsBadgeSize.xsmall => const EdgeInsets.symmetric(
+      horizontal: 6,
+      vertical: 2,
+    ),
+    WdsBadgeSize.small => const EdgeInsets.symmetric(
+      horizontal: 8,
+      vertical: 2,
+    ),
+    WdsBadgeSize.medium => const EdgeInsets.symmetric(
+      horizontal: 8,
+      vertical: 4,
+    ),
+  };
 
   double get _radius =>
       size == WdsBadgeSize.medium ? WdsRadius.md : WdsRadius.sm;
 
   TextStyle get _baseStyle => switch (size) {
-        WdsBadgeSize.xsmall => WdsTypographyTokens.caption2,
-        WdsBadgeSize.small => WdsTypographyTokens.caption1,
-        WdsBadgeSize.medium => WdsTypographyTokens.label2,
-      };
+    WdsBadgeSize.xsmall => WdsTypographyTokens.caption2,
+    WdsBadgeSize.small => WdsTypographyTokens.caption1,
+    WdsBadgeSize.medium => WdsTypographyTokens.label2,
+  };
 
   Color? get _accentBase => switch (accent) {
-        WdsBadgeAccent.neutral => null,
-        WdsBadgeAccent.redOrange => WdsColors.red50,
-        WdsBadgeAccent.lime => WdsColors.lime50,
-        WdsBadgeAccent.cyan => WdsColors.cyan50,
-        WdsBadgeAccent.violet => WdsColors.violet50,
-        WdsBadgeAccent.pink => WdsColors.pink50,
-      };
+    WdsBadgeAccent.neutral => null,
+    WdsBadgeAccent.redOrange => WdsColors.red50,
+    WdsBadgeAccent.lime => WdsColors.lime50,
+    WdsBadgeAccent.cyan => WdsColors.cyan50,
+    WdsBadgeAccent.violet => WdsColors.violet50,
+    WdsBadgeAccent.pink => WdsColors.pink50,
+  };
 
   @override
   Widget build(BuildContext context) {
