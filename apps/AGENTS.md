@@ -1,0 +1,148 @@
+# apps/ — 앱 트리 공통 규약
+
+이 디렉토리는 `wanting_apps` 모노레포의 **개별 Flutter 앱들**이 들어가는 곳이다. 어떤 앱이든 이 문서의 규약을 따른다.
+
+상위 진입점: [`/AGENTS.md`](../AGENTS.md). 디자인 시스템: [`packages/design_system/AGENTS.md`](../packages/design_system/AGENTS.md).
+
+---
+
+## 🛡️ 모든 앱이 따르는 불변 규칙
+
+상위 [`/AGENTS.md`](../AGENTS.md)의 핵심 불변 규칙을 앱 관점에서 재명시한다.
+
+1. **단일 DS**: 색·타이포·간격·반경·그림자·모션 토큰은 **반드시** `package:design_system`의 semantic 토큰만 사용. raw hex/픽셀 직접 사용 금지.
+2. **Framework-Neutral 화면 명세**: `apps/{app}/docs/screens/*.md`는 프레임워크 중립 유지. Flutter 키워드(Widget, BuildContext 등) 금지. 구현은 `lib/`에서.
+3. **검증 통과**: 화면 명세는 `validate_screen.py` exit 0이어야 production-ready (스킬은 sibling 레포 `../design-system-gen/`).
+4. **앱별 진입점 의무화**: 모든 앱은 `AGENTS.md`와 `README.md`를 자기 디렉토리에 가진다. 없으면 그 앱은 미완성 상태.
+
+---
+
+## 📁 앱 디렉토리 구조 (의무 + 권장)
+
+### 의무
+
+| 경로 | 역할 |
+|---|---|
+| `apps/{app}/AGENTS.md` | 앱 진입점 — 도메인, lib 구조, 외부 의존, 명령어 |
+| `apps/{app}/README.md` | 1-2줄 소개 + AGENTS.md 포인터 |
+| `apps/{app}/pubspec.yaml` | `resolution: workspace`, `design_system: any` |
+| `apps/{app}/lib/` | Flutter 구현 |
+| `apps/{app}/test/` | 테스트 (위젯/유닛/통합) |
+| `apps/{app}/docs/screens/` | 화면 명세 (framework-neutral .md, [TEMPLATE](daily_piece/docs/screens/TEMPLATE.md) 사용) |
+
+### 권장 (앱이 자라면 추가)
+
+| 경로 | 역할 |
+|---|---|
+| `apps/{app}/docs/architecture.md` | lib 레이어/모듈 도식, 의존 방향 |
+| `apps/{app}/docs/adr/NNNN-name.md` | 앱 단위 의사결정 기록 (상태관리/라우팅/DI 선택 등) |
+| `apps/{app}/analysis_options.yaml` | 앱별 lint 강화 (필요 시) |
+
+### 자유 (앱마다 달라도 됨)
+
+- `lib/` 내부 구조 (features/core/ui 패턴, layered, clean arch 등)
+- 상태관리 (Riverpod / Bloc / Provider / setState)
+- 라우팅 (go_router / auto_route / Navigator 1.0)
+- DI 컨테이너 (get_it / Riverpod / 직접 주입)
+- 테스트 스타일 (unit-heavy / widget-heavy / integration)
+
+→ 앱별 ADR로 결정하고 그 앱 안에서만 일관되게 적용.
+
+---
+
+## 🆕 새 앱 추가 절차
+
+1. **스캐폴드**
+
+    ```bash
+    flutter create --org com.wanting --platforms=ios,android apps/{new_app}
+    ```
+
+2. **워크스페이스 등록**
+
+    `apps/{new_app}/pubspec.yaml`:
+    ```yaml
+    resolution: workspace
+    dependencies:
+      flutter:
+        sdk: flutter
+      design_system: any
+    ```
+
+    루트 `/pubspec.yaml`의 `workspace:` 목록에 `apps/{new_app}` 추가.
+
+3. **의무 산출물 생성**
+
+    - `apps/{new_app}/AGENTS.md` ← `apps/daily_piece/AGENTS.md` 참고해 작성
+    - `apps/{new_app}/README.md` ← 1-2줄 + AGENTS 포인터
+    - `apps/{new_app}/docs/screens/` ← `apps/daily_piece/docs/screens/{TEMPLATE.md, README.md}` 복사
+
+4. **DS 적용**
+
+    `lib/main.dart`에서 `MaterialApp(theme: WdsTheme.light(), darkTheme: WdsTheme.dark())`. 이외 색/타이포/간격은 `context.wdsColors` / `context.wdsType` 등으로만 접근.
+
+5. **부트스트랩 + 첫 화면**
+
+    ```bash
+    melos bootstrap
+    ```
+
+    첫 화면 `01-{name}.md` 작성 → `validate_screen.py`로 검증 → 구현.
+
+6. **(선택) melos 단축 명령 추가**
+
+    루트 `/pubspec.yaml`의 `melos.scripts`에 `run:{short}` 추가하면 편함.
+
+---
+
+## ✅ 새 앱 합류 체크리스트
+
+- [ ] `apps/{app}/AGENTS.md` 존재 — 도메인·lib 구조·외부 의존·명령어 채워짐
+- [ ] `apps/{app}/README.md` 존재 — flutter create 스캐폴드 텍스트 제거됨
+- [ ] `apps/{app}/pubspec.yaml`에 `resolution: workspace` + `design_system: any`
+- [ ] 루트 `/pubspec.yaml`의 `workspace:`에 추가됨
+- [ ] `apps/{app}/docs/screens/`에 최소 `TEMPLATE.md`, `README.md`, `00-INDEX.md`
+- [ ] `melos bootstrap` 통과
+- [ ] `melos run analyze` 통과
+- [ ] `melos run test` 통과 (테스트가 있다면)
+
+---
+
+## 🔧 자주 쓰는 명령
+
+```bash
+melos bootstrap                    # 의존성 설치 + 패키지 링킹
+melos run analyze                  # 모든 앱/패키지 dart analyze
+melos run format                   # dart format
+melos run format-check             # CI에서 format 검증
+melos run test                     # 모든 패키지 flutter test
+melos run run:dp                   # DailyPiece 실행
+```
+
+특정 앱만 작업할 때:
+
+```bash
+melos exec -c 1 --scope={app_name} -- "flutter test"
+melos exec -c 1 --scope={app_name} -- "flutter analyze"
+```
+
+---
+
+## 🧭 현재 앱 인벤토리
+
+| 앱 | 상태 | 진입점 |
+|---|---|---|
+| `daily_piece` | 활성 (스캐폴드 단계) | [`daily_piece/AGENTS.md`](daily_piece/AGENTS.md) |
+
+---
+
+## 🔗 외부 스킬
+
+화면 명세 검증·DS 보강은 sibling 레포의 스킬을 호출 (자세한 건 [`/AGENTS.md`](../AGENTS.md)의 `🔌 외부 의존: skills` 섹션):
+
+```bash
+python3 ../design-system-gen/skills/screen-spec-gen/scripts/validate_screen.py \
+  --ds-root packages/design_system/docs \
+  --repo-root . \
+  apps/{app}/docs/screens/
+```

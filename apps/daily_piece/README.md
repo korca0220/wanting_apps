@@ -1,16 +1,12 @@
-# daily_piece
+# DailyPiece
 
-DailyPiece — wanting app
+미니멀 라이프 로깅 앱. 하루 한 장 사진 + 50자 코멘트로 일상을 기록한다.
 
-## Getting Started
+→ 진입점: [`AGENTS.md`](AGENTS.md)
+→ 화면 명세: [`docs/screens/`](docs/screens/)
 
-This project is a starting point for a Flutter application.
+## 실행
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```bash
+melos run run:dp
+```
