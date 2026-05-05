@@ -124,7 +124,7 @@
 
 ### Flutter 포트 잔존 (블로커: 외부 의존성)
 - **wds-theme atomic vendoring**: `red`/`green`/`orange`/accent 11-hue의 단계별 hex가 본 레포에 vendoring되지 않아 /60 stops는 표준 ramp(HSL +10%) 보간치. 디자이너 검수 후 정정.
-- **Pretendard JP 폰트 통합**: 라이선스/번들 결정 보류. 시스템 폰트 fallback 사용.
+- ~~**Pretendard 폰트 통합**~~ ✅ Pretendard 4-weight static OTF (Regular/Medium/SemiBold/Bold)을 `packages/design_system/fonts/`에 번들. `pubspec.yaml` fonts 등록 + `WdsTheme`의 ambient `fontFamily` + `WdsTypographyTokens`에 baked. 테스트는 `flutter_test_config.dart`에서 `FontLoader`로 명시 로드 → 골든이 실제 글리프 기준으로 잠김. **Pretendard JP**(가나 포함)은 일본어 화면 추가 시 `pretendard-jp`로 교체.
 - **실기 sweep**: `apps/daily_piece` + example 앱을 iOS sim/Android emu에서 light/dark 토글 시각 확인은 사람 판단 필요.
 
 ### 후속 (선택)

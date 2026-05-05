@@ -14,6 +14,11 @@ class WdsTypographyTokens {
   // via `.copyWith(fontWeight: ...)` at usage time. See "Bold 자동화 규칙"
   // in 00-typography.md: display/title use w700, others use w600.
 
+  /// Bundled font family. The `design_system` package declares Pretendard
+  /// in its pubspec, so any app that depends on this package picks it up
+  /// automatically without further configuration.
+  static const String fontFamily = 'Pretendard';
+
   static TextStyle _v({
     required double size,
     required double height,
@@ -25,8 +30,7 @@ class WdsTypographyTokens {
         height: height / size,
         letterSpacing: letterEm * size,
         fontWeight: weight,
-        // Use system default until Pretendard JP is bundled.
-        fontFamily: null,
+        fontFamily: fontFamily,
       );
 
   static final TextStyle display1 =

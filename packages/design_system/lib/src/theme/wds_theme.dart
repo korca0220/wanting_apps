@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../foundations/wds_typography_tokens.dart';
 import 'wds_color_scheme.dart';
 import 'wds_motion_theme.dart';
 import 'wds_radius_theme.dart';
@@ -60,6 +61,9 @@ class WdsTheme {
       useMaterial3: true,
       brightness: brightness,
       colorScheme: colorScheme,
+      // Apply Pretendard ambient so Material widgets that don't explicitly
+      // read WdsTypography (e.g., AppBar, default Text) inherit the family.
+      fontFamily: WdsTypographyTokens.fontFamily,
       scaffoldBackgroundColor: colors.backgroundNormalNormal,
       textTheme: TextTheme(
         displayLarge: typography.display1,
