@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Allow only one concurrent run per ref; cancel in-progress runs when
+# a new commit is pushed to the same PR.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze-and-test:
+    name: analyze + format + test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.35.6
+          channel: stable
+          cache: true
+
+      - name: Show versions
+        run: |
+          flutter --version
+          dart --version
+
+      - name: Activate Melos
+        run: dart pub global activate melos 7.5.1
+
+      - name: Bootstrap workspace
+        run: melos bootstrap
+
+      - name: Format check
+        run: melos run format-check
+
+      - name: Static analysis
+        run: melos run analyze
+
+      - name: Tests (excluding goldens)
+        # Goldens are baselined on macOS with bundled Pretendard; rasterization
+        # differs on Linux runners, so they're run as a separate manual job.
+        run: melos run test:ci

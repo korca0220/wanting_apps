@@ -30,6 +30,10 @@ melos:
       description: Run flutter test in all packages with tests
       run: melos exec -c 1 --flutter --dir-exists=test -- "flutter test"
 
+    test:ci:
+      description: Run tests excluding goldens (Linux runners can't match macOS baselines)
+      run: melos exec -c 1 --flutter --dir-exists=test -- "flutter test --exclude-tags golden"
+
     test:golden:
       description: Run only golden tests (host-platform-rendered baselines)
       run: melos exec -c 1 --scope=design_system -- "flutter test --tags golden"
