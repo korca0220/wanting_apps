@@ -38,16 +38,32 @@
 | `analysis_options.yaml` | 앱 lint (현재 `flutter_lints` 기본) |
 | `pubspec.yaml` | 의존성 |
 
-### lib/ 구조 (TBD — ADR 0001로 결정)
+### lib/ 구조
 
-현 상태: `main.dart` 단일 파일. 다음 결정이 끝나면 본 섹션 갱신:
+확정된 결정:
 
-- [ ] **상태관리** (ADR 후보: `docs/adr/0001-state-management.md`)
-- [ ] **라우팅** (ADR 후보: `docs/adr/0002-routing.md`)
-- [ ] **DI/서비스 로케이터**
-- [ ] **레이어 컨벤션** (features-first / layered / clean arch 등)
+- **상태관리 / DI**: Riverpod (`flutter_riverpod` + `riverpod_annotation`) — [ADR 0001](docs/adr/0001-state-management.md). DI는 Provider로 일원화 (별도 서비스 로케이터 없음).
+- **라우팅**: go_router — [ADR 0002](docs/adr/0002-routing.md). 라우터 정의는 `lib/app/router.dart` 단일 진입.
+- **레이어 컨벤션**: features-first. `lib/features/<feature>/` 안에 widget + provider + repository를 co-locate. cross-feature 공유는 `lib/core/` (auth, http client, domain models).
 
-결정 전까지 새 코드는 `lib/main.dart`에 누적하거나 실험 디렉토리에서 작업하고, 결정 직후 일괄 정리한다.
+타깃 스켈레톤 (P1-#8에서 깔 예정):
+
+```
+lib/
+├── main.dart            # ProviderScope + MaterialApp.router
+├── app/
+│   ├── app.dart         # MaterialApp.router widget
+│   └── router.dart      # GoRouter + redirect 가드
+├── core/
+│   ├── auth/            # 인증 상태 Provider
+│   ├── domain/          # Piece, Collection 등 도메인 모델
+│   └── http/            # API 클라이언트 (백엔드 결정 후)
+└── features/
+    ├── today/           # 오늘의 Piece 작성
+    ├── collection/      # 타임라인
+    ├── piece_detail/    # Piece 상세
+    └── settings/
+```
 
 ---
 
