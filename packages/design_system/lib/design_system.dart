@@ -45,6 +45,7 @@ export 'src/components/skeleton/wds_skeleton.dart';
 export 'src/components/snackbar/wds_snackbar.dart';
 export 'src/components/spinner/wds_spinner.dart';
 export 'src/components/switch/wds_switch.dart';
+export 'src/components/text/wds_text.dart';
 export 'src/components/text_field/wds_text_field.dart';
 export 'src/components/textarea/wds_textarea.dart';
 export 'src/components/tooltip/wds_tooltip.dart';

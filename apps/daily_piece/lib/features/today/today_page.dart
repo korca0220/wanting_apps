@@ -11,7 +11,13 @@ class TodayPage extends ConsumerWidget {
     return Scaffold(
       backgroundColor: colors.backgroundNormalNormal,
       appBar: AppBar(title: const Text('Today')),
-      body: const Center(child: Text("Today's Piece — TODO")),
+      body: const Center(
+        child: WdsText(
+          "Today's Piece — TODO",
+          style: WdsTextStyle.headline2,
+          color: WdsTextColor.alternative,
+        ),
+      ),
     );
   }
 }
