@@ -6,22 +6,29 @@
 → 화면 명세: [`docs/screens/`](docs/screens/)
 → 결정 기록: [`docs/adr/`](docs/adr/)
 
+## 처음 셋업 (1회)
+
+```bash
+# 1. Supabase URL / anonKey를 .env에 채움
+cp .env.example .env
+$EDITOR .env   # SUPABASE_URL, SUPABASE_ANON_KEY 입력
+
+# 2. envied 코드 생성 (.env → 난독화된 typed Env)
+melos run gen
+```
+
+`.env`는 git에 올라가지 않는다. 키 값은 1Password 등에 보관.
+
+`.env`나 `pubspec.yaml`을 수정하면 `melos run gen`을 다시 돌려야 한다.
+
 ## 실행
 
-Supabase URL/anonKey를 `--dart-define`으로 주입해야 한다 (없으면 시작 시 assert 실패):
-
 ```bash
-flutter run \
-  --dart-define=SUPABASE_URL=https://<your-ref>.supabase.co \
-  --dart-define=SUPABASE_ANON_KEY=<your-anon-key>
+melos run run:dp
 ```
 
-또는 melos 스크립트를 쓰고 싶다면 위 두 변수를 환경에 노출시킨 뒤:
+(내부적으로 `flutter run` — `--dart-define`은 더 이상 필요 없음)
 
-```bash
-melos run run:dp -- \
-  --dart-define=SUPABASE_URL=$SUPABASE_URL \
-  --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
-```
+## CI
 
-키는 절대 커밋하지 말 것. 로컬 개발 키는 `~/.zshrc` 등 셸 환경에 두고, CI는 GitHub Secrets에서 주입한다.
+GitHub Actions는 진짜 키 없이 컴파일한다. `.env.example`을 `.env`로 복사한 뒤 `melos run gen`을 돌려 빈 값으로 빌드 — analyze/test에는 문제 없음. 실제 배포 잡이 생기면 GitHub Secrets에서 진짜 키를 주입.

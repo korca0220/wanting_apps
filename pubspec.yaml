@@ -46,6 +46,10 @@ melos:
       description: Clean all packages
       run: melos exec -c 1 --flutter -- "flutter clean"
 
+    gen:
+      description: Run build_runner in packages that have it (envied, freezed, etc.)
+      run: melos exec -c 1 --depends-on="build_runner" -- "dart run build_runner build --delete-conflicting-outputs"
+
     run:dp:
       description: Run DailyPiece app
       run: melos exec -c 1 --scope=daily_piece -- "flutter run"

@@ -11,6 +11,10 @@
 include: package:flutter_lints/flutter.yaml
 
 analyzer:
+  exclude:
+    # Generated files (envied, freezed, json_serializable, riverpod_generator, etc.)
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
   language:
     strict-casts: true
     strict-inference: true

@@ -38,6 +38,15 @@ jobs:
       - name: Bootstrap workspace
         run: melos bootstrap
 
+      - name: Seed .env files for codegen
+        # CI doesn't need real secrets to compile — empty values flow
+        # through envied's obfuscator just fine. Real keys live in
+        # GitHub Secrets and would only be used by deploy jobs.
+        run: cp apps/daily_piece/.env.example apps/daily_piece/.env
+
+      - name: Generate code (envied / freezed / etc.)
+        run: melos run gen
+
       - name: Format check
         run: melos run format-check
 

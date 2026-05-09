@@ -97,16 +97,16 @@ Storage 버킷: `pieces`(private). 업로드 경로는 `{user_id}/{piece_id}.{ex
 
 ### 환경 분리
 
-```bash
-# dev
-flutter run \
-  --dart-define=SUPABASE_URL=https://<dev-ref>.supabase.co \
-  --dart-define=SUPABASE_ANON_KEY=<dev-anon>
+URL/anonKey는 `apps/daily_piece/.env` 파일에 두고 [`envied`](https://pub.dev/packages/envied)로 난독화해 컴파일 — `--dart-define` 사용하지 않음. 워크플로:
 
-# prod 빌드도 동일 패턴
+```bash
+cp apps/daily_piece/.env.example apps/daily_piece/.env
+$EDITOR apps/daily_piece/.env       # 값 입력
+melos run gen                       # env.g.dart 재생성
+melos run run:dp                    # 그냥 flutter run
 ```
 
-`.env` / 시크릿 파일은 git에 두지 않음. CI는 GitHub Secrets에서 주입.
+`.env`와 생성된 `*.g.dart`는 모두 gitignore. 진짜 키는 1Password 등에 보관. CI는 빈 `.env`로 컴파일하고, 배포 잡 도입 시 GitHub Secrets에서 실값 주입.
 
 ### 후속 ADR
 
