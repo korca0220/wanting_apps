@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../core/auth/auth_state.dart';
+import '../core/auth/session_provider.dart';
 import '../features/auth/sign_in_page.dart';
 import '../features/collection/collection_page.dart';
 import '../features/piece_detail/piece_detail_page.dart';
@@ -13,7 +13,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     initialLocation: '/today',
     redirect: (context, state) {
-      final signedIn = ref.read(authProvider).isSignedIn;
+      final signedIn = ref.read(isSignedInProvider);
       final atSignIn = state.matchedLocation == '/sign-in';
       if (!signedIn && !atSignIn) return '/sign-in';
       if (signedIn && atSignIn) return '/today';
@@ -36,6 +36,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
 class _RouterRefresh extends ChangeNotifier {
   _RouterRefresh(Ref ref) {
-    ref.listen<AuthState>(authProvider, (_, _) => notifyListeners());
+    ref.listen<bool>(isSignedInProvider, (_, _) => notifyListeners());
   }
 }
