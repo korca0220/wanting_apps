@@ -17,3 +17,4 @@ class DailyPieceApp extends ConsumerWidget {
     );
   }
 }
+2번으

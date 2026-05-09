@@ -71,13 +71,14 @@ lib/
 
 | 카테고리 | 현 상태 |
 |---|---|
-| 백엔드 API | TBD |
-| 인증 | TBD (`docs/screens/08-create-account.md`, `09-welcome-back.md`, `10-reset-password.md`로 보아 자체 계정 시스템 필요) |
-| 미디어 스토리지 (사진) | TBD |
+| 백엔드 / DB / 스토리지 | **Supabase** ([ADR 0003](docs/adr/0003-backend.md)) — Postgres + Auth + Storage. SDK: `supabase_flutter`. |
+| 인증 | Supabase Auth (이메일/비밀번호 시작; OAuth는 콘솔 추가). 세션은 `StreamProvider<Session?>` 노출 예정. |
+| 미디어 스토리지 (사진) | Supabase Storage (`pieces` 버킷, `{user_id}/{piece_id}.{ext}`). 클라이언트 캐시/리사이즈 정책은 ADR 0004에서. |
+| 로컬 영속화 / 오프라인 | TBD ([ADR 0005] 예정 — drift / Hive / in-memory 결정) |
 | 분석/크래시 리포팅 | TBD |
 | 푸시 알림 | TBD |
 
-> 결정되면 본 표에 반영하고, 비밀 키는 절대 `lib/`나 docs에 두지 않는다.
+> 비밀 키는 절대 `lib/`/docs에 두지 않는다. URL/anonKey는 `--dart-define` 또는 CI Secrets에서 주입.
 
 ---
 
