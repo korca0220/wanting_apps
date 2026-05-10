@@ -28,4 +28,14 @@ abstract class PieceRepository {
   /// One Piece by primary key, or `null` if the row doesn't exist or RLS
   /// hides it (e.g. signed out, or the id belongs to another user).
   Future<Piece?> getById(String id);
+
+  /// Updates the comment of an existing Piece. Photo and date are immutable
+  /// in the first cut — replacing the photo needs Storage cleanup + reupload
+  /// and changing the date collides with UNIQUE(user_id, date).
+  Future<Piece> updateComment({required String id, required String comment});
+
+  /// Deletes a Piece — row first, then a best-effort Storage object cleanup.
+  /// `photoPath` is required because Storage delete is decoupled from the
+  /// row delete (no FK there) and the path isn't recoverable post-row-delete.
+  Future<void> delete({required String id, required String photoPath});
 }

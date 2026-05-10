@@ -95,6 +95,22 @@ class PieceRepositoryImpl implements PieceRepository {
 
     return rows.map(_mapRow).toList(growable: false);
   }
+
+  @override
+  Future<Piece> updateComment({
+    required String id,
+    required String comment,
+  }) async {
+    final row = await _remote.updateRow(id: id, comment: comment);
+
+    return _mapRow(row);
+  }
+
+  @override
+  Future<void> delete({required String id, required String photoPath}) async {
+    await _remote.deleteRow(id);
+    await _remote.deletePhoto(photoPath);
+  }
 }
 
 Piece _mapRow(Map<String, dynamic> row) {

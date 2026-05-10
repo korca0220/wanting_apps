@@ -80,6 +80,22 @@ class PieceRemoteDataSource {
         .single();
   }
 
+  Future<Map<String, dynamic>> updateRow({
+    required String id,
+    required String comment,
+  }) {
+    return _client
+        .from('pieces')
+        .update({'comment': comment})
+        .eq('id', id)
+        .select()
+        .single();
+  }
+
+  Future<void> deleteRow(String id) async {
+    await _client.from('pieces').delete().eq('id', id);
+  }
+
   /// Best-effort cleanup of an orphaned Storage object after a failed insert.
   Future<void> deletePhoto(String path) async {
     try {
