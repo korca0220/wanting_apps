@@ -7,92 +7,95 @@ source:
   url: https://www.figma.com/design/ThGKok9Zm1OzXpsKTyo7hN/DailyPiece
   node_id: "2:760"
   link: https://www.figma.com/design/ThGKok9Zm1OzXpsKTyo7hN/DailyPiece?node-id=2-760&t=2SsB9yTpe6fjdj7N-4
+  spec_basis: screenshot
 viewport:
   primary: mobile
   responsive: [mobile]
 ---
 
-# Screen: Create Account
+# Screen: Create Account (Sign Up)
 
 ## 개요
 
-신규 사용자 가입 폼. 이름(선택) / 이메일 / 비밀번호(8자 이상) / 비밀번호 확인. 헤더 "Create Account" + 부제 "Start your daily photo journal".
-
-> ⚠️ 추정 명세 (node 2:513 frame 안의 sub-screen).
+신규 사용자 가입 폼. 백 버튼 + 큰 헤더 + Name(Optional)/Email/Password/Confirm Password 4 필드 + Create Account primary + Sign In 링크 + 하단 ToS 안내.
 
 ---
 
 ## 1. Skeleton
 
 ```
-Page (viewport: mobile, 375×840, 스크롤)
+Page (viewport: mobile)
+├── Region: TopBar
+│   └── Slot: backButton
+│       ↳ component: design_system/docs/components/09-icon-button.md
 ├── Region: Header
 │   ├── Slot: title
 │   │   ↳ component: design_system/docs/components/16-label.md
 │   └── Slot: subtitle
 │       ↳ component: design_system/docs/components/16-label.md
-├── Region: Content (form)
-│   ├── Section: NameField
+├── Region: Form
+│   ├── Section: NameField                  # Optional
 │   │   ├── Slot: label
-│   │   │   ↳ component: design_system/docs/components/16-label.md
 │   │   └── Slot: input
 │   │       ↳ component: design_system/docs/components/02-text-field.md
 │   ├── Section: EmailField
 │   │   ├── Slot: label
-│   │   │   ↳ component: design_system/docs/components/16-label.md
 │   │   └── Slot: input
 │   │       ↳ component: design_system/docs/components/02-text-field.md
 │   ├── Section: PasswordField
 │   │   ├── Slot: label
-│   │   │   ↳ component: design_system/docs/components/16-label.md
-│   │   ├── Slot: input
-│   │   │   ↳ component: design_system/docs/components/02-text-field.md
-│   │   └── Slot: helperText
-│   │       ↳ component: design_system/docs/components/16-label.md
-│   └── Section: ConfirmPasswordField
-│       ├── Slot: label
-│       │   ↳ component: design_system/docs/components/16-label.md
-│       └── Slot: input
-│           ↳ component: design_system/docs/components/02-text-field.md
-└── Region: Footer
-    ├── Section: SubmitArea
-    │   └── Slot: createButton
-    │       ↳ component: design_system/docs/components/01-button.md
-    └── Section: AltAuthLink
-        └── Slot: signInLink
-            ↳ component: design_system/docs/components/16-label.md
+│   │   └── Slot: input
+│   │       ↳ component: design_system/docs/components/02-text-field.md
+│   ├── Section: ConfirmPasswordField
+│   │   ├── Slot: label
+│   │   └── Slot: input
+│   │       ↳ component: design_system/docs/components/02-text-field.md
+│   ├── Slot: createAccountButton
+│   │   ↳ component: design_system/docs/components/01-button.md
+│   └── Section: SignInHint                 # "Already have an account? Sign In"
+│       ├── Slot: hintText
+│       └── Slot: signInLink
+└── Region: LegalFooter
+    └── Slot: termsText
 ```
 
 ---
 
 ## 2. Bindings
 
-### Region: Header
+### Region: TopBar
 
-#### Layout 토큰
+(09-welcome-back.md TopBar와 동일)
+
+**Slot: backButton**
+
+- icon: `chevron-left`
+- aria-label: `뒤로`
+- on-tap: `screen-flow → pop` (← 11 Welcome)
+
+### Region: Header
 
 - container-padding: `spacing/24`
 - gap: `spacing/8`
-- align: `center`
+- top-padding: `spacing/16`
 
 **Slot: title**
 
-- text-variant: `text/title2`
+- text-variant: `text/title1` (Inter Bold ~32px)
 - color: `color/label/strong`
 - content: `Create Account`
 
 **Slot: subtitle**
 
-- text-variant: `text/body2`
+- text-variant: `text/body1`
 - color: `color/label/alternative`
 - content: `Start your daily photo journal`
 
-### Region: Content (form)
+### Region: Form
 
-#### Layout 토큰
-
-- container-padding: `spacing/16`
+- container-padding: `spacing/24`
 - field-gap: `spacing/16`
+- top-padding: `spacing/32`
 
 #### Section: NameField
 
@@ -104,91 +107,78 @@ Page (viewport: mobile, 375×840, 스크롤)
 
 **Slot: input**
 
-- ref: `design_system/docs/components/02-text-field.md`
+- ref: `02-text-field.md`
 - placeholder: `Enter your name`
+- type: `text`
 - value: `{{form.name}}`
 - on-change: `state: form.name = $value`
 
 #### Section: EmailField
 
-**Slot: label**
-
-- content: `Email`
-- text-variant: `text/label1`
-
-**Slot: input**
-
-- ref: `design_system/docs/components/02-text-field.md`
-- placeholder: `your@email.com`
+- label: `Email`
+- input placeholder: `your@email.com`, type `email`, keyboardType `emailAddress`
 - value: `{{form.email}}`
-- type: `email` # 가상 키보드 힌트
 - invalid: `{{form.errors.email != null}}`
-- on-change: `state: form.email = $value, validate: form.email`
 
 #### Section: PasswordField
 
-**Slot: label**
-
-- content: `Password`
-- text-variant: `text/label1`
-
-**Slot: input**
-
-- ref: `design_system/docs/components/02-text-field.md`
-- placeholder: ``
-- type: `password`
+- label: `Password`
+- input placeholder: `Minimum 8 characters`, type `password`, obscureText
+- minLength validation: 8
 - value: `{{form.password}}`
 - invalid: `{{form.errors.password != null}}`
-- trailingContent: `<Custom name="PasswordVisibilityToggle">`
-- on-change: `state: form.password = $value`
-
-**Slot: helperText**
-
-- text-variant: `text/caption1`
-- color: `{{form.errors.password ? color/status/negative : color/label/alternative}}`
-- content: `Minimum 8 characters`
 
 #### Section: ConfirmPasswordField
 
-**Slot: label**
-
-- content: `Confirm Password`
-
-**Slot: input**
-
-- ref: `design_system/docs/components/02-text-field.md`
-- placeholder: `Re-enter your password`
-- type: `password`
+- label: `Confirm Password`
+- input placeholder: `Re-enter your password`, type `password`, obscureText
 - value: `{{form.confirmPassword}}`
 - invalid: `{{form.password !== form.confirmPassword && form.confirmPassword.length > 0}}`
-- on-change: `state: form.confirmPassword = $value`
 
-### Region: Footer
+#### Slot: createAccountButton
 
-#### Layout 토큰
-
-- container-padding: `spacing/16`
-- gap: `spacing/12`
-
-**Slot: createButton**
-
-- ref: `design_system/docs/components/01-button.md`
+- ref: `01-button.md`
 - variant: `solid`
 - color: `primary`
 - size: `large`
 - fullWidth: `true`
 - content: `Create Account`
-- disabled: `{{!form.canSubmit}}`
+- top-margin: `spacing/16`
+- disabled: `{{!form.canSubmit}}` (email + password ≥ 8 + confirm match)
 - loading: `{{state.submitting}}`
-- on-tap: `api: POST /auth/signup (form) → state: auth.user → screen-flow → 06-home.md`
+- on-tap: `api: POST /auth/signup → state: auth.session → screen-flow → 06-my-pieces.md (Confirm email = OFF) | 또는 confirmation sent view (Confirm email = ON)`
+
+#### Section: SignInHint
+
+- top-margin: `spacing/16`
+- align: center
+- layout: 가로, gap `spacing/4`
+
+**Slot: hintText**
+
+- text-variant: `text/body2`
+- color: `color/label/alternative`
+- content: `Already have an account?`
 
 **Slot: signInLink**
 
-- text-variant: `text/label2`
+- text-variant: `text/body2`
 - color: `color/primary/normal`
-- align: `center`
-- content: `이미 계정이 있나요? 로그인` (또는 비슷한 한국어/영어 — 추정)
+- weight: bold
+- content: `Sign In`
 - on-tap: `screen-flow → 09-welcome-back.md`
+
+### Region: LegalFooter
+
+- 화면 하단 고정
+- align: center
+- padding: `spacing/24`
+
+**Slot: termsText**
+
+- text-variant: `text/caption1`
+- color: `color/label/alternative`
+- content: `By creating an account, you agree to our Terms of Service and Privacy Policy`
 
 ---
 
@@ -196,42 +186,43 @@ Page (viewport: mobile, 375×840, 스크롤)
 
 ### 사용자 의도
 
-신규 가입 — 빠르고 마찰 적은 폼. 4개 필드(이름은 선택)로 30초 내 가입 완료.
+신규 가입. 4개 필드(Name 선택) + 비밀번호 강도 정책 8자 + 확인 일치.
 
 ### 진입 / 이탈
 
-- **진입**: 앱 첫 실행 (미인증) / Welcome Back 화면의 "Create Account" 링크
+- **진입**:
+  - 11 Welcome의 "Create Account" 버튼
+  - 09 Welcome Back의 "Don't have an account? Create Account" 링크
 - **이탈**:
-  - Submit 성공 → 06-home.md
-  - "Sign In" 링크 → 09-welcome-back.md
-  - 시스템 백 → 폼 dirty면 confirm
+  - Submit 성공 (Confirm email OFF) → 06 My Pieces
+  - Submit 성공 (Confirm email ON) → 확인 메일 안내 뷰 (위치: 같은 화면 상태 전환 또는 별도 화면)
+  - Sign In 링크 → 09 Welcome Back
+  - back → 11 Welcome
 
 ### 핵심 액션 우선순위
 
-1. **Create Account** (제출)
-2. 이메일/비밀번호 입력
-3. Sign In 링크 (이미 계정 있음)
+1. **Create Account**
+2. Sign In 링크 (이미 계정 있는 경우)
 
 ### 접근성
 
-- **포커스 순서**: title → subtitle → name → email → password → confirmPassword → Create button → Sign In link
-- **폼 라벨 연결**: 모든 입력에 `<label htmlFor>` (Label 컴포넌트 사용)
-- **PasswordVisibilityToggle**: aria-label "비밀번호 보기 토글"
-- **에러 메시지**: aria-live="polite"로 실시간 안내
-- **터치 타겟**: 입력 필드 ≥ 48px 높이
+- **포커스 순서**: backButton → title → subtitle → name → email → password → confirmPassword → Create Account → Sign In link → termsText
+- **에러 표시**: 비밀번호 정책(8자) 미달 시 비밀번호 필드 invalid + helper text "Minimum 8 characters" 강조
+- **확인 비밀번호 미스매치**: ConfirmPassword 필드 invalid + helper text "Passwords don't match"
+- **이메일 중복 (서버)**: 이메일 필드 invalid + 메시지
 
 ### Reactive Behavior
 
-- **로딩**: 폼은 정적 즉시 표시
-- **제출 중**: createButton loading=true, 모든 필드 disabled
-- **유효성 실패**: 해당 필드 invalid=true (status/negative 보더), helperText 색 변경, errors.email 등에 메시지
-- **이메일 중복**: API 응답 후 EmailField에 invalid + 메시지 ("이미 가입된 이메일")
-- **에러 (네트워크)**: Snackbar variant=error
+- **제출 중**: button loading + 모든 필드 disabled
+- **Confirm email = ON**: 응답에 session 없으면 confirmation 안내 뷰로 전환
+- **이메일 중복 / 약한 비밀번호 등 서버 거부**: 해당 필드 invalid 표시
 
 ---
 
 ## 검증 체크리스트
 
-- [x] 위계 / Slot 종결 / Bindings Semantic
-- [x] 폼 유효성 / 보안(passwordToggle) 명시
-- [ ] PasswordVisibilityToggle은 wanted DS에 없음 — IconButton 합성으로 표현 가능
+- [x] frontmatter / 위계 / 토큰 Semantic
+- [x] Name (Optional) 명시
+- [x] Confirm Password 일치 검증
+- [x] LegalFooter 포함
+- [ ] Confirm email ON 분기 — 별도 화면(`08a-confirmation-sent.md` 등) 명세 필요 여부 결정
