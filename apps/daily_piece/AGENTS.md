@@ -173,8 +173,11 @@ python3 ../../../design-system-gen/skills/screen-spec-gen/scripts/validate_scree
 
 세션 간 컨텍스트 유지를 위해 다음에 할 일을 여기에 둔다. 항목을 처리하면 같은 커밋에서 여기서도 지운다.
 
+### 데이터 레이어 임시 정책
+Today/Collection 첫 컷은 **캐시 없이 Supabase 직결**. Riverpod이 watch되는 동안의 in-memory만으로 시작. 실제 UX 통증(앱 재시작 깜박임, 비행기모드 저장 실패 등)을 본 뒤에 ADR 0005에서 결정.
+
 ### 다음 ADR 후보
-- **ADR 0005 — 오프라인 캐시**: drift / Hive / in-memory 결정. Today 화면 저장 실패 시 재시도 큐 + Collection 타임라인 캐시.
+- **ADR 0005 — 영속 캐시 / 재시도 큐**: drift / Hive / in-memory 결정. **Today 흐름 첫 컷을 돌려본 뒤** 통증 기반으로 작성.
 
 ### Today 흐름 실구현 (stub → 완성)
 1. **Sign in / Sign up 화면** — 이메일+비밀번호. `supabase_flutter`의 `auth.signInWithPassword` / `signUp`. error 매핑.
