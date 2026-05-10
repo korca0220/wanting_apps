@@ -2,7 +2,10 @@ import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../../../../core/data/repositories/auth_repository_impl.dart';
+import '../../../../core/domain/exceptions/auth_exceptions.dart';
+import '../widgets/confirmation_sent_view.dart';
 
 class SignUpPage extends ConsumerStatefulWidget {
   const SignUpPage({super.key});
@@ -44,20 +47,19 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
     });
 
     try {
-      final res = await Supabase.instance.client.auth.signUp(
-        email: email,
-        password: password,
-      );
+      final immediate = await ref
+          .read(authRepositoryProvider)
+          .signUp(email: email, password: password);
       if (!mounted) return;
 
-      if (res.session != null) {
-        // Confirm email이 OFF인 프로젝트면 즉시 로그인 → router redirect.
+      if (immediate) {
+        // Confirm email = OFF: signedInStream → router redirect로 이어짐.
         return;
       }
 
-      // Confirm email ON: 메일 확인 안내로 전환.
+      // Confirm email = ON: 메일 확인 안내로 전환.
       setState(() => _confirmationSent = true);
-    } on AuthException catch (e) {
+    } on AuthFailure catch (e) {
       if (mounted) setState(() => _error = e.message);
     } catch (_) {
       if (mounted) setState(() => _error = '가입에 실패했어요. 잠시 후 다시 시도해주세요.');
@@ -75,7 +77,9 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.all(spacing.componentXl),
-          child: _confirmationSent ? _buildSent(context) : _buildForm(context),
+          child: _confirmationSent
+              ? ConfirmationSentView(email: _email.text.trim())
+              : _buildForm(context),
         ),
       ),
     );
@@ -118,29 +122,6 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
           onPressed: _busy ? null : () => context.go('/sign-in'),
           variant: WdsButtonVariant.outlined,
           child: const Text('이미 계정이 있어요 — 로그인'),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSent(BuildContext context) {
-    final spacing = context.wdsSpacing;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const WdsText('확인 메일을 보냈어요.', style: WdsTextStyle.headline2),
-        SizedBox(height: spacing.componentSm),
-        WdsText(
-          '${_email.text.trim()} 으로 보낸 링크를 누르면 가입이 완료돼요.',
-          style: WdsTextStyle.body1,
-          color: WdsTextColor.alternative,
-        ),
-        SizedBox(height: spacing.componentXl),
-        WdsButton(
-          onPressed: () => context.go('/sign-in'),
-          child: const Text('로그인 화면으로'),
         ),
       ],
     );

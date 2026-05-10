@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../core/auth/session_provider.dart';
-import '../features/auth/sign_in_page.dart';
-import '../features/auth/sign_up_page.dart';
+import '../features/auth/presentation/pages/sign_in_page.dart';
+import '../features/auth/presentation/pages/sign_up_page.dart';
 import '../features/collection/presentation/pages/collection_page.dart';
 import '../features/piece_detail/presentation/pages/piece_detail_page.dart';
 import '../features/settings/settings_page.dart';

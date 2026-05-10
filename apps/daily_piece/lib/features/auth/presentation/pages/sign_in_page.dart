@@ -2,7 +2,9 @@ import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../../../../core/data/repositories/auth_repository_impl.dart';
+import '../../../../core/domain/exceptions/auth_exceptions.dart';
 
 class SignInPage extends ConsumerStatefulWidget {
   const SignInPage({super.key});
@@ -39,12 +41,11 @@ class _SignInPageState extends ConsumerState<SignInPage> {
     });
 
     try {
-      await Supabase.instance.client.auth.signInWithPassword(
-        email: email,
-        password: password,
-      );
-      // sessionProvider stream → router redirect가 /today로 보냄.
-    } on AuthException catch (e) {
+      await ref
+          .read(authRepositoryProvider)
+          .signIn(email: email, password: password);
+      // signedInStream → router redirect가 /today로 보냄.
+    } on AuthFailure catch (e) {
       if (mounted) setState(() => _error = e.message);
     } catch (_) {
       if (mounted) setState(() => _error = '로그인에 실패했어요. 잠시 후 다시 시도해주세요.');

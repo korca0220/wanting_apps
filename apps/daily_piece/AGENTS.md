@@ -59,17 +59,18 @@ lib/
 │   ├── app.dart         # MaterialApp.router widget
 │   └── router.dart      # GoRouter + redirect 가드 (auth 기반)
 ├── core/
-│   ├── auth/            # session_provider.dart (@Riverpod, keepAlive)
+│   ├── auth/            # signedInStream / isSignedIn (router redirect용 derived provider)
 │   ├── domain/
 │   │   ├── entities/        # Piece 등 도메인 엔티티 (프레임워크 free)
-│   │   ├── repositories/    # abstract Port (PieceRepository)
-│   │   └── exceptions/      # PieceAlreadyExistsToday 등 도메인 예외
+│   │   ├── repositories/    # abstract Port (Piece/Auth Repository)
+│   │   └── exceptions/      # PieceAlreadyExistsToday, AuthFailure 등 도메인 예외
 │   ├── data/
-│   │   ├── datasources/     # Supabase 호출만 하는 thin pipe
-│   │   └── repositories/    # *Impl + Riverpod provider, mapping/에러 변환
+│   │   ├── datasources/     # Supabase 호출만 하는 thin pipe (Piece/Auth)
+│   │   ├── repositories/    # *Impl + Riverpod provider, mapping/에러 변환
+│   │   └── cache/           # signed URL 캐시 (ADR 0005)
 │   └── env/                 # envied 기반 SUPABASE_URL/ANON_KEY (.env)
 └── features/
-    ├── auth/            # Sign in / Sign up (구현됨, CA 미분리 — 후속 정리)
+    ├── auth/            # Sign in / Sign up (CA 분리 완료 — authRepository 경유)
     ├── today/           # 작성/조회 (구현됨)
     ├── collection/      # 타임라인 그리드 (구현됨)
     ├── piece_detail/    # Piece 상세 read-only (구현됨)
@@ -209,10 +210,10 @@ python3 ../../../design-system-gen/skills/screen-spec-gen/scripts/validate_scree
 | Supabase client bootstrap | ✅ | `main.dart`에서 `Supabase.initialize` |
 | `pieces` 테이블 + RLS | ✅ | [`supabase/migrations/0001`](supabase/migrations/0001_create_pieces_table.sql). MCP로 dev 프로젝트에 적용됨 |
 | `pieces` Storage bucket + policies | ✅ | [`supabase/migrations/0002`](supabase/migrations/0002_create_pieces_bucket.sql). private, owner-only |
-| Sign in / Sign up | ✅ 코드, 🟡 실기 sweep 완료 (가입 → /today 도달 확인) | view 모드 (이메일 입력 + 비밀번호 + 에러 inline). Confirm email 분기 양쪽 코드만 검증 |
+| Sign in / Sign up | ✅ 코드, 🟡 실기 sweep 완료 (가입 → /today 도달 확인) | `authRepository` 경유. `AuthFailure(message)`로 도메인 예외 단일화. Confirm email 분기 양쪽 처리 |
 | Today: 작성 흐름 (compose) | ✅ 코드, ✅ 실기 sweep 통과 | pick → compress → upload → INSERT |
 | Today: 조회 (view 모드) | ✅ 코드, ✅ 실기 sweep 통과 | signed URL 이미지 로드 |
-| Today: edit / delete | ❌ | view 모드는 read-only. UX 결정 후 추가 |
+| Today/Detail: edit comment + delete | ✅ 코드, ❌ 실기 미검증 | 디테일 화면 AppBar 액션. 사진 교체 / 날짜 변경은 deferred (UNIQUE(user_id,date) 제약 + Storage 라이프사이클) |
 | 카메라 캡처 | ❌ | 갤러리만. `ImageSource.camera` 추가 시 iOS `NSCameraUsageDescription` + Android `CAMERA` permission 필요 |
 | Collection 화면 | ✅ 코드, ❌ 실기 미검증 | `date desc` keyset 페이지네이션(30/페이지), 3열 그리드, 빈 상태 CTA, 썸네일은 1h signed URL — 화면 재진입 시 재발급 |
 | Piece detail 화면 | ✅ 코드, ❌ 실기 미검증 | `/collection/:pieceId` (Collection 브랜치 nested). `pieceByIdProvider(family)` → 큰 사진 + 코멘트 + 날짜. row 없음(RLS/삭제) → "찾을 수 없어요" + 컬렉션 복귀 CTA |
@@ -227,10 +228,10 @@ python3 ../../../design-system-gen/skills/screen-spec-gen/scripts/validate_scree
 
 ### 다음 합리적 단계 (권장 순서)
 
-1. **Piece edit / delete** — 디테일 화면에 추가. 코멘트 수정은 단순(같은 날짜 내). 사진 교체/삭제는 Storage 정리 + DB UPDATE/DELETE + `signedUrlCacheProvider.invalidate(path)` 호출.
-2. **AuthRepository 분리** — `features/auth/`의 Supabase Auth 직호출을 `core/data/`로 끌어내림(같은 CA 패턴).
-3. **Settings 페이지 실구현** — 현재 stub. Sign out, 다크모드 토글 정도가 1차.
-4. **WdsTextField maxLength prop 추가** (선택) — 코멘트 50자 입력단 강제. 현재 서버 varchar(50) 거부에만 의존.
+1. **edit/delete + auth 리팩터 실기 검증** — 디테일 액션 + 사인인/사인업 회귀 확인 (가입/로그인/Confirm email 분기 / 코멘트 수정 / 삭제 → 컬렉션 복귀).
+2. **Settings 페이지 실구현** — 현재 stub. `authRepository.signOut()` + 다크모드 토글 정도가 1차.
+3. **WdsTextField maxLength prop 추가** (선택) — 코멘트 50자 입력단 강제. 현재 서버 varchar(50) 거부에만 의존.
+4. **사진 교체** (선택, 큰 작업) — 디테일에서 같은 날짜 유지하며 다른 사진으로 갈음. Storage 정리 + 신규 업로드 + DB UPDATE + 캐시 invalidate 순서.
 
 ### 선택
 - **Supabase CLI 부트스트랩** — `supabase init/link/db pull`로 SQL-파일 기반 마이그레이션 관리. (현재는 MCP `apply_migration` + 수동 `supabase/migrations/*.sql` 보관 중.)
