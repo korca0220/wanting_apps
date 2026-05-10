@@ -46,6 +46,7 @@ class CollectionFeed extends _$CollectionFeed {
     final items = await ref
         .read(pieceRepositoryProvider)
         .list(limit: _pageSize);
+
     return CollectionFeedState(
       items: items,
       hasMore: items.length == _pageSize,
@@ -56,11 +57,14 @@ class CollectionFeed extends _$CollectionFeed {
   Future<void> loadMore() async {
     final current = state.valueOrNull;
     if (current == null || !current.hasMore || current.loadingMore) return;
+
     state = AsyncData(current.copyWith(loadingMore: true));
+
     try {
       final more = await ref
           .read(pieceRepositoryProvider)
           .list(limit: _pageSize, before: current.items.last.date);
+
       state = AsyncData(
         CollectionFeedState(
           items: [...current.items, ...more],

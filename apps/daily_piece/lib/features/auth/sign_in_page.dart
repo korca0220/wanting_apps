@@ -21,6 +21,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
   void dispose() {
     _email.dispose();
     _password.dispose();
+
     super.dispose();
   }
 
@@ -31,10 +32,12 @@ class _SignInPageState extends ConsumerState<SignInPage> {
       setState(() => _error = '이메일과 비밀번호를 입력해주세요.');
       return;
     }
+
     setState(() {
       _busy = true;
       _error = null;
     });
+
     try {
       await Supabase.instance.client.auth.signInWithPassword(
         email: email,
@@ -53,6 +56,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
   @override
   Widget build(BuildContext context) {
     final spacing = context.wdsSpacing;
+
     return Scaffold(
       appBar: AppBar(title: const Text('Sign in')),
       body: SafeArea(

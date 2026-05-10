@@ -21,6 +21,7 @@ class _PieceViewState extends ConsumerState<PieceView> {
   @override
   void initState() {
     super.initState();
+
     _signedUrl = ref
         .read(pieceRepositoryProvider)
         .signedPhotoUrl(widget.piece.photoPath);
@@ -29,6 +30,7 @@ class _PieceViewState extends ConsumerState<PieceView> {
   @override
   Widget build(BuildContext context) {
     final spacing = context.wdsSpacing;
+
     return Padding(
       padding: EdgeInsets.all(spacing.componentXl),
       child: Column(

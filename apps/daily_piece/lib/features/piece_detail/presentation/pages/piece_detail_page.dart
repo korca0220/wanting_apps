@@ -16,6 +16,7 @@ class PieceDetailPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.wdsColors;
     final piece = ref.watch(pieceByIdProvider(pieceId));
+
     return Scaffold(
       backgroundColor: colors.backgroundNormalNormal,
       appBar: AppBar(),
@@ -48,6 +49,7 @@ class _DetailBodyState extends ConsumerState<_DetailBody> {
   @override
   void initState() {
     super.initState();
+
     _signedUrl = ref
         .read(pieceRepositoryProvider)
         .signedPhotoUrl(widget.piece.photoPath);
@@ -56,6 +58,7 @@ class _DetailBodyState extends ConsumerState<_DetailBody> {
   @override
   Widget build(BuildContext context) {
     final spacing = context.wdsSpacing;
+
     return SingleChildScrollView(
       padding: EdgeInsets.symmetric(horizontal: spacing.componentXl),
       child: Column(
@@ -95,6 +98,7 @@ String _formatDate(DateTime d) {
   final y = d.year.toString().padLeft(4, '0');
   final m = d.month.toString().padLeft(2, '0');
   final day = d.day.toString().padLeft(2, '0');
+
   return '$y. $m. $day';
 }
 
@@ -104,6 +108,7 @@ class _MissingView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final spacing = context.wdsSpacing;
+
     return Center(
       child: Padding(
         padding: EdgeInsets.all(spacing.componentXl),
@@ -138,6 +143,7 @@ class _ErrorView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final spacing = context.wdsSpacing;
+
     return Center(
       child: Padding(
         padding: EdgeInsets.all(spacing.componentXl),

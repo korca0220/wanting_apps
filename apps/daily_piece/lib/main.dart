@@ -13,6 +13,8 @@ Future<void> main() async {
     '(copy .env.example) and codegen must be run (melos run gen). '
     'See apps/daily_piece/README.md.',
   );
+
   await Supabase.initialize(url: Env.supabaseUrl, anonKey: Env.supabaseAnonKey);
+
   runApp(const ProviderScope(child: DailyPieceApp()));
 }

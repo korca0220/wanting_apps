@@ -22,6 +22,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
   void dispose() {
     _email.dispose();
     _password.dispose();
+
     super.dispose();
   }
 
@@ -36,20 +37,24 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
       setState(() => _error = '비밀번호는 6자 이상이어야 해요.');
       return;
     }
+
     setState(() {
       _busy = true;
       _error = null;
     });
+
     try {
       final res = await Supabase.instance.client.auth.signUp(
         email: email,
         password: password,
       );
       if (!mounted) return;
+
       if (res.session != null) {
         // Confirm email이 OFF인 프로젝트면 즉시 로그인 → router redirect.
         return;
       }
+
       // Confirm email ON: 메일 확인 안내로 전환.
       setState(() => _confirmationSent = true);
     } on AuthException catch (e) {
@@ -64,6 +69,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     final spacing = context.wdsSpacing;
+
     return Scaffold(
       appBar: AppBar(title: const Text('Sign up')),
       body: SafeArea(
@@ -77,6 +83,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
 
   Widget _buildForm(BuildContext context) {
     final spacing = context.wdsSpacing;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -118,6 +125,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
 
   Widget _buildSent(BuildContext context) {
     final spacing = context.wdsSpacing;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisAlignment: MainAxisAlignment.center,

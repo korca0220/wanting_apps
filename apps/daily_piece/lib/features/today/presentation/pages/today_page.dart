@@ -15,6 +15,7 @@ class TodayPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.wdsColors;
     final today = ref.watch(todayPieceProvider);
+
     return Scaffold(
       backgroundColor: colors.backgroundNormalNormal,
       appBar: AppBar(title: const Text('Today')),
@@ -44,6 +45,7 @@ class _ErrorView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final spacing = context.wdsSpacing;
+
     return Center(
       child: Padding(
         padding: EdgeInsets.all(spacing.componentXl),

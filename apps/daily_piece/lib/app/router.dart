@@ -19,6 +19,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     redirect: (context, state) {
       final signedIn = ref.read(isSignedInProvider);
       final atAuth = _authPaths.contains(state.matchedLocation);
+
       if (!signedIn && !atAuth) return '/sign-in';
       if (signedIn && atAuth) return '/today';
       return null;

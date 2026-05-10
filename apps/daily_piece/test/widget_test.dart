@@ -11,7 +11,9 @@ void main() {
         child: const DailyPieceApp(),
       ),
     );
+
     await tester.pumpAndSettle();
+
     expect(find.text('Sign in'), findsWidgets);
   });
 
@@ -22,7 +24,9 @@ void main() {
         child: const DailyPieceApp(),
       ),
     );
+
     await tester.pumpAndSettle();
+
     expect(find.text('Today'), findsWidgets);
   });
 }

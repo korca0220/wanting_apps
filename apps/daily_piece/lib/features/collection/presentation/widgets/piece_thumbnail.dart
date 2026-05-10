@@ -23,6 +23,7 @@ class _PieceThumbnailState extends ConsumerState<PieceThumbnail> {
   @override
   void initState() {
     super.initState();
+
     _signedUrl = ref
         .read(pieceRepositoryProvider)
         .signedPhotoUrl(widget.piece.photoPath);
@@ -31,6 +32,7 @@ class _PieceThumbnailState extends ConsumerState<PieceThumbnail> {
   @override
   Widget build(BuildContext context) {
     final colors = context.wdsColors;
+
     return GestureDetector(
       onTap: widget.onTap,
       child: ClipRRect(

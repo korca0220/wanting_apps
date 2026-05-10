@@ -27,10 +27,12 @@ class PieceRepositoryImpl implements PieceRepository {
   Future<Piece?> getToday() async {
     final userId = _remote.currentUserId;
     if (userId == null) return null;
+
     final row = await _remote.fetchTodayRow(
       userId: userId,
       date: _localDateString(DateTime.now()),
     );
+
     if (row == null) return null;
     return _mapRow(row);
   }
@@ -44,9 +46,12 @@ class PieceRepositoryImpl implements PieceRepository {
     if (userId == null) {
       throw const AuthException('Not signed in.');
     }
+
     final pieceId = const Uuid().v4();
     final path = '$userId/$pieceId.jpg';
+
     await _remote.uploadPhoto(path, photoBytes);
+
     try {
       final row = await _remote.insertRow(
         id: pieceId,
@@ -81,11 +86,13 @@ class PieceRepositoryImpl implements PieceRepository {
   Future<List<Piece>> list({required int limit, DateTime? before}) async {
     final userId = _remote.currentUserId;
     if (userId == null) return const [];
+
     final rows = await _remote.listRows(
       userId: userId,
       limit: limit,
       beforeDate: before == null ? null : _localDateString(before),
     );
+
     return rows.map(_mapRow).toList(growable: false);
   }
 }

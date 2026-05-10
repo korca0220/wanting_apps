@@ -22,6 +22,7 @@ class _CollectionPageState extends ConsumerState<CollectionPage> {
   @override
   void initState() {
     super.initState();
+
     _scroll.addListener(_onScroll);
   }
 
@@ -30,6 +31,7 @@ class _CollectionPageState extends ConsumerState<CollectionPage> {
     _scroll
       ..removeListener(_onScroll)
       ..dispose();
+
     super.dispose();
   }
 
@@ -44,6 +46,7 @@ class _CollectionPageState extends ConsumerState<CollectionPage> {
   Widget build(BuildContext context) {
     final colors = context.wdsColors;
     final feed = ref.watch(collectionFeedProvider);
+
     return Scaffold(
       backgroundColor: colors.backgroundNormalNormal,
       appBar: AppBar(title: const Text('Collection')),
@@ -74,6 +77,7 @@ class _Grid extends StatelessWidget {
     final spacing = context.wdsSpacing;
     final padding = EdgeInsets.all(spacing.componentMd);
     final gap = spacing.componentSm;
+
     return CustomScrollView(
       controller: controller,
       slivers: [
@@ -112,6 +116,7 @@ class _EmptyView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final spacing = context.wdsSpacing;
+
     return Center(
       child: Padding(
         padding: EdgeInsets.all(spacing.componentXl),
@@ -146,6 +151,7 @@ class _ErrorView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final spacing = context.wdsSpacing;
+
     return Center(
       child: Padding(
         padding: EdgeInsets.all(spacing.componentXl),

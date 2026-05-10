@@ -29,6 +29,7 @@ class _ComposeViewState extends ConsumerState<ComposeView> {
   @override
   void dispose() {
     _comment.dispose();
+
     super.dispose();
   }
 
@@ -37,14 +38,17 @@ class _ComposeViewState extends ConsumerState<ComposeView> {
       _busy = true;
       _error = null;
     });
+
     try {
       final picked = await _picker.pickImage(source: ImageSource.gallery);
       if (picked == null) {
         if (mounted) setState(() => _busy = false);
         return;
       }
+
       final bytes = await processForUpload(picked.path);
       if (!mounted) return;
+
       setState(() {
         _photoBytes = bytes;
         _busy = false;
@@ -62,15 +66,18 @@ class _ComposeViewState extends ConsumerState<ComposeView> {
   Future<void> _save() async {
     final bytes = _photoBytes;
     if (bytes == null) return;
+
     final comment = _comment.text.trim();
     if (comment.isEmpty) {
       setState(() => _error = '코멘트를 입력해주세요.');
       return;
     }
+
     setState(() {
       _busy = true;
       _error = null;
     });
+
     try {
       await ref
           .read(pieceRepositoryProvider)
@@ -94,6 +101,7 @@ class _ComposeViewState extends ConsumerState<ComposeView> {
   Widget build(BuildContext context) {
     final spacing = context.wdsSpacing;
     final hasPhoto = _photoBytes != null;
+
     return Padding(
       padding: EdgeInsets.all(spacing.componentXl),
       child: Column(

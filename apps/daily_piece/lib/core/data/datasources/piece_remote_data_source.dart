@@ -44,7 +44,9 @@ class PieceRemoteDataSource {
     if (beforeDate != null) {
       query = query.lt('date', beforeDate);
     }
+
     final rows = await query.order('date', ascending: false).limit(limit);
+
     return List<Map<String, dynamic>>.from(rows);
   }
 
