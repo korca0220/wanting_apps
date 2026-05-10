@@ -33,8 +33,9 @@
 | [`docs/screens/`](docs/screens/) | 화면 명세 11개 (framework-neutral .md) — Profile, MyPieces, Calendar, EditPiece, PieceDetails, Home, NewPiece, CreateAccount, WelcomeBack, ResetPassword |
 | [`docs/screens/00-INDEX.md`](docs/screens/00-INDEX.md) | 화면 인덱스 + 통계 |
 | [`docs/screens/TEMPLATE.md`](docs/screens/TEMPLATE.md) | 새 화면 템플릿 |
-| `lib/` | Flutter 구현 (현재 `main.dart`만, 레이어 구조 미정) |
-| `test/` | 위젯/유닛 테스트 (현재 default scaffold만) |
+| `lib/` | Flutter 구현 — [구현 상태](#-구현-상태) 참고 |
+| `supabase/migrations/` | 백엔드 스키마 SQL (replay 가능). README는 폴더 안에. |
+| `test/` | 위젯/유닛 테스트 (현재 router redirect smoke만) |
 | `analysis_options.yaml` | 앱 lint (현재 `flutter_lints` 기본) |
 | `pubspec.yaml` | 의존성 |
 
@@ -59,12 +60,21 @@ lib/
 │   ├── domain/          # Piece 등 도메인 모델
 │   └── env/             # envied 기반 SUPABASE_URL/ANON_KEY (.env)
 └── features/
-    ├── auth/            # Sign in (현재 stub)
-    ├── today/           # 오늘의 Piece 작성 (현재 stub)
-    ├── collection/      # 타임라인 (현재 stub)
-    ├── piece_detail/    # Piece 상세 (현재 stub)
-    └── settings/        # 설정 (현재 stub)
+    ├── auth/            # Sign in / Sign up (이메일+비밀번호, 구현됨)
+    ├── today/           # 오늘의 Piece 작성/조회 (구현됨, 실기 sweep 미완)
+    ├── collection/      # 타임라인 (stub)
+    ├── piece_detail/    # Piece 상세 (stub)
+    └── settings/        # 설정 (stub)
 ```
+
+### today/ 내부 구조
+
+| 파일 | 역할 |
+|---|---|
+| `today_page.dart` | `todayPieceProvider`의 AsyncValue 분기 → loading / error / `_ComposeView` (null) / `_PieceView` (있음). 단일 화면 상태 머신. |
+| `today_piece_provider.dart` | `@riverpod` Future. `pieceRepository.getToday()` 위임. 저장 성공 후 `ref.refresh`로 invalidate해 view 모드로 전환. |
+| `piece_repository.dart` | Supabase wrapper. `getToday()` / `create({photoBytes, comment})` / `signedPhotoUrl(path)`. UNIQUE(user_id, date) 위반은 `PieceAlreadyExistsToday` 예외로 변환 + 고아 객체 best-effort 정리. |
+| `media_pipeline.dart` | ADR 0004 파이프라인 — `flutter_image_compress`로 1080px / q=80 / EXIF strip. |
 
 ---
 
@@ -73,7 +83,7 @@ lib/
 | 카테고리 | 현 상태 |
 |---|---|
 | 백엔드 / DB / 스토리지 | **Supabase** ([ADR 0003](docs/adr/0003-backend.md)) — Postgres + Auth + Storage. SDK: `supabase_flutter`. |
-| 인증 | Supabase Auth (이메일/비밀번호 시작; OAuth는 콘솔 추가). 세션은 `StreamProvider<Session?>` 노출 예정. |
+| 인증 | Supabase Auth — 이메일/비밀번호 (OAuth 미적용). 세션은 `sessionProvider` (`@Riverpod(keepAlive: true)` Stream). dev 프로젝트는 **Confirm email = OFF** (가입 즉시 세션 발급), 운영은 ON 예정. |
 | 미디어 스토리지 (사진) | Supabase Storage (`pieces` 버킷, `{user_id}/{piece_id}.jpg`). 클라이언트 파이프라인: 긴 변 1080px / JPEG q80 / EXIF 전체 제거 — [ADR 0004](docs/adr/0004-media-client-policy.md). 라이브러리: `flutter_image_compress`. |
 | 로컬 영속화 / 오프라인 | TBD ([ADR 0005] 예정 — drift / Hive / in-memory 결정) |
 | 분석/크래시 리포팅 | TBD |
@@ -169,24 +179,41 @@ python3 ../../../design-system-gen/skills/screen-spec-gen/scripts/validate_scree
 
 ---
 
-## 🗺️ Roadmap
+## 📊 구현 상태
 
-세션 간 컨텍스트 유지를 위해 다음에 할 일을 여기에 둔다. 항목을 처리하면 같은 커밋에서 여기서도 지운다.
+세션 간 컨텍스트 유지를 위한 핸드오프 보드. 코드 작성 ≠ 실기 검증임에 유의.
+
+| 영역 | 상태 | 비고 |
+|---|---|---|
+| Supabase client bootstrap | ✅ | `main.dart`에서 `Supabase.initialize` |
+| `pieces` 테이블 + RLS | ✅ | [`supabase/migrations/0001`](supabase/migrations/0001_create_pieces_table.sql). MCP로 dev 프로젝트에 적용됨 |
+| `pieces` Storage bucket + policies | ✅ | [`supabase/migrations/0002`](supabase/migrations/0002_create_pieces_bucket.sql). private, owner-only |
+| Sign in / Sign up | ✅ 코드, 🟡 실기 sweep 완료 (가입 → /today 도달 확인) | view 모드 (이메일 입력 + 비밀번호 + 에러 inline). Confirm email 분기 양쪽 코드만 검증 |
+| Today: 작성 흐름 (compose) | ✅ 코드, ❌ 실기 미검증 | pick → compress → upload → INSERT. iOS 권한 다이얼로그 / 압축 결과 / Storage 업로드 결과 / view 모드 전환 모두 직접 sweep 필요 |
+| Today: 조회 (view 모드) | ✅ 코드, ❌ 실기 미검증 | signed URL 이미지 로드 |
+| Today: edit / delete | ❌ | view 모드는 read-only. UX 결정 후 추가 |
+| 카메라 캡처 | ❌ | 갤러리만. `ImageSource.camera` 추가 시 iOS `NSCameraUsageDescription` + Android `CAMERA` permission 필요 |
+| Collection 화면 | ❌ stub | 페이지네이션 + 썸네일 그리드 |
+| Piece detail 화면 | ❌ stub | |
+| Settings 화면 | ❌ stub | |
+| Bottom navigation (Today ↔ Collection) | ❌ | DS의 `WdsBottomNavigation` 사용 가능 |
+| 위젯 테스트 | 🟡 router redirect 2개만 | feature 단위 테스트 추가 필요 |
+| ADR 0005 (영속 캐시 / 재시도 큐) | ❌ deferred | **데이터 레이어 임시 정책** 참고 |
 
 ### 데이터 레이어 임시 정책
 Today/Collection 첫 컷은 **캐시 없이 Supabase 직결**. Riverpod이 watch되는 동안의 in-memory만으로 시작. 실제 UX 통증(앱 재시작 깜박임, 비행기모드 저장 실패 등)을 본 뒤에 ADR 0005에서 결정.
 
-### 다음 ADR 후보
-- **ADR 0005 — 영속 캐시 / 재시도 큐**: drift / Hive / in-memory 결정. **Today 흐름 첫 컷을 돌려본 뒤** 통증 기반으로 작성.
+### 다음 합리적 단계 (권장 순서)
 
-### Today 흐름 다음 작업
-- **Edit / Delete**: 현재 view 모드는 read-only. 동일 날짜에 대한 수정/삭제 UX 결정 필요.
-- **카메라 캡처**: 현재 갤러리만. `ImageSource.camera` 추가 시 iOS `NSCameraUsageDescription` + Android `CAMERA` permission 추가.
-- **Collection 화면 실구현**: Today 다음 자연스러운 화면. 페이지네이션 + 썸네일 그리드 + 상세 진입.
-- **WdsBottomNavigation 적용**: Today ↔ Collection 전환 (DS Tier 2 컴포넌트 이미 있음).
+1. **Today 흐름 실기 sweep** (`melos run run:dp` → 사진 픽 → 저장 → view 모드 → 앱 재시작 시에도 view 모드 유지). 깨지는 지점 발견 시 그 자리에서 수정.
+2. **Collection 화면 실구현** — 페이지네이션 (`pieces` 테이블 `created_at` 또는 `date` desc로 keyset/range). 썸네일은 signed URL 캐싱 정책 결정 필요 (signed URL 1h만 → screen 재진입 시 재발급).
+3. **WdsBottomNavigation으로 Today ↔ Collection 전환** + 라우트 연결.
+4. **Piece detail 화면** (`/collection/:pieceId`) — 큰 사진 + 코멘트.
+5. ADR 0005 — 1~4 돌려보고 통증 기반으로 결정.
 
 ### 선택
 - **Supabase CLI 부트스트랩** — `supabase init/link/db pull`로 SQL-파일 기반 마이그레이션 관리. (현재는 MCP `apply_migration` + 수동 `supabase/migrations/*.sql` 보관 중.)
+- **카메라 캡처** — UX 결정과 묶어서.
 
 ---
 
