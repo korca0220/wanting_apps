@@ -2,9 +2,9 @@
 
 ## 📊 현재 상태
 
-- ✅ Documented: **10 / 11** (06 My Pieces는 디자인 미확정)
-- ⚠️ 정밀 재명세 완료: **2** (01 Profile, 11 Welcome)
-- 🟡 정밀 재명세 보류: **8** (Figma MCP rate limit 도달 — 다음 한도 회복 후 진행)
+- ✅ Documented: **11 / 11**
+- ⚠️ 정밀 재명세 완료: **3** (01 Profile, 06 My Pieces[스크린샷 기반], 11 Welcome)
+- 🟡 정밀 재명세 보류: **7** (Figma MCP rate limit 도달 — 다음 한도 회복 후 진행)
 
 > **명세 vs 구현**: 본 명세는 **풀 디자인 타깃**. 현재 구현은 MVP 부분집합이다 — 매핑은 [`MVP 구현 매핑`](#mvp-구현-매핑) 섹션 참고. 명세는 그대로 두고, 구현이 따라잡으면 매핑 표를 갱신한다.
 
@@ -21,7 +21,7 @@ DailyPiece 앱은 인증 흐름 4 화면(Welcome/Sign In/Sign Up/Reset Password)
 | 03 Calendar        | ❌ 없음             | —                                                                                                                                              | 미구현                                                                                              |
 | 04 Edit Piece      | (Detail에 통합됨)   | [`features/piece_detail/presentation/widgets/detail_scaffold.dart`](../../lib/features/piece_detail/presentation/widgets/detail_scaffold.dart) | 명세는 별도 화면이지만 코드는 Detail의 인라인 edit 모드로 구현                                      |
 | 05 Piece Details   | **PieceDetailPage** | [`features/piece_detail/presentation/pages/piece_detail_page.dart`](../../lib/features/piece_detail/presentation/pages/piece_detail_page.dart) | 사진 + 코멘트 + 날짜. edit / delete / 사진 교체 포함                                                |
-| 06 My Pieces       | **CollectionPage**  | [`features/collection/presentation/pages/collection_page.dart`](../../lib/features/collection/presentation/pages/collection_page.dart)         | 3열 키셋 그리드. 단 명세 자체가 미확정(8:2에 frame 없음)                                            |
+| 06 My Pieces       | **CollectionPage**  | [`features/collection/presentation/pages/collection_page.dart`](../../lib/features/collection/presentation/pages/collection_page.dart)         | 명세 = **풀폭 큰 카드 + FAB**, 코드 = **3열 그리드**. 명세대로 회귀 필요 (디렉토리도 `my_pieces`로) |
 | 07 New Piece       | (TodayPage에 흡수)  | [`features/today/presentation/pages/today_page.dart`](../../lib/features/today/presentation/pages/today_page.dart)                             | 명세는 별도 화면이지만 코드는 "오늘 자 piece"가 없을 때의 compose 모드로 표현                       |
 | 08 Create Account  | **SignUpPage**      | [`features/auth/presentation/pages/sign_up_page.dart`](../../lib/features/auth/presentation/pages/sign_up_page.dart)                           | 이메일 + 비밀번호. 명세의 Name(Optional) / Confirm Password 누락                                    |
 | 09 Welcome Back    | **SignInPage**      | [`features/auth/presentation/pages/sign_in_page.dart`](../../lib/features/auth/presentation/pages/sign_in_page.dart)                           | 이메일 + 비밀번호. Forgot password 링크 미구현                                                      |
@@ -43,7 +43,7 @@ DailyPiece 앱은 인증 흐름 4 화면(Welcome/Sign In/Sign Up/Reset Password)
 | 03  | Calendar       | 2:209    | BottomNav 탭        | [03-calendar.md](03-calendar.md)             |
 | 04  | Edit Piece     | 2:367    | 콘텐츠 편집         | [04-edit-piece.md](04-edit-piece.md)         |
 | 05  | Piece Details  | 2:412    | 콘텐츠 상세         | [05-piece-details.md](05-piece-details.md)   |
-| 06  | My Pieces      | (없음)   | BottomNav 탭 (TBD)  | [06-my-pieces.md](06-my-pieces.md)           |
+| 06  | My Pieces      | (8:2 외) | BottomNav 탭        | [06-my-pieces.md](06-my-pieces.md)           |
 | 07  | New Piece      | 2:513    | 콘텐츠 작성         | [07-new-piece.md](07-new-piece.md)           |
 | 08  | Create Account | 2:760    | 인증                | [08-create-account.md](08-create-account.md) |
 | 09  | Welcome Back   | 2:812    | 인증 (Sign In)      | [09-welcome-back.md](09-welcome-back.md)     |
@@ -60,7 +60,7 @@ DailyPiece 앱은 인증 흐름 4 화면(Welcome/Sign In/Sign Up/Reset Password)
 flowchart TD
     AppInit([앱 시작])
     AppInit -->|미인증| Welcome[11 Welcome]
-    AppInit -->|인증됨| MyPieces[06 My Pieces<br/>디자인 미확정]
+    AppInit -->|인증됨| MyPieces[06 My Pieces]
 
     Welcome -->|Create Account| Create[08 Create Account]
     Welcome -->|Sign In| WelcomeBack[09 Welcome Back]
@@ -76,9 +76,11 @@ flowchart TD
     MyPieces <-.BottomNav.-> Search[02 Search]
     MyPieces <-.BottomNav.-> Profile[01 Profile]
 
-    Search -->|카드 탭| Details[05 Piece Details]
+    MyPieces -->|카드 탭| Details[05 Piece Details]
+    MyPieces -->|FAB +| NewPiece[07 New Piece]
+    Search -->|카드 탭| Details
     Calendar -->|있는 날 탭| Details
-    Calendar -->|빈 날 탭| NewPiece[07 New Piece]
+    Calendar -->|빈 날 탭| NewPiece
 
     Details -->|Edit| EditPiece[04 Edit Piece]
     Details -->|Delete + 확인| MyPieces
