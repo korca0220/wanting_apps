@@ -17,6 +17,55 @@
 
 ---
 
+## ✍️ 코드 컨벤션 (모든 앱)
+
+`lib/` 내부 구조·상태관리·라우팅은 앱별 자유지만, 아래 두 규칙은 모든 앱이 공통으로 따른다.
+
+### 1. 위젯 1파일 1클래스
+
+`presentation/pages/`의 page 파일은 **라우팅·구성에만 집중**한다. 같은 파일에 정의된 sub-widget(에러 뷰, 빈 상태, 그리드 등)은 모두 `presentation/widgets/` 하위에 **각자 별도 파일**로 분리한다.
+
+분리 시 public(언더스코어 제거)으로 노출 — Dart `_`는 library-scope라 다른 파일에서 못 본다.
+
+```
+features/<feature>/presentation/
+├── pages/
+│   └── foo_page.dart           # AsyncValue 분기 + Scaffold 정도만
+└── widgets/
+    ├── error_view.dart
+    ├── empty_view.dart
+    └── ...                     # 각 위젯 한 파일
+```
+
+같은 이름의 위젯이 여러 피처에 등장(예: 피처별 `ErrorView`)해도 OK. 진짜 중복이 보이면 그때 `lib/core/`로 promote 또는 design system 합류 검토.
+
+### 2. 빈 줄 그루핑
+
+가까운 관계의 코드 라인은 붙여 쓰고, 관계가 약해지는 지점에 **빈 줄 1개**로 시각적 그루핑을 만든다. dart format은 빈 줄을 손대지 않으므로 사람이 의식해서 넣어야 한다.
+
+```dart
+// 같은 객체에서 파생된 보조 변수는 붙여 쓴다
+final spacing = context.wdsSpacing;
+final padding = EdgeInsets.all(spacing.componentMd);
+final gap = spacing.componentSm;
+
+return CustomScrollView(...);   // 변수 준비 → 반환 사이는 빈 줄
+```
+
+```dart
+@override
+void initState() {
+  super.initState();             // boilerplate
+
+  _scroll.addListener(_onScroll); // 실제 셋업
+}
+```
+
+- 빈 줄을 연속 2줄 이상 쓰지 않는다 (메서드/클래스 분리는 dart format이 처리).
+- 짧은 메서드(2~3줄, 모두 강하게 연관)에는 빈 줄을 넣지 않는다 — 인위적 분리는 가독성을 해친다.
+
+---
+
 ## 📁 앱 디렉토리 구조 (의무 + 권장)
 
 ### 의무

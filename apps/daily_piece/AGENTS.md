@@ -48,7 +48,7 @@
 - **레이어 컨벤션**: Clean Architecture — [ADR 0006](docs/adr/0006-clean-architecture-layout.md). 각 피처 / `core/` 하위는 `data / domain / presentation` 3-레이어로 분리하고, 그 아래는 역할별 디렉토리 (`entities / repositories / exceptions / datasources / pages / widgets / providers` …)로 나눈다. cross-feature 공유는 `lib/core/` (피스 도메인은 여러 화면에서 쓰이므로 여기에 둠).
 - **DIP**: 도메인은 `repositories/` 아래 abstract 인터페이스만 둠. 데이터 레이어가 구현 + Riverpod provider를 노출하고, 프레젠테이션은 abstract 타입으로 받는다. 인터페이스 mock이 필요하기 전엔 fake provider override로 충분.
 - **Use case 클래스는 미도입**. Riverpod provider가 use case 역할을 하므로 trivial wrapper UseCase는 만들지 않는다. 도메인 규칙이 여러 provider에 걸쳐 흐트러질 때 도입을 재평가.
-- **위젯 1파일 1클래스**. `presentation/pages/`의 page는 라우팅·구성에 집중. sub-widget(에러/빈상태/그리드/플레이스홀더 등)은 `presentation/widgets/` 하위에 각자 별도 파일. 분리 시 public(언더스코어 제거)으로 노출 — Dart `_`는 library-scope라 다른 파일에서 못 봄.
+- **위젯 1파일 1클래스 + 빈 줄 그루핑** — [`apps/AGENTS.md`의 코드 컨벤션 섹션](../AGENTS.md#-코드-컨벤션-모든-앱)에서 상속.
 
 현 스켈레톤:
 
