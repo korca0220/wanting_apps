@@ -21,6 +21,8 @@ class AuthRemoteDataSource {
 
   Session? get currentSession => _client.auth.currentSession;
 
+  User? get currentUser => _client.auth.currentUser;
+
   Future<AuthResponse> signInWithPassword({
     required String email,
     required String password,
