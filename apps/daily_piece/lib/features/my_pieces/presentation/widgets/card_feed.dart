@@ -3,16 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../providers/my_pieces_feed_provider.dart';
-import 'piece_thumbnail.dart';
+import 'piece_card.dart';
 
-/// Sliver-based 3-column grid that hosts the My Pieces feed plus a
-/// `loadingMore` footer when the feed notifier is fetching the next page.
-class TimelineGrid extends StatelessWidget {
-  const TimelineGrid({
-    super.key,
-    required this.state,
-    required this.controller,
-  });
+/// Vertical full-width card feed plus a `loadingMore` footer when the feed
+/// notifier is fetching the next page.
+class CardFeed extends StatelessWidget {
+  const CardFeed({super.key, required this.state, required this.controller});
 
   final MyPiecesFeedState state;
   final ScrollController controller;
@@ -20,27 +16,27 @@ class TimelineGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final spacing = context.wdsSpacing;
-    final padding = EdgeInsets.all(spacing.componentMd);
-    final gap = spacing.componentSm;
+    final padding = EdgeInsets.symmetric(
+      horizontal: spacing.componentXl,
+      vertical: spacing.componentMd,
+    );
+    final gap = spacing.componentLg;
 
     return CustomScrollView(
       controller: controller,
       slivers: [
         SliverPadding(
           padding: padding,
-          sliver: SliverGrid(
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              mainAxisSpacing: gap,
-              crossAxisSpacing: gap,
-            ),
-            delegate: SliverChildBuilderDelegate((context, i) {
+          sliver: SliverList.separated(
+            itemCount: state.items.length,
+            separatorBuilder: (_, _) => SizedBox(height: gap),
+            itemBuilder: (context, i) {
               final piece = state.items[i];
-              return PieceThumbnail(
+              return PieceCard(
                 piece: piece,
                 onTap: () => context.go('/my-pieces/${piece.id}'),
               );
-            }, childCount: state.items.length),
+            },
           ),
         ),
         if (state.loadingMore)

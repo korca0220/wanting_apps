@@ -4,12 +4,28 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../providers/my_pieces_feed_provider.dart';
+import '../widgets/card_feed.dart';
 import '../widgets/empty_view.dart';
 import '../widgets/error_view.dart';
-import '../widgets/timeline_grid.dart';
 
-/// Authenticated landing — paged feed of the user's Pieces. Empty state nudges
-/// the user to create their first Piece.
+const _monthsLong = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];
+
+/// Authenticated landing — paged full-width card feed of the user's Pieces.
+/// FAB launches the New Piece flow. Empty state nudges the user to create
+/// their first Piece.
 class MyPiecesPage extends ConsumerStatefulWidget {
   const MyPiecesPage({super.key});
 
@@ -46,10 +62,31 @@ class _MyPiecesPageState extends ConsumerState<MyPiecesPage> {
   Widget build(BuildContext context) {
     final colors = context.wdsColors;
     final feed = ref.watch(myPiecesFeedProvider);
+    final now = DateTime.now();
+    final monthLabel = '${_monthsLong[now.month - 1]} ${now.year}';
 
     return Scaffold(
       backgroundColor: colors.backgroundNormalNormal,
-      appBar: AppBar(title: const Text('DailyPiece')),
+      appBar: AppBar(
+        title: const Text('DailyPiece'),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Center(
+              child: WdsText(
+                monthLabel,
+                style: WdsTextStyle.caption1,
+                color: WdsTextColor.alternative,
+              ),
+            ),
+          ),
+          const IconButton(
+            onPressed: null,
+            icon: Icon(Icons.notifications_none_outlined),
+            tooltip: '알림',
+          ),
+        ],
+      ),
       body: SafeArea(
         child: feed.when(
           loading: () => const Center(child: WdsSpinner()),
@@ -59,7 +96,7 @@ class _MyPiecesPageState extends ConsumerState<MyPiecesPage> {
           ),
           data: (state) => state.items.isEmpty
               ? const EmptyView()
-              : TimelineGrid(state: state, controller: _scroll),
+              : CardFeed(state: state, controller: _scroll),
         ),
       ),
       floatingActionButton: FloatingActionButton(
