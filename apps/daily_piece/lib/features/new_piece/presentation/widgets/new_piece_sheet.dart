@@ -14,9 +14,14 @@ import 'photo_picker_tile.dart';
 /// Modal bottom sheet for creating a new Piece. Pick photo → caption → save.
 /// On success, pops the sheet and invalidates the My Pieces feed.
 ///
+/// [forDate] defaults to today; the calendar passes a specific day when the
+/// user taps an empty past cell.
+///
 /// Use [showNewPieceSheet] from a widget to invoke; this isn't a routed page.
 class NewPieceSheet extends ConsumerStatefulWidget {
-  const NewPieceSheet({super.key});
+  const NewPieceSheet({super.key, this.forDate});
+
+  final DateTime? forDate;
 
   @override
   ConsumerState<NewPieceSheet> createState() => _NewPieceSheetState();
@@ -89,7 +94,11 @@ class _NewPieceSheetState extends ConsumerState<NewPieceSheet> {
     try {
       await ref
           .read(pieceRepositoryProvider)
-          .create(photoBytes: bytes, comment: comment);
+          .create(
+            photoBytes: bytes,
+            comment: comment,
+            date: widget.forDate,
+          );
 
       ref.invalidate(myPiecesFeedProvider);
 
@@ -97,7 +106,7 @@ class _NewPieceSheetState extends ConsumerState<NewPieceSheet> {
     } on PieceAlreadyExistsToday {
       if (mounted) {
         setState(() {
-          _error = '오늘의 Piece가 이미 저장돼있어요.';
+          _error = '해당 날짜의 Piece가 이미 저장돼있어요.';
           _busy = false;
         });
       }
@@ -197,13 +206,13 @@ class _NewPieceSheetState extends ConsumerState<NewPieceSheet> {
 }
 
 /// Shows the New Piece bottom sheet. Returns once the sheet is dismissed
-/// (saved or cancelled).
-Future<void> showNewPieceSheet(BuildContext context) {
+/// (saved or cancelled). Pass [forDate] to fill in a non-today day.
+Future<void> showNewPieceSheet(BuildContext context, {DateTime? forDate}) {
   return showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
     backgroundColor: Colors.transparent,
-    builder: (_) => const NewPieceSheet(),
+    builder: (_) => NewPieceSheet(forDate: forDate),
   );
 }

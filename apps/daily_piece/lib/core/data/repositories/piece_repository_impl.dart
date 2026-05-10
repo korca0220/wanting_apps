@@ -41,6 +41,7 @@ class PieceRepositoryImpl implements PieceRepository {
   Future<Piece> create({
     required Uint8List photoBytes,
     required String comment,
+    DateTime? date,
   }) async {
     final userId = _remote.currentUserId;
     if (userId == null) {
@@ -58,7 +59,7 @@ class PieceRepositoryImpl implements PieceRepository {
         userId: userId,
         photoPath: path,
         comment: comment,
-        date: _localDateString(DateTime.now()),
+        date: _localDateString(date ?? DateTime.now()),
       );
       return _mapRow(row);
     } on PostgrestException catch (e) {
@@ -68,6 +69,28 @@ class PieceRepositoryImpl implements PieceRepository {
       }
       rethrow;
     }
+  }
+
+  @override
+  Future<List<Piece>> listByMonth({
+    required int year,
+    required int month,
+  }) async {
+    final userId = _remote.currentUserId;
+    if (userId == null) return const [];
+
+    final from = DateTime(year, month, 1);
+    // DateTime(year, month + 1, 0) lands on the last day of `month` —
+    // handles December rollover correctly.
+    final to = DateTime(year, month + 1, 0);
+
+    final rows = await _remote.listMonthRows(
+      userId: userId,
+      fromDate: _localDateString(from),
+      toDate: _localDateString(to),
+    );
+
+    return rows.map(_mapRow).toList(growable: false);
   }
 
   @override

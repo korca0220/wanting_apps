@@ -50,6 +50,22 @@ class PieceRemoteDataSource {
     return List<Map<String, dynamic>>.from(rows);
   }
 
+  Future<List<Map<String, dynamic>>> listMonthRows({
+    required String userId,
+    required String fromDate,
+    required String toDate,
+  }) async {
+    final rows = await _client
+        .from('pieces')
+        .select()
+        .eq('user_id', userId)
+        .gte('date', fromDate)
+        .lte('date', toDate)
+        .order('date', ascending: true);
+
+    return List<Map<String, dynamic>>.from(rows);
+  }
+
   Future<void> uploadPhoto(String path, Uint8List bytes) {
     return _client.storage
         .from('pieces')

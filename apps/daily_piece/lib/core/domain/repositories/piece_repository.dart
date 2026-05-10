@@ -10,12 +10,19 @@ abstract class PieceRepository {
   /// "Today" is the device's local calendar day.
   Future<Piece?> getToday();
 
-  /// Uploads bytes to Storage then inserts the row. Throws
-  /// [PieceAlreadyExistsToday] if today's Piece already exists.
+  /// Uploads bytes to Storage then inserts the row. Defaults to today's
+  /// local date; pass [date] to fill in a different day (e.g. an empty
+  /// past day picked from the calendar). Throws [PieceAlreadyExistsToday]
+  /// if a Piece for that user/date already exists.
   Future<Piece> create({
     required Uint8List photoBytes,
     required String comment,
+    DateTime? date,
   });
+
+  /// All Pieces for the signed-in user within the given calendar month.
+  /// Used by the Calendar screen to render the dot map.
+  Future<List<Piece>> listByMonth({required int year, required int month});
 
   /// Short-lived signed URL for displaying a private Piece photo.
   Future<String> signedPhotoUrl(String path, {int expiresInSeconds = 3600});
