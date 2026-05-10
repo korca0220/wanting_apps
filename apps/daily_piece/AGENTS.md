@@ -179,13 +179,11 @@ Today/Collection 첫 컷은 **캐시 없이 Supabase 직결**. Riverpod이 watch
 ### 다음 ADR 후보
 - **ADR 0005 — 영속 캐시 / 재시도 큐**: drift / Hive / in-memory 결정. **Today 흐름 첫 컷을 돌려본 뒤** 통증 기반으로 작성.
 
-### Today 흐름 실구현 (stub → 완성)
-1. **Sign in / Sign up 화면** — 이메일+비밀번호. `supabase_flutter`의 `auth.signInWithPassword` / `signUp`. error 매핑.
-2. **사진 선택** — `image_picker` 추가 후 카메라/갤러리.
-3. **코멘트 입력** — `WdsTextField(maxLength: 50)`.
-4. **리사이즈/압축** — ADR 0004 결정대로.
-5. **Storage 업로드** — `client.storage.from('pieces').upload('{uid}/{pieceId}.jpg', file)` → `photo_path` 획득.
-6. **`pieces` INSERT** — UNIQUE(user_id, date) 위반 catch → "오늘 이미 있음" UX (수정 화면으로 유도).
+### Today 흐름 다음 작업
+- **Edit / Delete**: 현재 view 모드는 read-only. 동일 날짜에 대한 수정/삭제 UX 결정 필요.
+- **카메라 캡처**: 현재 갤러리만. `ImageSource.camera` 추가 시 iOS `NSCameraUsageDescription` + Android `CAMERA` permission 추가.
+- **Collection 화면 실구현**: Today 다음 자연스러운 화면. 페이지네이션 + 썸네일 그리드 + 상세 진입.
+- **WdsBottomNavigation 적용**: Today ↔ Collection 전환 (DS Tier 2 컴포넌트 이미 있음).
 
 ### 선택
 - **Supabase CLI 부트스트랩** — `supabase init/link/db pull`로 SQL-파일 기반 마이그레이션 관리. (현재는 MCP `apply_migration` + 수동 `supabase/migrations/*.sql` 보관 중.)

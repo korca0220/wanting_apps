@@ -44,6 +44,11 @@ dependencies:
   supabase_flutter: ^2.8.0
   envied: ^1.1.1
 
+  # Today flow — see ADR 0004.
+  image_picker: ^1.1.2
+  flutter_image_compress: ^2.3.0
+  uuid: ^4.5.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
