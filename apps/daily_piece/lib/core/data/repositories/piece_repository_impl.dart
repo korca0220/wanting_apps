@@ -107,6 +107,40 @@ class PieceRepositoryImpl implements PieceRepository {
   }
 
   @override
+  Future<Piece> replacePhoto({
+    required String id,
+    required String oldPhotoPath,
+    required Uint8List newPhotoBytes,
+  }) async {
+    final userId = _remote.currentUserId;
+    if (userId == null) {
+      throw const AuthException('Not signed in.');
+    }
+
+    // New uuid keeps the photo path independent of the row id, so multiple
+    // replacements don't pile up at the same key.
+    final newPath = '$userId/${const Uuid().v4()}.jpg';
+
+    await _remote.uploadPhoto(newPath, newPhotoBytes);
+
+    try {
+      final row = await _remote.updatePhotoPathRow(id: id, photoPath: newPath);
+
+      // Old object cleanup is best-effort — if it fails the row already
+      // points at the new path, so the user sees the new photo and only an
+      // orphan lingers in Storage.
+      await _remote.deletePhoto(oldPhotoPath);
+
+      return _mapRow(row);
+    } catch (_) {
+      // Row update failed — clean up the orphan we just uploaded so we don't
+      // leak Storage objects on every retry.
+      await _remote.deletePhoto(newPath);
+      rethrow;
+    }
+  }
+
+  @override
   Future<void> delete({required String id, required String photoPath}) async {
     await _remote.deleteRow(id);
     await _remote.deletePhoto(photoPath);

@@ -213,7 +213,7 @@ python3 ../../../design-system-gen/skills/screen-spec-gen/scripts/validate_scree
 | Sign in / Sign up | ✅ 코드, 🟡 실기 sweep 완료 (가입 → /today 도달 확인) | `authRepository` 경유. `AuthFailure(message)`로 도메인 예외 단일화. Confirm email 분기 양쪽 처리 |
 | Today: 작성 흐름 (compose) | ✅ 코드, ✅ 실기 sweep 통과 | pick → compress → upload → INSERT |
 | Today: 조회 (view 모드) | ✅ 코드, ✅ 실기 sweep 통과 | signed URL 이미지 로드 |
-| Today/Detail: edit comment + delete | ✅ 코드, ❌ 실기 미검증 | 디테일 화면 AppBar 액션. 사진 교체 / 날짜 변경은 deferred (UNIQUE(user_id,date) 제약 + Storage 라이프사이클) |
+| Detail: edit comment + 사진 교체 + delete | ✅ 코드, ❌ 실기 미검증 | 편집 모드에서 사진 탭 → 교체 / 코멘트 수정 / 저장 시 photo + comment 동시 처리. 날짜 변경은 deferred (UNIQUE(user_id,date)) |
 | 카메라 캡처 | ❌ | 갤러리만. `ImageSource.camera` 추가 시 iOS `NSCameraUsageDescription` + Android `CAMERA` permission 필요 |
 | Collection 화면 | ✅ 코드, ❌ 실기 미검증 | `date desc` keyset 페이지네이션(30/페이지), 3열 그리드, 빈 상태 CTA, 썸네일은 1h signed URL — 화면 재진입 시 재발급 |
 | Piece detail 화면 | ✅ 코드, ❌ 실기 미검증 | `/collection/:pieceId` (Collection 브랜치 nested). `pieceByIdProvider(family)` → 큰 사진 + 코멘트 + 날짜. row 없음(RLS/삭제) → "찾을 수 없어요" + 컬렉션 복귀 CTA |
@@ -228,9 +228,9 @@ python3 ../../../design-system-gen/skills/screen-spec-gen/scripts/validate_scree
 
 ### 다음 합리적 단계 (권장 순서)
 
-1. **누적 회귀 sweep** — auth 리팩터 / edit·delete / Settings(테마+로그아웃)까지 한 번에. 가입 → /today → Piece 작성 → 컬렉션 → 디테일 → edit → delete → 설정 → 테마 토글 → 로그아웃 → /sign-in 도달 사이클.
-2. **WdsTextField maxLength prop 추가** (선택) — 코멘트 50자 입력단 강제. 현재 서버 varchar(50) 거부에만 의존.
-3. **사진 교체** (선택, 큰 작업) — 디테일에서 같은 날짜 유지하며 다른 사진으로 갈음. Storage 정리 + 신규 업로드 + DB UPDATE + 캐시 invalidate 순서.
+1. **누적 회귀 sweep** — 가입 → /today → 작성 → 컬렉션 → 디테일 → 코멘트 수정 + 사진 교체 → 저장 → 삭제 → 설정 → 테마 토글 / 로그아웃 → /sign-in 사이클. 50자 입력 한도(WdsTextField.maxLength) + Storage 객체 라이프사이클(이전 사진 정리)도 함께 확인.
+2. **카메라 캡처** (선택) — 갤러리에 더해 ImageSource.camera 옵션. iOS NSCameraUsageDescription + Android CAMERA permission 추가 필요.
+3. **위젯 테스트 보강** — feature 단위로 mocking된 repository 사용해 핵심 흐름 검증.
 
 ### 선택
 - **Supabase CLI 부트스트랩** — `supabase init/link/db pull`로 SQL-파일 기반 마이그레이션 관리. (현재는 MCP `apply_migration` + 수동 `supabase/migrations/*.sql` 보관 중.)

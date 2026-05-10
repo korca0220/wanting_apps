@@ -92,6 +92,18 @@ class PieceRemoteDataSource {
         .single();
   }
 
+  Future<Map<String, dynamic>> updatePhotoPathRow({
+    required String id,
+    required String photoPath,
+  }) {
+    return _client
+        .from('pieces')
+        .update({'photo_path': photoPath})
+        .eq('id', id)
+        .select()
+        .single();
+  }
+
   Future<void> deleteRow(String id) async {
     await _client.from('pieces').delete().eq('id', id);
   }

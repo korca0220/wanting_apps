@@ -29,10 +29,18 @@ abstract class PieceRepository {
   /// hides it (e.g. signed out, or the id belongs to another user).
   Future<Piece?> getById(String id);
 
-  /// Updates the comment of an existing Piece. Photo and date are immutable
-  /// in the first cut — replacing the photo needs Storage cleanup + reupload
-  /// and changing the date collides with UNIQUE(user_id, date).
+  /// Updates the comment of an existing Piece. Date stays immutable —
+  /// changing it would collide with UNIQUE(user_id, date).
   Future<Piece> updateComment({required String id, required String comment});
+
+  /// Swaps the photo bound to a Piece. Uploads bytes to a fresh path,
+  /// updates the row's `photo_path`, then best-effort removes the old
+  /// Storage object. Returns the updated Piece (with the new path).
+  Future<Piece> replacePhoto({
+    required String id,
+    required String oldPhotoPath,
+    required Uint8List newPhotoBytes,
+  });
 
   /// Deletes a Piece — row first, then a best-effort Storage object cleanup.
   /// `photoPath` is required because Storage delete is decoupled from the

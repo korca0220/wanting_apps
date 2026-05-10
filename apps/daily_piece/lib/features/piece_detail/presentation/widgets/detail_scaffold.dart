@@ -1,9 +1,13 @@
+import 'dart:typed_data';
+
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/data/cache/signed_url_cache_provider.dart';
+import '../../../../core/data/media/media_pipeline.dart';
 import '../../../../core/data/repositories/piece_repository_impl.dart';
 import '../../../../core/domain/entities/piece.dart';
 import '../../../collection/presentation/providers/collection_feed_provider.dart';
@@ -11,7 +15,8 @@ import '../../../today/presentation/providers/today_piece_provider.dart';
 import '../providers/piece_by_id_provider.dart';
 
 /// Owns the full scaffold once a Piece is loaded — AppBar actions(edit/delete)
-/// + inline edit mode for the comment + signed URL fetch for the photo.
+/// + inline edit mode for both the comment and the photo + signed URL fetch
+/// for the photo when not previewing a replacement.
 class DetailScaffold extends ConsumerStatefulWidget {
   const DetailScaffold({super.key, required this.piece});
 
@@ -24,6 +29,11 @@ class DetailScaffold extends ConsumerStatefulWidget {
 class _DetailScaffoldState extends ConsumerState<DetailScaffold> {
   late Future<String> _signedUrl;
   late TextEditingController _commentCtrl;
+  final _picker = ImagePicker();
+
+  /// Locally-staged replacement photo. Non-null while in edit mode and the
+  /// user has just picked a new image — committed on save.
+  Uint8List? _pendingPhotoBytes;
 
   bool _editing = false;
   bool _busy = false;
@@ -41,8 +51,12 @@ class _DetailScaffoldState extends ConsumerState<DetailScaffold> {
   void didUpdateWidget(DetailScaffold old) {
     super.didUpdateWidget(old);
 
-    // Provider invalidation pushes a fresh Piece in — sync the controller so
-    // a subsequent edit starts from the latest comment, not the stale one.
+    // Provider invalidation pushes a fresh Piece in — re-resolve the signed
+    // URL for the new path and re-seed the comment controller so the next
+    // edit starts from the latest state.
+    if (old.piece.photoPath != widget.piece.photoPath) {
+      _signedUrl = ref.read(signedUrlCacheProvider).get(widget.piece.photoPath);
+    }
     if (!_editing && old.piece.comment != widget.piece.comment) {
       _commentCtrl.text = widget.piece.comment;
     }
@@ -59,6 +73,7 @@ class _DetailScaffoldState extends ConsumerState<DetailScaffold> {
     setState(() {
       _editing = true;
       _error = null;
+      _pendingPhotoBytes = null;
       _commentCtrl.text = widget.piece.comment;
     });
   }
@@ -67,7 +82,38 @@ class _DetailScaffoldState extends ConsumerState<DetailScaffold> {
     setState(() {
       _editing = false;
       _error = null;
+      _pendingPhotoBytes = null;
     });
+  }
+
+  Future<void> _pickReplacementPhoto() async {
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
+
+    try {
+      final picked = await _picker.pickImage(source: ImageSource.gallery);
+      if (picked == null) {
+        if (mounted) setState(() => _busy = false);
+        return;
+      }
+
+      final bytes = await processForUpload(picked.path);
+      if (!mounted) return;
+
+      setState(() {
+        _pendingPhotoBytes = bytes;
+        _busy = false;
+      });
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _error = '사진 처리에 실패했어요: $e';
+          _busy = false;
+        });
+      }
+    }
   }
 
   Future<void> _saveEdit() async {
@@ -76,7 +122,10 @@ class _DetailScaffoldState extends ConsumerState<DetailScaffold> {
       setState(() => _error = '코멘트를 입력해주세요.');
       return;
     }
-    if (next == widget.piece.comment) {
+
+    final commentChanged = next != widget.piece.comment;
+    final photoChanged = _pendingPhotoBytes != null;
+    if (!commentChanged && !photoChanged) {
       _cancelEdit();
       return;
     }
@@ -86,10 +135,25 @@ class _DetailScaffoldState extends ConsumerState<DetailScaffold> {
       _error = null;
     });
 
+    final repo = ref.read(pieceRepositoryProvider);
+
     try {
-      await ref
-          .read(pieceRepositoryProvider)
-          .updateComment(id: widget.piece.id, comment: next);
+      // Photo first — it's the bigger / failure-prone operation. If it
+      // throws, no DB write happened, so the comment isn't half-applied.
+      if (photoChanged) {
+        final oldPath = widget.piece.photoPath;
+
+        await repo.replacePhoto(
+          id: widget.piece.id,
+          oldPhotoPath: oldPath,
+          newPhotoBytes: _pendingPhotoBytes!,
+        );
+
+        ref.read(signedUrlCacheProvider).invalidate(oldPath);
+      }
+      if (commentChanged) {
+        await repo.updateComment(id: widget.piece.id, comment: next);
+      }
 
       _invalidatePieceCaches();
 
@@ -97,6 +161,7 @@ class _DetailScaffoldState extends ConsumerState<DetailScaffold> {
         setState(() {
           _editing = false;
           _busy = false;
+          _pendingPhotoBytes = null;
         });
       }
     } catch (e) {
@@ -207,16 +272,55 @@ class _DetailScaffoldState extends ConsumerState<DetailScaffold> {
             children: [
               AspectRatio(
                 aspectRatio: 1,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: FutureBuilder<String>(
-                    future: _signedUrl,
-                    builder: (context, snap) {
-                      if (!snap.hasData) {
-                        return const Center(child: WdsSpinner());
-                      }
-                      return Image.network(snap.data!, fit: BoxFit.cover);
-                    },
+                child: GestureDetector(
+                  onTap: (_editing && !_busy) ? _pickReplacementPhoto : null,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: _pendingPhotoBytes != null
+                            ? Image.memory(
+                                _pendingPhotoBytes!,
+                                fit: BoxFit.cover,
+                              )
+                            : FutureBuilder<String>(
+                                future: _signedUrl,
+                                builder: (context, snap) {
+                                  if (!snap.hasData) {
+                                    return const Center(child: WdsSpinner());
+                                  }
+                                  return Image.network(
+                                    snap.data!,
+                                    fit: BoxFit.cover,
+                                  );
+                                },
+                              ),
+                      ),
+                      if (_editing)
+                        Positioned(
+                          right: 12,
+                          bottom: 12,
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              color: colors.backgroundElevatedNormal,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              child: WdsText(
+                                _pendingPhotoBytes == null
+                                    ? '탭해서 사진 교체'
+                                    : '교체할 사진 선택됨',
+                                style: WdsTextStyle.caption1,
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                 ),
               ),

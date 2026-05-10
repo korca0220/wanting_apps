@@ -8,7 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../../../core/data/repositories/piece_repository_impl.dart';
 import '../../../../core/domain/entities/piece.dart';
 import '../../../../core/domain/exceptions/piece_exceptions.dart';
-import '../../data/media/media_pipeline.dart';
+import '../../../../core/data/media/media_pipeline.dart';
 import '../providers/today_piece_provider.dart';
 import 'photo_placeholder.dart';
 
