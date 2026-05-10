@@ -74,7 +74,7 @@ lib/
 |---|---|
 | 백엔드 / DB / 스토리지 | **Supabase** ([ADR 0003](docs/adr/0003-backend.md)) — Postgres + Auth + Storage. SDK: `supabase_flutter`. |
 | 인증 | Supabase Auth (이메일/비밀번호 시작; OAuth는 콘솔 추가). 세션은 `StreamProvider<Session?>` 노출 예정. |
-| 미디어 스토리지 (사진) | Supabase Storage (`pieces` 버킷, `{user_id}/{piece_id}.{ext}`). 클라이언트 캐시/리사이즈 정책은 ADR 0004에서. |
+| 미디어 스토리지 (사진) | Supabase Storage (`pieces` 버킷, `{user_id}/{piece_id}.jpg`). 클라이언트 파이프라인: 긴 변 1080px / JPEG q80 / EXIF 전체 제거 — [ADR 0004](docs/adr/0004-media-client-policy.md). 라이브러리: `flutter_image_compress`. |
 | 로컬 영속화 / 오프라인 | TBD ([ADR 0005] 예정 — drift / Hive / in-memory 결정) |
 | 분석/크래시 리포팅 | TBD |
 | 푸시 알림 | TBD |
@@ -174,7 +174,6 @@ python3 ../../../design-system-gen/skills/screen-spec-gen/scripts/validate_scree
 세션 간 컨텍스트 유지를 위해 다음에 할 일을 여기에 둔다. 항목을 처리하면 같은 커밋에서 여기서도 지운다.
 
 ### 다음 ADR 후보
-- **ADR 0004 — 미디어 클라이언트 정책**: image_picker로 픽 → 1080p 리사이즈 → JPEG q=80 → EXIF 제거 → Supabase Storage 업로드. Storage 1GB 한도 안에서 오래 가도록.
 - **ADR 0005 — 오프라인 캐시**: drift / Hive / in-memory 결정. Today 화면 저장 실패 시 재시도 큐 + Collection 타임라인 캐시.
 
 ### Today 흐름 실구현 (stub → 완성)
