@@ -32,6 +32,7 @@ DailyPiece가 백엔드에 요구하는 것:
 ## Consequences
 
 **Pros**
+
 - DB/인증/스토리지가 한 SDK로 통합 — 클라이언트 의존성 1개(`supabase_flutter`)로 시작
 - Postgres 그대로 → 도메인 invariant를 DB constraint로 강제 (코드 + DB 다층 방어)
 - RLS(Row Level Security)로 사용자별 격리를 정책으로 표현 — 클라이언트 권한 누수 방지
@@ -39,11 +40,13 @@ DailyPiece가 백엔드에 요구하는 것:
 - 무료 티어로 MVP 단계 운영 가능
 
 **Cons**
+
 - Supabase 자체의 운영 가용성에 의존 (관리형이지만 외부 서비스)
 - Realtime/Edge Functions 등 고급 기능을 깊게 쓰면 SQL/Deno/PostgREST 학습 필요
 - 무료 티어 한도(스토리지 1GB, DB 500MB) 초과 시 유료 전환
 
 **대안 기각 사유**
+
 - **Firebase**: Flutter SDK 성숙하지만 NoSQL 모델링 + 제약 강제(예: 1일 1Piece) 클라이언트로 옮겨감. 쿼리 제약(복합 인덱스, 페이지네이션 awkward)이 타임라인에 비효율.
 - **Custom REST/GraphQL**: 1인 운영에 인프라 부담 과대. 도메인 작업 시간을 잠식.
 - **Local-only**: 멀티 디바이스 동기화/백업 불가. Personal Archiving 도메인에서 데이터 손실 리스크 큼.
