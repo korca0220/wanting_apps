@@ -214,7 +214,7 @@ python3 ../../../design-system-gen/skills/screen-spec-gen/scripts/validate_scree
 | Collection 화면 | ✅ 코드, ❌ 실기 미검증 | `date desc` keyset 페이지네이션(30/페이지), 3열 그리드, 빈 상태 CTA, 썸네일은 1h signed URL — 화면 재진입 시 재발급 |
 | Piece detail 화면 | ❌ stub | tap navigates `/collection/:pieceId` from Collection grid |
 | Settings 화면 | ❌ stub | |
-| Bottom navigation (Today ↔ Collection) | ❌ | DS의 `WdsBottomNavigation` 사용 가능. 현재는 라우트만 존재, 화면 간 이동은 deep link뿐 |
+| Bottom navigation (Today / Collection / Settings) | ✅ 코드, ❌ 실기 미검증 | `StatefulShellRoute.indexedStack`으로 3-탭. 각 브랜치 독립 navigator → 탭 전환 후 복귀 시 sub-route 백스택 유지 |
 | 위젯 테스트 | 🟡 router redirect 2개만 | feature 단위 테스트 추가 필요 |
 | ADR 0005 (영속 캐시 / 재시도 큐) | ❌ deferred | **데이터 레이어 임시 정책** 참고 |
 
@@ -223,10 +223,9 @@ Today/Collection 첫 컷은 **캐시 없이 Supabase 직결**. Riverpod이 watch
 
 ### 다음 합리적 단계 (권장 순서)
 
-1. **Collection 실기 sweep** — Today에서 만든 Piece가 그리드에 보이는지, 30+개 만들었을 때 페이지네이션 트리거가 자연스러운지, 빈 상태 CTA에서 `/today` 이동되는지.
-2. **WdsBottomNavigation으로 Today ↔ Collection 전환** + 라우트 연결. 현재 Collection은 deep link/empty CTA로만 도달 가능.
-3. **Piece detail 화면** (`/collection/:pieceId`) — Collection 탭에서 그리드 진입 시 디테일. 큰 사진 + 코멘트 + (이후) edit/delete.
-4. ADR 0005 — 1~3 돌려보고 통증 기반으로 결정.
+1. **Collection + 바텀 내비 실기 sweep** — 탭 전환, 빈 상태 CTA `/today` 이동, 그리드 진입 → detail → 백 시 그리드 스크롤 위치 유지, 30+개에서 페이지네이션.
+2. **Piece detail 화면** (`/collection/:pieceId`) — 큰 사진 + 코멘트. 현재 stub. Collection 브랜치 내부 라우트라 detail에서 back 시 그리드로 자연 복귀.
+3. ADR 0005 — 1~2 돌려보고 통증(앱 재시작 깜박임 / 비행기모드 / signed URL 만료 등) 기반으로 결정.
 
 ### 선택
 - **Supabase CLI 부트스트랩** — `supabase init/link/db pull`로 SQL-파일 기반 마이그레이션 관리. (현재는 MCP `apply_migration` + 수동 `supabase/migrations/*.sql` 보관 중.)
