@@ -10,6 +10,7 @@ import '../../../../core/domain/entities/piece.dart';
 import '../../../../core/domain/exceptions/piece_exceptions.dart';
 import '../../data/media/media_pipeline.dart';
 import '../providers/today_piece_provider.dart';
+import 'photo_placeholder.dart';
 
 /// Compose mode — no Piece for today yet. Pick → preview → comment → save.
 class ComposeView extends ConsumerStatefulWidget {
@@ -115,7 +116,7 @@ class _ComposeViewState extends ConsumerState<ComposeView> {
                 borderRadius: BorderRadius.circular(16),
                 child: hasPhoto
                     ? Image.memory(_photoBytes!, fit: BoxFit.cover)
-                    : _PhotoPlaceholder(busy: _busy),
+                    : PhotoPlaceholder(busy: _busy),
               ),
             ),
           ),
@@ -135,28 +136,6 @@ class _ComposeViewState extends ConsumerState<ComposeView> {
             child: const Text('오늘의 Piece 저장'),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _PhotoPlaceholder extends StatelessWidget {
-  const _PhotoPlaceholder({required this.busy});
-  final bool busy;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.wdsColors;
-    return Container(
-      color: colors.backgroundNormalAlternative,
-      child: Center(
-        child: busy
-            ? const WdsSpinner()
-            : const WdsText(
-                '탭해서 사진 고르기',
-                style: WdsTextStyle.body1,
-                color: WdsTextColor.alternative,
-              ),
       ),
     );
   }
