@@ -4,24 +4,28 @@ import 'package:go_router/go_router.dart';
 
 import '../core/auth/session_provider.dart';
 import '../features/auth/sign_in_page.dart';
+import '../features/auth/sign_up_page.dart';
 import '../features/collection/collection_page.dart';
 import '../features/piece_detail/piece_detail_page.dart';
 import '../features/settings/settings_page.dart';
 import '../features/today/today_page.dart';
+
+const _authPaths = {'/sign-in', '/sign-up'};
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     initialLocation: '/today',
     redirect: (context, state) {
       final signedIn = ref.read(isSignedInProvider);
-      final atSignIn = state.matchedLocation == '/sign-in';
-      if (!signedIn && !atSignIn) return '/sign-in';
-      if (signedIn && atSignIn) return '/today';
+      final atAuth = _authPaths.contains(state.matchedLocation);
+      if (!signedIn && !atAuth) return '/sign-in';
+      if (signedIn && atAuth) return '/today';
       return null;
     },
     refreshListenable: _RouterRefresh(ref),
     routes: [
       GoRoute(path: '/sign-in', builder: (_, _) => const SignInPage()),
+      GoRoute(path: '/sign-up', builder: (_, _) => const SignUpPage()),
       GoRoute(path: '/today', builder: (_, _) => const TodayPage()),
       GoRoute(path: '/collection', builder: (_, _) => const CollectionPage()),
       GoRoute(
