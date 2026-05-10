@@ -217,7 +217,7 @@ python3 ../../../design-system-gen/skills/screen-spec-gen/scripts/validate_scree
 | 카메라 캡처 | ❌ | 갤러리만. `ImageSource.camera` 추가 시 iOS `NSCameraUsageDescription` + Android `CAMERA` permission 필요 |
 | Collection 화면 | ✅ 코드, ❌ 실기 미검증 | `date desc` keyset 페이지네이션(30/페이지), 3열 그리드, 빈 상태 CTA, 썸네일은 1h signed URL — 화면 재진입 시 재발급 |
 | Piece detail 화면 | ✅ 코드, ❌ 실기 미검증 | `/collection/:pieceId` (Collection 브랜치 nested). `pieceByIdProvider(family)` → 큰 사진 + 코멘트 + 날짜. row 없음(RLS/삭제) → "찾을 수 없어요" + 컬렉션 복귀 CTA |
-| Settings 화면 | ❌ stub | |
+| Settings 화면 | ✅ 코드, ❌ 실기 미검증 | 테마(System/Light/Dark) + 로그아웃. 테마는 `SharedPreferences`로 영속 (재시작 후 유지) |
 | Bottom navigation (Today / Collection / Settings) | ✅ 코드, ❌ 실기 미검증 | `StatefulShellRoute.indexedStack`으로 3-탭. 각 브랜치 독립 navigator → 탭 전환 후 복귀 시 sub-route 백스택 유지 |
 | 위젯 테스트 | 🟡 router redirect 2개만 | feature 단위 테스트 추가 필요 |
 | ADR 0005 (캐시 정책) | ✅ Accepted | [ADR 0005](docs/adr/0005-local-cache-policy.md). signed URL in-memory 캐시 + Flutter ImageCache. 디스크 캐시/로컬 DB/재시도 큐는 보류 |
@@ -228,10 +228,9 @@ python3 ../../../design-system-gen/skills/screen-spec-gen/scripts/validate_scree
 
 ### 다음 합리적 단계 (권장 순서)
 
-1. **edit/delete + auth 리팩터 실기 검증** — 디테일 액션 + 사인인/사인업 회귀 확인 (가입/로그인/Confirm email 분기 / 코멘트 수정 / 삭제 → 컬렉션 복귀).
-2. **Settings 페이지 실구현** — 현재 stub. `authRepository.signOut()` + 다크모드 토글 정도가 1차.
-3. **WdsTextField maxLength prop 추가** (선택) — 코멘트 50자 입력단 강제. 현재 서버 varchar(50) 거부에만 의존.
-4. **사진 교체** (선택, 큰 작업) — 디테일에서 같은 날짜 유지하며 다른 사진으로 갈음. Storage 정리 + 신규 업로드 + DB UPDATE + 캐시 invalidate 순서.
+1. **누적 회귀 sweep** — auth 리팩터 / edit·delete / Settings(테마+로그아웃)까지 한 번에. 가입 → /today → Piece 작성 → 컬렉션 → 디테일 → edit → delete → 설정 → 테마 토글 → 로그아웃 → /sign-in 도달 사이클.
+2. **WdsTextField maxLength prop 추가** (선택) — 코멘트 50자 입력단 강제. 현재 서버 varchar(50) 거부에만 의존.
+3. **사진 교체** (선택, 큰 작업) — 디테일에서 같은 날짜 유지하며 다른 사진으로 갈음. Storage 정리 + 신규 업로드 + DB UPDATE + 캐시 invalidate 순서.
 
 ### 선택
 - **Supabase CLI 부트스트랩** — `supabase init/link/db pull`로 SQL-파일 기반 마이그레이션 관리. (현재는 MCP `apply_migration` + 수동 `supabase/migrations/*.sql` 보관 중.)

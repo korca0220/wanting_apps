@@ -49,6 +49,10 @@ dependencies:
   flutter_image_compress: ^2.3.0
   uuid: ^4.5.1
 
+  # Settings persistence (theme mode etc.). Cache for backend data is still
+  # deferred — see ADR 0005.
+  shared_preferences: ^2.3.5
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
