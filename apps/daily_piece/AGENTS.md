@@ -45,7 +45,9 @@
 
 - **상태관리 / DI**: Riverpod (`flutter_riverpod` + `riverpod_annotation` codegen) — [ADR 0001](docs/adr/0001-state-management.md). 신규 provider는 `@Riverpod(...)` 함수/클래스로 작성. `riverpod_lint`가 `custom_lint` 플러그인으로 활성화돼 있어 forgot-to-watch / 누락된 keepAlive 등을 잡아준다.
 - **라우팅**: go_router — [ADR 0002](docs/adr/0002-routing.md). 라우터 정의는 `lib/app/router.dart` 단일 진입.
-- **레이어 컨벤션**: features-first. `lib/features/<feature>/` 안에 widget + provider + repository를 co-locate. cross-feature 공유는 `lib/core/` (auth, domain models, env).
+- **레이어 컨벤션**: Clean Architecture. 각 피처 / `core/` 하위는 `data / domain / presentation` 3-레이어로 분리하고, 그 아래는 역할별 디렉토리 (`entities / repositories / exceptions / datasources / pages / widgets / providers` …)로 나눈다. cross-feature 공유는 `lib/core/` (피스 도메인은 여러 화면에서 쓰이므로 여기에 둠).
+- **DIP**: 도메인은 `repositories/` 아래 abstract 인터페이스만 둠. 데이터 레이어가 구현 + Riverpod provider를 노출하고, 프레젠테이션은 abstract 타입으로 받는다. 인터페이스 mock이 필요하기 전엔 fake provider override로 충분.
+- **Use case 클래스는 미도입**. Riverpod provider가 use case 역할을 하므로 trivial wrapper UseCase는 만들지 않는다. 도메인 규칙이 여러 provider에 걸쳐 흐트러질 때 도입을 재평가.
 
 현 스켈레톤:
 
@@ -57,11 +59,17 @@ lib/
 │   └── router.dart      # GoRouter + redirect 가드 (auth 기반)
 ├── core/
 │   ├── auth/            # session_provider.dart (@Riverpod, keepAlive)
-│   ├── domain/          # Piece 등 도메인 모델
-│   └── env/             # envied 기반 SUPABASE_URL/ANON_KEY (.env)
+│   ├── domain/
+│   │   ├── entities/        # Piece 등 도메인 엔티티 (프레임워크 free)
+│   │   ├── repositories/    # abstract Port (PieceRepository)
+│   │   └── exceptions/      # PieceAlreadyExistsToday 등 도메인 예외
+│   ├── data/
+│   │   ├── datasources/     # Supabase 호출만 하는 thin pipe
+│   │   └── repositories/    # *Impl + Riverpod provider, mapping/에러 변환
+│   └── env/                 # envied 기반 SUPABASE_URL/ANON_KEY (.env)
 └── features/
-    ├── auth/            # Sign in / Sign up (이메일+비밀번호, 구현됨)
-    ├── today/           # 오늘의 Piece 작성/조회 (구현됨, 실기 sweep 미완)
+    ├── auth/            # Sign in / Sign up (구현됨, CA 미분리 — 후속 정리)
+    ├── today/           # 아래 today/ 내부 구조 참고
     ├── collection/      # 타임라인 (stub)
     ├── piece_detail/    # Piece 상세 (stub)
     └── settings/        # 설정 (stub)
@@ -69,12 +77,22 @@ lib/
 
 ### today/ 내부 구조
 
-| 파일 | 역할 |
-|---|---|
-| `today_page.dart` | `todayPieceProvider`의 AsyncValue 분기 → loading / error / `_ComposeView` (null) / `_PieceView` (있음). 단일 화면 상태 머신. |
-| `today_piece_provider.dart` | `@riverpod` Future. `pieceRepository.getToday()` 위임. 저장 성공 후 `ref.refresh`로 invalidate해 view 모드로 전환. |
-| `piece_repository.dart` | Supabase wrapper. `getToday()` / `create({photoBytes, comment})` / `signedPhotoUrl(path)`. UNIQUE(user_id, date) 위반은 `PieceAlreadyExistsToday` 예외로 변환 + 고아 객체 best-effort 정리. |
-| `media_pipeline.dart` | ADR 0004 파이프라인 — `flutter_image_compress`로 1080px / q=80 / EXIF strip. |
+```
+features/today/
+├── data/
+│   └── media/
+│       └── media_pipeline.dart  # ADR 0004 — 1080px / JPEG q80 / EXIF strip
+└── presentation/
+    ├── pages/
+    │   └── today_page.dart      # AsyncValue 분기 → loading / error / Compose / View
+    ├── widgets/
+    │   ├── compose_view.dart    # Pick → preview → comment → save 상태머신
+    │   └── piece_view.dart      # 저장된 Piece read-only (signed URL FutureBuilder)
+    └── providers/
+        └── today_piece_provider.dart  # @riverpod Future<Piece?>, pieceRepository 위임
+```
+
+`PieceRepository`(abstract)와 `pieceRepositoryProvider`는 [`core/`](lib/core/) 아래 공유 — Today/Collection/PieceDetail이 같은 `pieces` 애그리거트를 다루므로 피처별 분산 대신 도메인 레이어로 끌어올렸다. 신규 도메인 작업(예: Collection 페이지네이션) 시 `core/data/datasources/` + `core/data/repositories/`에 메서드를 추가하고, 피처는 그 인터페이스만 의존한다.
 
 ---
 

@@ -5,133 +5,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../core/domain/piece.dart';
-import 'media_pipeline.dart';
-import 'piece_repository.dart';
-import 'today_piece_provider.dart';
-
-class TodayPage extends ConsumerWidget {
-  const TodayPage({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final colors = context.wdsColors;
-    final today = ref.watch(todayPieceProvider);
-    return Scaffold(
-      backgroundColor: colors.backgroundNormalNormal,
-      appBar: AppBar(title: const Text('Today')),
-      body: SafeArea(
-        child: today.when(
-          loading: () => const Center(child: WdsSpinner()),
-          error: (e, _) => _ErrorView(error: e, onRetry: () {
-            // ignore: unused_result
-            ref.refresh(todayPieceProvider);
-          }),
-          data: (piece) => piece == null
-              ? const _ComposeView()
-              : _PieceView(piece: piece),
-        ),
-      ),
-    );
-  }
-}
-
-class _ErrorView extends StatelessWidget {
-  const _ErrorView({required this.error, required this.onRetry});
-  final Object error;
-  final VoidCallback onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    final spacing = context.wdsSpacing;
-    return Center(
-      child: Padding(
-        padding: EdgeInsets.all(spacing.componentXl),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const WdsText('오늘의 Piece를 불러오지 못했어요.',
-                style: WdsTextStyle.headline2),
-            SizedBox(height: spacing.componentSm),
-            WdsText('$error',
-                style: WdsTextStyle.body2,
-                color: WdsTextColor.alternative),
-            SizedBox(height: spacing.componentXl),
-            WdsButton(onPressed: onRetry, child: const Text('다시 시도')),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// View mode — today's Piece already saved. Read-only for now (edit/delete is
-/// a follow-up flow).
-class _PieceView extends ConsumerStatefulWidget {
-  const _PieceView({required this.piece});
-  final Piece piece;
-
-  @override
-  ConsumerState<_PieceView> createState() => _PieceViewState();
-}
-
-class _PieceViewState extends ConsumerState<_PieceView> {
-  late Future<String> _signedUrl;
-
-  @override
-  void initState() {
-    super.initState();
-    _signedUrl = ref
-        .read(pieceRepositoryProvider)
-        .signedPhotoUrl(widget.piece.photoPath);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final spacing = context.wdsSpacing;
-    return Padding(
-      padding: EdgeInsets.all(spacing.componentXl),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          AspectRatio(
-            aspectRatio: 1,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: FutureBuilder<String>(
-                future: _signedUrl,
-                builder: (context, snap) {
-                  if (!snap.hasData) {
-                    return const Center(child: WdsSpinner());
-                  }
-                  return Image.network(snap.data!, fit: BoxFit.cover);
-                },
-              ),
-            ),
-          ),
-          SizedBox(height: spacing.componentLg),
-          WdsText(widget.piece.comment, style: WdsTextStyle.headline2),
-          SizedBox(height: spacing.componentSm),
-          const WdsText(
-            '오늘의 Piece는 이미 저장됐어요.',
-            style: WdsTextStyle.body2,
-            color: WdsTextColor.alternative,
-          ),
-        ],
-      ),
-    );
-  }
-}
+import '../../../../core/data/repositories/piece_repository_impl.dart';
+import '../../../../core/domain/entities/piece.dart';
+import '../../../../core/domain/exceptions/piece_exceptions.dart';
+import '../../data/media/media_pipeline.dart';
+import '../providers/today_piece_provider.dart';
 
 /// Compose mode — no Piece for today yet. Pick → preview → comment → save.
-class _ComposeView extends ConsumerStatefulWidget {
-  const _ComposeView();
+class ComposeView extends ConsumerStatefulWidget {
+  const ComposeView({super.key});
 
   @override
-  ConsumerState<_ComposeView> createState() => _ComposeViewState();
+  ConsumerState<ComposeView> createState() => _ComposeViewState();
 }
 
-class _ComposeViewState extends ConsumerState<_ComposeView> {
+class _ComposeViewState extends ConsumerState<ComposeView> {
   final _comment = TextEditingController();
   final _picker = ImagePicker();
   Uint8List? _photoBytes;

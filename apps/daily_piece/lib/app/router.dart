@@ -8,7 +8,7 @@ import '../features/auth/sign_up_page.dart';
 import '../features/collection/collection_page.dart';
 import '../features/piece_detail/piece_detail_page.dart';
 import '../features/settings/settings_page.dart';
-import '../features/today/today_page.dart';
+import '../features/today/presentation/pages/today_page.dart';
 
 const _authPaths = {'/sign-in', '/sign-up'};
 

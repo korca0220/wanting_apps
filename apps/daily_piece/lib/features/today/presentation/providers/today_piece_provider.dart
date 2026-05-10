@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../core/domain/piece.dart';
-import 'piece_repository.dart';
+import '../../../../core/data/repositories/piece_repository_impl.dart';
+import '../../../../core/domain/entities/piece.dart';
 
 part 'today_piece_provider.g.dart';
 

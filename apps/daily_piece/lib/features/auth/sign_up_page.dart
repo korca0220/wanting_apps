@@ -41,7 +41,10 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
       _error = null;
     });
     try {
-      final res = await Supabase.instance.client.auth.signUp(email: email, password: password);
+      final res = await Supabase.instance.client.auth.signUp(
+        email: email,
+        password: password,
+      );
       if (!mounted) return;
       if (res.session != null) {
         // Confirm email이 OFF인 프로젝트면 즉시 로그인 → router redirect.
@@ -98,7 +101,11 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
           invalid: _error != null,
         ),
         SizedBox(height: spacing.componentXl),
-        WdsButton(onPressed: _busy ? null : _submit, loading: _busy, child: const Text('가입하기')),
+        WdsButton(
+          onPressed: _busy ? null : _submit,
+          loading: _busy,
+          child: const Text('가입하기'),
+        ),
         SizedBox(height: spacing.componentMd),
         WdsButton(
           onPressed: _busy ? null : () => context.go('/sign-in'),
@@ -123,7 +130,10 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
           color: WdsTextColor.alternative,
         ),
         SizedBox(height: spacing.componentXl),
-        WdsButton(onPressed: () => context.go('/sign-in'), child: const Text('로그인 화면으로')),
+        WdsButton(
+          onPressed: () => context.go('/sign-in'),
+          child: const Text('로그인 화면으로'),
+        ),
       ],
     );
   }
