@@ -26,6 +26,18 @@ class _PieceViewState extends ConsumerState<PieceView> {
   }
 
   @override
+  void didUpdateWidget(PieceView old) {
+    super.didUpdateWidget(old);
+
+    // Provider invalidation pushes a fresh Piece in (e.g. after photo
+    // replace from the detail screen) — re-resolve the signed URL so the
+    // FutureBuilder doesn't keep showing the previous path's bytes.
+    if (old.piece.photoPath != widget.piece.photoPath) {
+      _signedUrl = ref.read(signedUrlCacheProvider).get(widget.piece.photoPath);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final spacing = context.wdsSpacing;
 

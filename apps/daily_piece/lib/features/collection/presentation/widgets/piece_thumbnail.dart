@@ -29,6 +29,18 @@ class _PieceThumbnailState extends ConsumerState<PieceThumbnail> {
   }
 
   @override
+  void didUpdateWidget(PieceThumbnail old) {
+    super.didUpdateWidget(old);
+
+    // Feed invalidation can swap the piece at this index (photo replace
+    // creates a new path). Without this, the tile keeps rendering the old
+    // signed URL because the Future was captured in initState.
+    if (old.piece.photoPath != widget.piece.photoPath) {
+      _signedUrl = ref.read(signedUrlCacheProvider).get(widget.piece.photoPath);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final colors = context.wdsColors;
 
