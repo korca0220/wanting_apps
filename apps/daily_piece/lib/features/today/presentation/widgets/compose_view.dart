@@ -125,6 +125,7 @@ class _ComposeViewState extends ConsumerState<ComposeView> {
             controller: _comment,
             label: '코멘트',
             placeholder: '오늘을 한 줄로 (최대 ${Piece.commentMaxLength}자)',
+            maxLength: Piece.commentMaxLength,
             disabled: _busy || !hasPhoto,
             errorText: _error,
             invalid: _error != null,

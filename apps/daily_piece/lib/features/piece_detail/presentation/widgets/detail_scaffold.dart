@@ -76,10 +76,6 @@ class _DetailScaffoldState extends ConsumerState<DetailScaffold> {
       setState(() => _error = '코멘트를 입력해주세요.');
       return;
     }
-    if (next.length > Piece.commentMaxLength) {
-      setState(() => _error = '코멘트는 ${Piece.commentMaxLength}자 이하여야 해요.');
-      return;
-    }
     if (next == widget.piece.comment) {
       _cancelEdit();
       return;
@@ -230,6 +226,7 @@ class _DetailScaffoldState extends ConsumerState<DetailScaffold> {
                   controller: _commentCtrl,
                   label: '코멘트',
                   placeholder: '오늘을 한 줄로 (최대 ${Piece.commentMaxLength}자)',
+                  maxLength: Piece.commentMaxLength,
                   disabled: _busy,
                   errorText: _error,
                   invalid: _error != null,

@@ -33,6 +33,7 @@ class WdsTextField extends StatefulWidget {
     this.textInputAction,
     this.maxLines = 1,
     this.minLines,
+    this.maxLength,
   });
 
   final TextEditingController? controller;
@@ -56,6 +57,11 @@ class WdsTextField extends StatefulWidget {
   final TextInputAction? textInputAction;
   final int? maxLines;
   final int? minLines;
+
+  /// Hard cap on character count. Flutter's default
+  /// [MaxLengthEnforcement.enforced] truncates further input and the built-in
+  /// "len/max" counter appears under the field.
+  final int? maxLength;
 
   @override
   State<WdsTextField> createState() => _WdsTextFieldState();
@@ -182,6 +188,7 @@ class _WdsTextFieldState extends State<WdsTextField> {
       textInputAction: widget.textInputAction,
       maxLines: widget.maxLines,
       minLines: widget.minLines,
+      maxLength: widget.maxLength,
       style: type.body1.copyWith(
         color: widget.disabled ? colors.labelDisable : colors.labelNormal,
       ),
