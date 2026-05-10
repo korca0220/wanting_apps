@@ -1,8 +1,8 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
+import '../../../new_piece/presentation/widgets/new_piece_sheet.dart';
 import '../providers/my_pieces_feed_provider.dart';
 import '../widgets/card_feed.dart';
 import '../widgets/empty_view.dart';
@@ -100,7 +100,7 @@ class _MyPiecesPageState extends ConsumerState<MyPiecesPage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push('/new-piece'),
+        onPressed: () => showNewPieceSheet(context),
         child: const Icon(Icons.add),
       ),
     );

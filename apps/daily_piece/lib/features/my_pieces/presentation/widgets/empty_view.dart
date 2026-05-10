@@ -1,6 +1,7 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+
+import '../../../new_piece/presentation/widgets/new_piece_sheet.dart';
 
 class EmptyView extends StatelessWidget {
   const EmptyView({super.key});
@@ -24,7 +25,7 @@ class EmptyView extends StatelessWidget {
             ),
             SizedBox(height: spacing.componentXl),
             WdsButton(
-              onPressed: () => context.push('/new-piece'),
+              onPressed: () => showNewPieceSheet(context),
               child: const Text('첫 Piece 만들기'),
             ),
           ],

@@ -10,7 +10,6 @@ import '../../../../core/data/media/photo_picker.dart';
 import '../../../../core/data/repositories/piece_repository_impl.dart';
 import '../../../../core/domain/entities/piece.dart';
 import '../../../my_pieces/presentation/providers/my_pieces_feed_provider.dart';
-import '../../../today/presentation/providers/today_piece_provider.dart';
 import '../providers/piece_by_id_provider.dart';
 
 /// Owns the full scaffold once a Piece is loaded — AppBar actions(edit/delete)
@@ -211,14 +210,11 @@ class _DetailScaffoldState extends ConsumerState<DetailScaffold> {
     }
   }
 
-  /// Fanout to the three providers that may be holding this Piece — by-id,
-  /// the timeline feed, and Today (if this Piece happens to be today's).
-  /// Cheap to over-invalidate; the alternative is per-call branching that
-  /// drifts as new screens land.
+  /// Fanout to providers that may be holding this Piece — by-id and the
+  /// My Pieces feed. Cheap to over-invalidate.
   void _invalidatePieceCaches() {
     ref.invalidate(pieceByIdProvider(widget.piece.id));
     ref.invalidate(myPiecesFeedProvider);
-    ref.invalidate(todayPieceProvider);
   }
 
   @override

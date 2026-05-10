@@ -10,7 +10,6 @@ import '../features/my_pieces/presentation/pages/my_pieces_page.dart';
 import '../features/piece_detail/presentation/pages/piece_detail_page.dart';
 import '../features/profile/presentation/pages/profile_page.dart';
 import '../features/search/presentation/pages/search_page.dart';
-import '../features/today/presentation/pages/today_page.dart';
 import 'shell/main_shell_page.dart';
 
 const _authPaths = {'/sign-in', '/sign-up'};
@@ -30,9 +29,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     routes: [
       GoRoute(path: '/sign-in', builder: (_, _) => const SignInPage()),
       GoRoute(path: '/sign-up', builder: (_, _) => const SignUpPage()),
-      // New Piece is a top-level modal route, not a tab — invoked via FAB on
-      // My Pieces. Step 3 of the renewal swaps the content for a bottom sheet.
-      GoRoute(path: '/new-piece', builder: (_, _) => const TodayPage()),
       // Bottom-nav shell. Each branch keeps its own navigator so deep links
       // into a tab (e.g. /my-pieces/:pieceId) keep their back stack when the
       // user switches tabs and comes back.
