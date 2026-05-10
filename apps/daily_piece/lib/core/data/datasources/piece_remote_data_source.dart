@@ -30,6 +30,10 @@ class PieceRemoteDataSource {
         .maybeSingle();
   }
 
+  Future<Map<String, dynamic>?> fetchRowById(String id) {
+    return _client.from('pieces').select().eq('id', id).maybeSingle();
+  }
+
   /// Keyset page on `(date desc)`. `beforeDate`, when supplied, is exclusive.
   Future<List<Map<String, dynamic>>> listRows({
     required String userId,

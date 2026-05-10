@@ -24,4 +24,8 @@ abstract class PieceRepository {
   /// exclusive cursor — pass the last item's `date` to fetch the next page.
   /// Empty list when nothing left or signed out.
   Future<List<Piece>> list({required int limit, DateTime? before});
+
+  /// One Piece by primary key, or `null` if the row doesn't exist or RLS
+  /// hides it (e.g. signed out, or the id belongs to another user).
+  Future<Piece?> getById(String id);
 }

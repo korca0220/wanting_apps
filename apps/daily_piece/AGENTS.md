@@ -212,7 +212,7 @@ python3 ../../../design-system-gen/skills/screen-spec-gen/scripts/validate_scree
 | Today: edit / delete | ❌ | view 모드는 read-only. UX 결정 후 추가 |
 | 카메라 캡처 | ❌ | 갤러리만. `ImageSource.camera` 추가 시 iOS `NSCameraUsageDescription` + Android `CAMERA` permission 필요 |
 | Collection 화면 | ✅ 코드, ❌ 실기 미검증 | `date desc` keyset 페이지네이션(30/페이지), 3열 그리드, 빈 상태 CTA, 썸네일은 1h signed URL — 화면 재진입 시 재발급 |
-| Piece detail 화면 | ❌ stub | tap navigates `/collection/:pieceId` from Collection grid |
+| Piece detail 화면 | ✅ 코드, ❌ 실기 미검증 | `/collection/:pieceId` (Collection 브랜치 nested). `pieceByIdProvider(family)` → 큰 사진 + 코멘트 + 날짜. row 없음(RLS/삭제) → "찾을 수 없어요" + 컬렉션 복귀 CTA |
 | Settings 화면 | ❌ stub | |
 | Bottom navigation (Today / Collection / Settings) | ✅ 코드, ❌ 실기 미검증 | `StatefulShellRoute.indexedStack`으로 3-탭. 각 브랜치 독립 navigator → 탭 전환 후 복귀 시 sub-route 백스택 유지 |
 | 위젯 테스트 | 🟡 router redirect 2개만 | feature 단위 테스트 추가 필요 |
@@ -223,9 +223,9 @@ Today/Collection 첫 컷은 **캐시 없이 Supabase 직결**. Riverpod이 watch
 
 ### 다음 합리적 단계 (권장 순서)
 
-1. **Collection + 바텀 내비 실기 sweep** — 탭 전환, 빈 상태 CTA `/today` 이동, 그리드 진입 → detail → 백 시 그리드 스크롤 위치 유지, 30+개에서 페이지네이션.
-2. **Piece detail 화면** (`/collection/:pieceId`) — 큰 사진 + 코멘트. 현재 stub. Collection 브랜치 내부 라우트라 detail에서 back 시 그리드로 자연 복귀.
-3. ADR 0005 — 1~2 돌려보고 통증(앱 재시작 깜박임 / 비행기모드 / signed URL 만료 등) 기반으로 결정.
+1. **풀 흐름 실기 sweep** — 가입 → Today 작성 → 컬렉션 탭 → 그리드 → 디테일 → 백 → 탭 전환 사이클. 30+ Piece에서 페이지네이션 + signed URL 만료(1h) 인내 확인.
+2. **ADR 0005** — 위 sweep에서 본 통증(앱 재시작 깜박임 / 비행기모드 저장 / signed URL 만료 / 그리드 깜박임 등)을 근거로 영속 캐시·재시도 큐 정책 결정.
+3. **Piece edit / delete** — 디테일 화면에 추가. UNIQUE(user_id, date) 제약 때문에 같은 날짜 안에서만 수정 가능. delete는 Storage 객체도 함께 정리 필요.
 
 ### 선택
 - **Supabase CLI 부트스트랩** — `supabase init/link/db pull`로 SQL-파일 기반 마이그레이션 관리. (현재는 MCP `apply_migration` + 수동 `supabase/migrations/*.sql` 보관 중.)

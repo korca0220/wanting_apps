@@ -71,6 +71,13 @@ class PieceRepositoryImpl implements PieceRepository {
   }
 
   @override
+  Future<Piece?> getById(String id) async {
+    final row = await _remote.fetchRowById(id);
+    if (row == null) return null;
+    return _mapRow(row);
+  }
+
+  @override
   Future<List<Piece>> list({required int limit, DateTime? before}) async {
     final userId = _remote.currentUserId;
     if (userId == null) return const [];
