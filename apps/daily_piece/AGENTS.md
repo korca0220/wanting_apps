@@ -42,27 +42,28 @@
 
 확정된 결정:
 
-- **상태관리 / DI**: Riverpod (`flutter_riverpod` + `riverpod_annotation`) — [ADR 0001](docs/adr/0001-state-management.md). DI는 Provider로 일원화 (별도 서비스 로케이터 없음).
+- **상태관리 / DI**: Riverpod (`flutter_riverpod` + `riverpod_annotation` codegen) — [ADR 0001](docs/adr/0001-state-management.md). 신규 provider는 `@Riverpod(...)` 함수/클래스로 작성. `riverpod_lint`가 `custom_lint` 플러그인으로 활성화돼 있어 forgot-to-watch / 누락된 keepAlive 등을 잡아준다.
 - **라우팅**: go_router — [ADR 0002](docs/adr/0002-routing.md). 라우터 정의는 `lib/app/router.dart` 단일 진입.
-- **레이어 컨벤션**: features-first. `lib/features/<feature>/` 안에 widget + provider + repository를 co-locate. cross-feature 공유는 `lib/core/` (auth, http client, domain models).
+- **레이어 컨벤션**: features-first. `lib/features/<feature>/` 안에 widget + provider + repository를 co-locate. cross-feature 공유는 `lib/core/` (auth, domain models, env).
 
-타깃 스켈레톤 (P1-#8에서 깔 예정):
+현 스켈레톤:
 
 ```
 lib/
-├── main.dart            # ProviderScope + MaterialApp.router
+├── main.dart            # ProviderScope + Supabase.initialize + MaterialApp.router
 ├── app/
 │   ├── app.dart         # MaterialApp.router widget
-│   └── router.dart      # GoRouter + redirect 가드
+│   └── router.dart      # GoRouter + redirect 가드 (auth 기반)
 ├── core/
-│   ├── auth/            # 인증 상태 Provider
-│   ├── domain/          # Piece, Collection 등 도메인 모델
-│   └── http/            # API 클라이언트 (백엔드 결정 후)
+│   ├── auth/            # session_provider.dart (@Riverpod, keepAlive)
+│   ├── domain/          # Piece 등 도메인 모델
+│   └── env/             # envied 기반 SUPABASE_URL/ANON_KEY (.env)
 └── features/
-    ├── today/           # 오늘의 Piece 작성
-    ├── collection/      # 타임라인
-    ├── piece_detail/    # Piece 상세
-    └── settings/
+    ├── auth/            # Sign in (현재 stub)
+    ├── today/           # 오늘의 Piece 작성 (현재 stub)
+    ├── collection/      # 타임라인 (현재 stub)
+    ├── piece_detail/    # Piece 상세 (현재 stub)
+    └── settings/        # 설정 (현재 stub)
 ```
 
 ---
@@ -78,7 +79,7 @@ lib/
 | 분석/크래시 리포팅 | TBD |
 | 푸시 알림 | TBD |
 
-> 비밀 키는 절대 `lib/`/docs에 두지 않는다. URL/anonKey는 `--dart-define` 또는 CI Secrets에서 주입.
+> 비밀 키는 절대 `lib/`/docs에 두지 않는다. `SUPABASE_URL` / `SUPABASE_ANON_KEY`는 `apps/daily_piece/.env` (gitignored) → `envied`가 obfuscate해 컴파일 타임 상수로 노출. 로컬: `cp .env.example .env` 후 값 채움 → `melos run gen`. CI: GitHub Secrets에서 `.env` 시드 후 codegen.
 
 ---
 
@@ -165,6 +166,27 @@ python3 ../../../design-system-gen/skills/screen-spec-gen/scripts/validate_scree
 3. **사진 필수** — Piece는 사진 없이 생성 불가.
 
 > 위 규칙은 `WdsTextField.maxLength`, 도메인 모델 validator, repository write 시점 검증 등 다층에서 강제한다.
+
+---
+
+## 🗺️ Roadmap
+
+세션 간 컨텍스트 유지를 위해 다음에 할 일을 여기에 둔다. 항목을 처리하면 같은 커밋에서 여기서도 지운다.
+
+### 다음 ADR 후보
+- **ADR 0004 — 미디어 클라이언트 정책**: image_picker로 픽 → 1080p 리사이즈 → JPEG q=80 → EXIF 제거 → Supabase Storage 업로드. Storage 1GB 한도 안에서 오래 가도록.
+- **ADR 0005 — 오프라인 캐시**: drift / Hive / in-memory 결정. Today 화면 저장 실패 시 재시도 큐 + Collection 타임라인 캐시.
+
+### Today 흐름 실구현 (stub → 완성)
+1. **Sign in / Sign up 화면** — 이메일+비밀번호. `supabase_flutter`의 `auth.signInWithPassword` / `signUp`. error 매핑.
+2. **사진 선택** — `image_picker` 추가 후 카메라/갤러리.
+3. **코멘트 입력** — `WdsTextField(maxLength: 50)`.
+4. **리사이즈/압축** — ADR 0004 결정대로.
+5. **Storage 업로드** — `client.storage.from('pieces').upload('{uid}/{pieceId}.jpg', file)` → `photo_path` 획득.
+6. **`pieces` INSERT** — UNIQUE(user_id, date) 위반 catch → "오늘 이미 있음" UX (수정 화면으로 유도).
+
+### 선택
+- **Supabase CLI 부트스트랩** — `supabase init/link/db pull`로 SQL-파일 기반 마이그레이션 관리. (현재는 MCP `apply_migration` + 수동 `supabase/migrations/*.sql` 보관 중.)
 
 ---
 
