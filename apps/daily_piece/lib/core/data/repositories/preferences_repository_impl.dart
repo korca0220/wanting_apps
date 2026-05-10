@@ -22,33 +22,14 @@ class PreferencesRepositoryImpl implements PreferencesRepository {
   ThemeMode getThemeMode() {
     final stored = _local.getString(_themeModeKey);
 
-    return _decodeThemeMode(stored);
+    return ThemeMode.values.firstWhere(
+      (m) => m.name == stored,
+      orElse: () => ThemeMode.system,
+    );
   }
 
   @override
   Future<void> setThemeMode(ThemeMode mode) {
-    return _local.setString(_themeModeKey, _encodeThemeMode(mode));
-  }
-}
-
-ThemeMode _decodeThemeMode(String? s) {
-  switch (s) {
-    case 'light':
-      return ThemeMode.light;
-    case 'dark':
-      return ThemeMode.dark;
-    default:
-      return ThemeMode.system;
-  }
-}
-
-String _encodeThemeMode(ThemeMode mode) {
-  switch (mode) {
-    case ThemeMode.light:
-      return 'light';
-    case ThemeMode.dark:
-      return 'dark';
-    case ThemeMode.system:
-      return 'system';
+    return _local.setString(_themeModeKey, mode.name);
   }
 }

@@ -172,6 +172,9 @@ class _DetailScaffoldState extends ConsumerState<DetailScaffold> {
   Widget build(BuildContext context) {
     final colors = context.wdsColors;
     final spacing = context.wdsSpacing;
+    final d = widget.piece.date;
+    final dateLabel =
+        '${d.year.toString().padLeft(4, '0')}. ${d.month.toString().padLeft(2, '0')}. ${d.day.toString().padLeft(2, '0')}';
 
     return Scaffold(
       backgroundColor: colors.backgroundNormalNormal,
@@ -235,7 +238,7 @@ class _DetailScaffoldState extends ConsumerState<DetailScaffold> {
                 WdsText(widget.piece.comment, style: WdsTextStyle.headline2),
               SizedBox(height: spacing.componentSm),
               WdsText(
-                _formatDate(widget.piece.date),
+                dateLabel,
                 style: WdsTextStyle.body2,
                 color: WdsTextColor.alternative,
               ),
@@ -254,12 +257,4 @@ class _DetailScaffoldState extends ConsumerState<DetailScaffold> {
       ),
     );
   }
-}
-
-String _formatDate(DateTime d) {
-  final y = d.year.toString().padLeft(4, '0');
-  final m = d.month.toString().padLeft(2, '0');
-  final day = d.day.toString().padLeft(2, '0');
-
-  return '$y. $m. $day';
 }
