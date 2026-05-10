@@ -1,6 +1,6 @@
 import 'package:daily_piece/app/app.dart';
 import 'package:daily_piece/core/auth/session_provider.dart';
-import 'package:daily_piece/core/theme/theme_mode_provider.dart';
+import 'package:daily_piece/core/data/datasources/preferences_local_data_source.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
