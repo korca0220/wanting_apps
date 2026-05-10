@@ -6,6 +6,7 @@ source:
   type: figma
   url: https://www.figma.com/design/ThGKok9Zm1OzXpsKTyo7hN/DailyPiece
   node_id: "2:513 (혼합 frame)"
+  link: https://www.figma.com/design/ThGKok9Zm1OzXpsKTyo7hN/DailyPiece?node-id=2-760&t=2SsB9yTpe6fjdj7N-4
 viewport:
   primary: mobile
   responsive: [mobile]
@@ -14,6 +15,7 @@ viewport:
 # Screen: Create Account
 
 ## 개요
+
 신규 사용자 가입 폼. 이름(선택) / 이메일 / 비밀번호(8자 이상) / 비밀번호 확인. 헤더 "Create Account" + 부제 "Start your daily photo journal".
 
 > ⚠️ 추정 명세 (node 2:513 frame 안의 sub-screen).
@@ -68,16 +70,19 @@ Page (viewport: mobile, 375×840, 스크롤)
 ### Region: Header
 
 #### Layout 토큰
+
 - container-padding: `spacing/24`
 - gap: `spacing/8`
 - align: `center`
 
 **Slot: title**
+
 - text-variant: `text/title2`
 - color: `color/label/strong`
 - content: `Create Account`
 
 **Slot: subtitle**
+
 - text-variant: `text/body2`
 - color: `color/label/alternative`
 - content: `Start your daily photo journal`
@@ -85,17 +90,20 @@ Page (viewport: mobile, 375×840, 스크롤)
 ### Region: Content (form)
 
 #### Layout 토큰
+
 - container-padding: `spacing/16`
 - field-gap: `spacing/16`
 
 #### Section: NameField
 
 **Slot: label**
+
 - text-variant: `text/label1`
 - color: `color/label/normal`
 - content: `Name (Optional)`
 
 **Slot: input**
+
 - ref: `design_system/docs/components/02-text-field.md`
 - placeholder: `Enter your name`
 - value: `{{form.name}}`
@@ -104,24 +112,28 @@ Page (viewport: mobile, 375×840, 스크롤)
 #### Section: EmailField
 
 **Slot: label**
+
 - content: `Email`
 - text-variant: `text/label1`
 
 **Slot: input**
+
 - ref: `design_system/docs/components/02-text-field.md`
 - placeholder: `your@email.com`
 - value: `{{form.email}}`
-- type: `email`  # 가상 키보드 힌트
+- type: `email` # 가상 키보드 힌트
 - invalid: `{{form.errors.email != null}}`
 - on-change: `state: form.email = $value, validate: form.email`
 
 #### Section: PasswordField
 
 **Slot: label**
+
 - content: `Password`
 - text-variant: `text/label1`
 
 **Slot: input**
+
 - ref: `design_system/docs/components/02-text-field.md`
 - placeholder: ``
 - type: `password`
@@ -131,6 +143,7 @@ Page (viewport: mobile, 375×840, 스크롤)
 - on-change: `state: form.password = $value`
 
 **Slot: helperText**
+
 - text-variant: `text/caption1`
 - color: `{{form.errors.password ? color/status/negative : color/label/alternative}}`
 - content: `Minimum 8 characters`
@@ -138,9 +151,11 @@ Page (viewport: mobile, 375×840, 스크롤)
 #### Section: ConfirmPasswordField
 
 **Slot: label**
+
 - content: `Confirm Password`
 
 **Slot: input**
+
 - ref: `design_system/docs/components/02-text-field.md`
 - placeholder: `Re-enter your password`
 - type: `password`
@@ -151,10 +166,12 @@ Page (viewport: mobile, 375×840, 스크롤)
 ### Region: Footer
 
 #### Layout 토큰
+
 - container-padding: `spacing/16`
 - gap: `spacing/12`
 
 **Slot: createButton**
+
 - ref: `design_system/docs/components/01-button.md`
 - variant: `solid`
 - color: `primary`
@@ -166,6 +183,7 @@ Page (viewport: mobile, 375×840, 스크롤)
 - on-tap: `api: POST /auth/signup (form) → state: auth.user → screen-flow → 06-home.md`
 
 **Slot: signInLink**
+
 - text-variant: `text/label2`
 - color: `color/primary/normal`
 - align: `center`
@@ -177,9 +195,11 @@ Page (viewport: mobile, 375×840, 스크롤)
 ## 3. Intent
 
 ### 사용자 의도
+
 신규 가입 — 빠르고 마찰 적은 폼. 4개 필드(이름은 선택)로 30초 내 가입 완료.
 
 ### 진입 / 이탈
+
 - **진입**: 앱 첫 실행 (미인증) / Welcome Back 화면의 "Create Account" 링크
 - **이탈**:
   - Submit 성공 → 06-home.md
@@ -187,11 +207,13 @@ Page (viewport: mobile, 375×840, 스크롤)
   - 시스템 백 → 폼 dirty면 confirm
 
 ### 핵심 액션 우선순위
+
 1. **Create Account** (제출)
 2. 이메일/비밀번호 입력
 3. Sign In 링크 (이미 계정 있음)
 
 ### 접근성
+
 - **포커스 순서**: title → subtitle → name → email → password → confirmPassword → Create button → Sign In link
 - **폼 라벨 연결**: 모든 입력에 `<label htmlFor>` (Label 컴포넌트 사용)
 - **PasswordVisibilityToggle**: aria-label "비밀번호 보기 토글"
@@ -199,6 +221,7 @@ Page (viewport: mobile, 375×840, 스크롤)
 - **터치 타겟**: 입력 필드 ≥ 48px 높이
 
 ### Reactive Behavior
+
 - **로딩**: 폼은 정적 즉시 표시
 - **제출 중**: createButton loading=true, 모든 필드 disabled
 - **유효성 실패**: 해당 필드 invalid=true (status/negative 보더), helperText 색 변경, errors.email 등에 메시지
@@ -208,6 +231,7 @@ Page (viewport: mobile, 375×840, 스크롤)
 ---
 
 ## 검증 체크리스트
+
 - [x] 위계 / Slot 종결 / Bindings Semantic
 - [x] 폼 유효성 / 보안(passwordToggle) 명시
 - [ ] PasswordVisibilityToggle은 wanted DS에 없음 — IconButton 합성으로 표현 가능

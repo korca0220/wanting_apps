@@ -1,11 +1,12 @@
 ---
-name: My Pieces
+name: Search
 extends: design_system
 imports: []
 source:
   type: figma
   url: https://www.figma.com/design/ThGKok9Zm1OzXpsKTyo7hN/DailyPiece
   node_id: "2:126"
+  link: https://www.figma.com/design/ThGKok9Zm1OzXpsKTyo7hN/DailyPiece?node-id=2-126&t=2SsB9yTpe6fjdj7N-4
 viewport:
   primary: mobile
   responsive: [mobile]
@@ -14,6 +15,7 @@ viewport:
 # Screen: My Pieces
 
 ## 개요
+
 사용자의 일별 한 조각(daily piece) 콘텐츠를 시간순으로 보여주는 메인 피드. 상단에 검색 입력 + 월별 필터 칩, 본문에 콘텐츠 카드 리스트, 하단 BottomNav. 앱의 첫 진입 화면.
 
 > ⚠️ sparse metadata 기반 시범 명세.
@@ -52,12 +54,14 @@ Page (viewport: mobile, 375×840)
 ### Region: Header
 
 #### Layout 토큰
+
 - container-padding: `spacing/16`
 - gap: `spacing/12`
 
 #### Section: SearchBar
 
 **Slot: searchInput**
+
 - ref: `design_system/docs/components/02-text-field.md`
 - placeholder: `Search captions...`
 - leadingContent: `icon: search`
@@ -66,6 +70,7 @@ Page (viewport: mobile, 375×840)
 #### Section: MonthFilter
 
 **Slot: filterChips** (반복: months)
+
 - ref: `design_system/docs/components/04-chip.md`
 - variant: `solid`
 - size: `medium`
@@ -75,6 +80,7 @@ Page (viewport: mobile, 375×840)
   - on-tap: `state: selectedMonth = item.value → filter(pieces)`
 
 데이터:
+
 ```
 [
   { label: All,      value: "all" },
@@ -87,6 +93,7 @@ Page (viewport: mobile, 375×840)
 ### Region: Content
 
 #### Layout 토큰
+
 - container-padding: `spacing/16`
 - card-gap: `spacing/12`
 
@@ -104,6 +111,7 @@ Page (viewport: mobile, 375×840)
   - on-tap: `screen-flow → 05-piece-details.md (pieceId: piece.id)`
 
 데이터 예시:
+
 ```
 [
   { id: 1, caption: "Beautiful sunset over the mountains today", date: "2026-03-01", imageUrl: "..." },
@@ -122,24 +130,29 @@ Page (viewport: mobile, 375×840)
 ## 3. Intent
 
 ### 사용자 의도
+
 사용자는 자신이 그동안 기록한 daily piece들을 빠르게 훑고, 특정 항목을 탭해 상세를 보거나 텍스트/월로 빠르게 필터링한다.
 
 ### 진입 / 이탈
+
 - **진입**: 앱 시작 시 첫 화면 / BottomNav의 My Pieces 탭
 - **이탈**: 카드 탭 → Piece Details / SearchBar 입력 → 결과 필터링 (현재 화면 유지) / 월 칩 → 필터링 / BottomNav 탭
 
 ### 핵심 액션 우선순위
+
 1. 카드 탭 (콘텐츠 상세 진입)
 2. 검색 (캡션 텍스트 검색)
 3. 월별 필터 (시간 범위 좁히기)
 
 ### 접근성
+
 - **포커스 순서**: SearchBar → 첫 month chip → ... → 마지막 chip → 첫 card → ... → BottomNav 4 items
 - **스크린리더 의도**: "내 조각들. 검색 입력. 월 필터. 카드 N개." 위계대로
 - **터치 타겟**: 카드 행 전체 ≥ 44px 높이. chip 크기 medium 권장.
 - **카드 alt**: 썸네일은 `alt: caption + date`로 의미 부여.
 
 ### Reactive Behavior
+
 - **로딩**: 카드 영역에 Skeleton(rectangle thumbnail + 2 text lines) × 4 표시
 - **빈 상태**: `<FallbackView>` (caption: "아직 저장된 조각이 없어요" + 액션 버튼: "첫 Piece 만들기" → 07-new-piece.md)
 - **검색 결과 없음**: `<FallbackView>` ("'{query}'에 대한 결과 없음")
@@ -148,5 +161,10 @@ Page (viewport: mobile, 375×840)
 ---
 
 ## 검증 체크리스트
+
 - [x] frontmatter / 5단계 위계 / Slot→Component 종결 / 토큰 Semantic 사용
 - [ ] 일부 영역(SearchBar의 leadingContent icon)은 wanted 아이콘 시스템에 매핑 필요
+
+## Figma
+
+https://www.figma.com/design/ThGKok9Zm1OzXpsKTyo7hN/DailyPiece?node-id=2-513&t=2SsB9yTpe6fjdj7N-4

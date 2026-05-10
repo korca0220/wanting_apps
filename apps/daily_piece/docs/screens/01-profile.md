@@ -6,6 +6,7 @@ source:
   type: figma
   url: https://www.figma.com/design/ThGKok9Zm1OzXpsKTyo7hN/DailyPiece
   node_id: 2:4
+  link: https://www.figma.com/design/ThGKok9Zm1OzXpsKTyo7hN/DailyPiece?node-id=2-4&t=2SsB9yTpe6fjdj7N-4
 viewport:
   primary: mobile
   responsive: [mobile]
@@ -14,6 +15,7 @@ viewport:
 # Screen: Profile
 
 ## 개요
+
 사용자 본인의 프로필을 확인하고, 데이터 내보내기·테마·계정 관리(로그아웃·삭제)를 수행하는 설정 화면. DailyPiece v1.0.0의 4개 메인 탭 중 하나.
 
 > ⚠️ **본 명세는 sparse metadata 기반의 시범 작성**입니다. Figma `get_design_context` 응답이 응답 크기 한도로 잘려 (a) 정확한 색상 매핑은 추정값, (b) 일부 슬롯의 실제 컴포넌트 형태는 wds 카탈로그와의 휴리스틱 매칭. 정확도를 위해선 sub-layer별 추가 콜 필요.
@@ -75,12 +77,14 @@ Page (viewport: mobile, 375×918)
 #### Section: TopBar
 
 **Slot: title**
+
 - ref: `design_system/docs/components/16-label.md`
 - text-variant: `text/heading2`
 - color: `color/label/normal`
 - content: `Profile`
 
 #### Layout 토큰 (TopBar)
+
 - height: 65 (Figma 추정 — 검수 필요)
 - padding-x: `spacing/16`
 
@@ -89,6 +93,7 @@ Page (viewport: mobile, 375×918)
 ### Region: Content
 
 #### Layout 토큰 (Content)
+
 - container-padding: `spacing/24`
 - region-gap: `spacing/24`
 - section-gap: `spacing/16`
@@ -96,6 +101,7 @@ Page (viewport: mobile, 375×918)
 #### Section: ProfileHeader
 
 **Slot: avatar**
+
 - ref: `design_system/docs/components/15-avatar.md`
 - variant: `person`
 - size: `xlarge` (~80px)
@@ -103,24 +109,29 @@ Page (viewport: mobile, 375×918)
 - alt: `{{user.name}}`
 
 **Slot: name**
+
 - ref: `design_system/docs/components/16-label.md`
 - text-variant: `text/heading2`
 - color: `color/label/normal`
 - content: `{{user.name}}` (예: "Sarah Johnson")
 
 **Slot: email**
+
 - ref: `design_system/docs/components/16-label.md`
 - text-variant: `text/body2`
 - color: `color/label/alternative`
 - content: `{{user.email}}`
 
 ##### Section: MemberSince
+
 **Slot: caption**
+
 - text-variant: `text/label2`
 - color: `color/label/alternative`
 - content: `Member since`
 
 **Slot: value**
+
 - text-variant: `text/label1`
 - color: `color/label/normal`
 - content: `{{user.joinedAt | format("MMMM yyyy")}}` (예: "January 2026")
@@ -128,12 +139,14 @@ Page (viewport: mobile, 375×918)
 #### Section: SettingsGroup
 
 **Slot: groupTitle**
+
 - ref: `design_system/docs/components/16-label.md`
 - text-variant: `text/label1`
 - color: `color/label/alternative`
 - content: `Settings`
 
 **Slot: divider**
+
 - ref: `design_system/docs/components/17-divider.md`
 - color: `color/line/normal/neutral`
 - thickness: `1px`
@@ -145,6 +158,7 @@ Page (viewport: mobile, 375×918)
 - on-tap: `api: GET /export → state: downloading=true`
 
 ListItem 슬롯 바인딩:
+
 - **leading**: (없음)
 - **content title**: `Export Data` (text/body1, color/label/normal)
 - **content caption**: `Download your archive` (text/label2, color/label/alternative)
@@ -156,6 +170,7 @@ ListItem 슬롯 바인딩:
 - variant: `with-control`
 
 ListItem 슬롯 바인딩:
+
 - **leading**: (없음)
 - **content title**: `App Theme`
 - **content caption**: `Dark Mode (locked)` (현재 화면에서 잠긴 상태)
@@ -165,11 +180,13 @@ ListItem 슬롯 바인딩:
 #### Section: AccountGroup
 
 **Slot: groupTitle**
+
 - text-variant: `text/label1`
 - color: `color/label/alternative`
 - content: `Account`
 
 **Slot: signOutButton**
+
 - ref: `design_system/docs/components/01-button.md`
 - variant: `outlined`
 - color: `assistive`
@@ -179,9 +196,10 @@ ListItem 슬롯 바인딩:
 - on-tap: `api: POST /auth/signout → screen-flow → app-init`
 
 **Slot: deleteButton**
+
 - ref: `design_system/docs/components/01-button.md`
 - variant: `outlined`
-- color: `assistive`             # 시각적 secondary, 위험 인지는 Alert 다이얼로그에서 처리
+- color: `assistive` # 시각적 secondary, 위험 인지는 Alert 다이얼로그에서 처리
 - size: `medium`
 - fullWidth: `true`
 - content: `Delete Account`
@@ -191,6 +209,7 @@ ListItem 슬롯 바인딩:
 #### Section: VersionFooter
 
 **Slot: version**
+
 - text-variant: `text/caption1`
 - color: `color/label/assistive`
 - content: `DailyPiece v1.0.0`
@@ -205,6 +224,7 @@ ListItem 슬롯 바인딩:
 #### (반복) items × 4
 
 각 아이템 (My Pieces / Calendar / Search / Profile):
+
 - bindings (per item, BottomNavigationItem 슬롯):
   - icon: `{{item.icon}}`
   - activeIcon: `{{item.activeIcon}}`
@@ -214,6 +234,7 @@ ListItem 슬롯 바인딩:
   - on-tap: `screen-flow → {{item.route}}`
 
 데이터:
+
 ```
 [
   { icon: 'image-stack',  activeIcon: 'image-stack-fill', label: 'My Pieces', route: 'my-pieces' },
@@ -228,9 +249,11 @@ ListItem 슬롯 바인딩:
 ## 3. Intent (의도 / 접근성 / 플로우)
 
 ### 사용자 의도
+
 사용자는 본인 정보를 확인하고, 앱 데이터 내보내기·테마·로그아웃 등 **빈번하지 않지만 중요한** 계정 액션을 수행한다. 단순 정보 확인보다 작업 트리거 화면.
 
 ### 진입 / 이탈
+
 - **진입**: BottomNav의 Profile 탭 클릭
 - **이탈**:
   - Export Data 트리거 → 인앱 다운로드 (현재 화면 유지)
@@ -239,12 +262,14 @@ ListItem 슬롯 바인딩:
   - 다른 BottomNav 탭 → 해당 화면으로 전이
 
 ### 핵심 액션 우선순위
+
 1. **Export Data** (정상 사용자가 가장 자주 트리거)
 2. **App Theme 토글** (테마는 본 버전에서 잠겼으나 향후 활성)
 3. **Sign Out** (계정 보호)
 4. **Delete Account** (가장 위험 — 시각적으로 강조하지 않고 Account 그룹 하단에 배치)
 
 ### 접근성
+
 - **포커스 순서**: Header title → ProfileHeader (avatar→name→email) → SettingsGroup (Export → Theme switch) → AccountGroup (SignOut → Delete) → BottomNav 4 items
 - **스크린리더 의도**: "프로필 화면. {사용자 이름}. {이메일}. 가입일 {날짜}. 설정과 계정 관리." 같이 위계 그대로 읽힘
 - **터치 타겟**: 모든 인터랙티브 요소 ≥ 44×44px. ExportRow의 chevron 트리거는 행 전체를 터치 영역으로.
@@ -252,6 +277,7 @@ ListItem 슬롯 바인딩:
 - **Delete Account 보호**: Alert 다이얼로그(negative variant)에서 outsideClick 닫기 비활성 권장.
 
 ### Reactive Behavior
+
 - **데이터 로딩 중**: ProfileHeader 영역에 Skeleton(circle 80px + text 2줄) 사용. SettingsGroup/AccountGroup은 정적이라 즉시 렌더 가능.
 - **빈 상태**: 해당 없음 (Profile은 항상 데이터 있음. 로그아웃 상태는 별도 인증 화면).
 - **에러**:
@@ -262,6 +288,7 @@ ListItem 슬롯 바인딩:
 ---
 
 ## 검증 체크리스트
+
 - [x] frontmatter 채워짐 (extends=wanted)
 - [x] Skeleton 5단계 위계 준수
 - [x] 모든 Slot이 component 또는 `<Custom>`로 끝남
