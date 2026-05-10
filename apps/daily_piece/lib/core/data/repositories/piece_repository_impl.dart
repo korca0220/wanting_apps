@@ -69,6 +69,18 @@ class PieceRepositoryImpl implements PieceRepository {
   Future<String> signedPhotoUrl(String path, {int expiresInSeconds = 3600}) {
     return _remote.createSignedUrl(path, expiresInSeconds);
   }
+
+  @override
+  Future<List<Piece>> list({required int limit, DateTime? before}) async {
+    final userId = _remote.currentUserId;
+    if (userId == null) return const [];
+    final rows = await _remote.listRows(
+      userId: userId,
+      limit: limit,
+      beforeDate: before == null ? null : _localDateString(before),
+    );
+    return rows.map(_mapRow).toList(growable: false);
+  }
 }
 
 Piece _mapRow(Map<String, dynamic> row) {

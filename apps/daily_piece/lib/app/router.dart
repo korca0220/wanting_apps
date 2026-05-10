@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../core/auth/session_provider.dart';
 import '../features/auth/sign_in_page.dart';
 import '../features/auth/sign_up_page.dart';
-import '../features/collection/collection_page.dart';
+import '../features/collection/presentation/pages/collection_page.dart';
 import '../features/piece_detail/piece_detail_page.dart';
 import '../features/settings/settings_page.dart';
 import '../features/today/presentation/pages/today_page.dart';

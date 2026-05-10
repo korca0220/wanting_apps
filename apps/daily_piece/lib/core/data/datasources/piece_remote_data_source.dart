@@ -30,6 +30,20 @@ class PieceRemoteDataSource {
         .maybeSingle();
   }
 
+  /// Keyset page on `(date desc)`. `beforeDate`, when supplied, is exclusive.
+  Future<List<Map<String, dynamic>>> listRows({
+    required String userId,
+    required int limit,
+    String? beforeDate,
+  }) async {
+    var query = _client.from('pieces').select().eq('user_id', userId);
+    if (beforeDate != null) {
+      query = query.lt('date', beforeDate);
+    }
+    final rows = await query.order('date', ascending: false).limit(limit);
+    return List<Map<String, dynamic>>.from(rows);
+  }
+
   Future<void> uploadPhoto(String path, Uint8List bytes) {
     return _client.storage
         .from('pieces')

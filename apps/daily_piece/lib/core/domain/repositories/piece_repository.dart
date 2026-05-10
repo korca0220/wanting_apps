@@ -19,4 +19,9 @@ abstract class PieceRepository {
 
   /// Short-lived signed URL for displaying a private Piece photo.
   Future<String> signedPhotoUrl(String path, {int expiresInSeconds = 3600});
+
+  /// Page of the signed-in user's Pieces, ordered `date desc`. `before` is an
+  /// exclusive cursor — pass the last item's `date` to fetch the next page.
+  /// Empty list when nothing left or signed out.
+  Future<List<Piece>> list({required int limit, DateTime? before});
 }

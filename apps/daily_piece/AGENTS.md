@@ -207,14 +207,14 @@ python3 ../../../design-system-gen/skills/screen-spec-gen/scripts/validate_scree
 | `pieces` 테이블 + RLS | ✅ | [`supabase/migrations/0001`](supabase/migrations/0001_create_pieces_table.sql). MCP로 dev 프로젝트에 적용됨 |
 | `pieces` Storage bucket + policies | ✅ | [`supabase/migrations/0002`](supabase/migrations/0002_create_pieces_bucket.sql). private, owner-only |
 | Sign in / Sign up | ✅ 코드, 🟡 실기 sweep 완료 (가입 → /today 도달 확인) | view 모드 (이메일 입력 + 비밀번호 + 에러 inline). Confirm email 분기 양쪽 코드만 검증 |
-| Today: 작성 흐름 (compose) | ✅ 코드, ❌ 실기 미검증 | pick → compress → upload → INSERT. iOS 권한 다이얼로그 / 압축 결과 / Storage 업로드 결과 / view 모드 전환 모두 직접 sweep 필요 |
-| Today: 조회 (view 모드) | ✅ 코드, ❌ 실기 미검증 | signed URL 이미지 로드 |
+| Today: 작성 흐름 (compose) | ✅ 코드, ✅ 실기 sweep 통과 | pick → compress → upload → INSERT |
+| Today: 조회 (view 모드) | ✅ 코드, ✅ 실기 sweep 통과 | signed URL 이미지 로드 |
 | Today: edit / delete | ❌ | view 모드는 read-only. UX 결정 후 추가 |
 | 카메라 캡처 | ❌ | 갤러리만. `ImageSource.camera` 추가 시 iOS `NSCameraUsageDescription` + Android `CAMERA` permission 필요 |
-| Collection 화면 | ❌ stub | 페이지네이션 + 썸네일 그리드 |
-| Piece detail 화면 | ❌ stub | |
+| Collection 화면 | ✅ 코드, ❌ 실기 미검증 | `date desc` keyset 페이지네이션(30/페이지), 3열 그리드, 빈 상태 CTA, 썸네일은 1h signed URL — 화면 재진입 시 재발급 |
+| Piece detail 화면 | ❌ stub | tap navigates `/collection/:pieceId` from Collection grid |
 | Settings 화면 | ❌ stub | |
-| Bottom navigation (Today ↔ Collection) | ❌ | DS의 `WdsBottomNavigation` 사용 가능 |
+| Bottom navigation (Today ↔ Collection) | ❌ | DS의 `WdsBottomNavigation` 사용 가능. 현재는 라우트만 존재, 화면 간 이동은 deep link뿐 |
 | 위젯 테스트 | 🟡 router redirect 2개만 | feature 단위 테스트 추가 필요 |
 | ADR 0005 (영속 캐시 / 재시도 큐) | ❌ deferred | **데이터 레이어 임시 정책** 참고 |
 
@@ -223,11 +223,10 @@ Today/Collection 첫 컷은 **캐시 없이 Supabase 직결**. Riverpod이 watch
 
 ### 다음 합리적 단계 (권장 순서)
 
-1. **Today 흐름 실기 sweep** (`melos run run:dp` → 사진 픽 → 저장 → view 모드 → 앱 재시작 시에도 view 모드 유지). 깨지는 지점 발견 시 그 자리에서 수정.
-2. **Collection 화면 실구현** — 페이지네이션 (`pieces` 테이블 `created_at` 또는 `date` desc로 keyset/range). 썸네일은 signed URL 캐싱 정책 결정 필요 (signed URL 1h만 → screen 재진입 시 재발급).
-3. **WdsBottomNavigation으로 Today ↔ Collection 전환** + 라우트 연결.
-4. **Piece detail 화면** (`/collection/:pieceId`) — 큰 사진 + 코멘트.
-5. ADR 0005 — 1~4 돌려보고 통증 기반으로 결정.
+1. **Collection 실기 sweep** — Today에서 만든 Piece가 그리드에 보이는지, 30+개 만들었을 때 페이지네이션 트리거가 자연스러운지, 빈 상태 CTA에서 `/today` 이동되는지.
+2. **WdsBottomNavigation으로 Today ↔ Collection 전환** + 라우트 연결. 현재 Collection은 deep link/empty CTA로만 도달 가능.
+3. **Piece detail 화면** (`/collection/:pieceId`) — Collection 탭에서 그리드 진입 시 디테일. 큰 사진 + 코멘트 + (이후) edit/delete.
+4. ADR 0005 — 1~3 돌려보고 통증 기반으로 결정.
 
 ### 선택
 - **Supabase CLI 부트스트랩** — `supabase init/link/db pull`로 SQL-파일 기반 마이그레이션 관리. (현재는 MCP `apply_migration` + 수동 `supabase/migrations/*.sql` 보관 중.)
