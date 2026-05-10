@@ -3,8 +3,7 @@
 ## 📊 현재 상태
 
 - ✅ Documented: **11 / 11**
-- ⚠️ 정밀 재명세 완료: **9** — 01 Profile · 03 Calendar · 04 Edit Piece · 05 Piece Details · 06 My Pieces · 07 New Piece · 08 Create Account · 09 Welcome Back · 11 Welcome
-- 🟡 정밀 재명세 보류: **2** — 02 Search · 10 Reset Password (다음 스크린샷 또는 Figma 한도 회복 대기)
+- ⚠️ 정밀 재명세 완료: **11/11** — 모든 화면 스크린샷 기반 정밀 명세 완료 ✅
 
 > **명세 vs 구현**: 본 명세는 **풀 디자인 타깃**. 현재 구현은 MVP 부분집합이다 — 매핑은 [`MVP 구현 매핑`](#mvp-구현-매핑) 섹션 참고. 명세는 그대로 두고, 구현이 따라잡으면 매핑 표를 갱신한다.
 
