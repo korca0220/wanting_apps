@@ -3,145 +3,35 @@ name: My Pieces
 extends: design_system
 imports: []
 source:
-  type: figma
-  url: https://www.figma.com/design/ThGKok9Zm1OzXpsKTyo7hN/DailyPiece
-  node_id: "2:513 (혼합 frame)"
-  link: https://www.figma.com/design/ThGKok9Zm1OzXpsKTyo7hN/DailyPiece?node-id=2-513&t=2SsB9yTpe6fjdj7N-4
+  type: none
+  note: BottomNav 첫 번째 탭이지만 8:2 프레임에 대응하는 화면 디자인이 없음. 디자인 미확정.
 viewport:
   primary: mobile
   responsive: [mobile]
 ---
 
-# Screen: Home
+# Screen: My Pieces (디자인 미확정)
 
-## 개요
+## 상태
 
-앱 진입 직후 보이는 환영 페이지. 큰 DailyPiece 로고/타이틀 + 가장 최근 piece의 미니 카드. 사용자가 이미 인증되어 있고 데이터가 있을 때의 첫 화면.
+본 화면은 **BottomNav 4개 탭(My Pieces / Calendar / Search / Profile) 중 첫 번째**로 라벨만 정의돼 있고, Figma `8:2` 프레임 어디에도 대응하는 화면 frame이 없다. 즉 디자인은 미확정 상태.
 
-> ⚠️ 본 명세는 sparse metadata에서 추출한 텍스트 기반 시범. 정확한 레이아웃은 추정. node 2:513 frame 안에 여러 sub-screen이 stack되어 있어 명확한 분리는 후속 콜에서 가능.
-
----
-
-## 1. Skeleton
-
-```
-Page (viewport: mobile, 375×840)
-├── Region: Hero
-│   └── Section: BrandHeader
-│       ├── Slot: appLogo
-│       │   ↳ <Custom name="AppLogoMark">
-│       └── Slot: appName
-│           ↳ component: design_system/docs/components/16-label.md
-├── Region: Content
-│   ├── Section: MonthHeader
-│   │   └── Slot: monthLabel
-│   │       ↳ component: design_system/docs/components/16-label.md
-│   └── Section: LatestPieceCard
-│       ↳ component: design_system/docs/components/06-card.md
-│           ├── ↳ slot: thumbnail
-│           │   ↳ <Custom name="DailyPieceThumbnail">
-│           ├── ↳ slot: caption
-│           │   ↳ component: design_system/docs/components/16-label.md
-│           └── ↳ slot: date
-│               ↳ component: design_system/docs/components/16-label.md
-└── Region: Footer (BottomNav)
-    ↳ component: design_system/docs/components/23-bottom-navigation.md
-    └── (반복) items × 4 (slot: items)
-```
+이전 명세에는 "Home" 또는 "My Pieces" 콘텐츠가 채워져 있었지만, 그건 sparse metadata 추정에서 비롯된 가설이었고 실제 Figma에는 **이 탭의 화면 디자인이 존재하지 않는다**.
 
 ---
 
-## 2. Bindings
+## 결정 필요 사항
 
-### Region: Hero
+이 탭의 의도가 다음 중 어느 것인지 디자인 결정이 선행돼야 한다:
 
-#### Layout 토큰
+1. **Search 탭과 같은 콘텐츠 (캡션 검색 + 카드 리스트)** — 이 경우 02-search.md를 그대로 재사용하거나 `My Pieces`를 default 진입(검색어 비어있는 상태)로 해석.
+2. **그리드 형태의 타임라인 (월별 구분 없이 모든 piece를 시각 위주로 보여줌)** — Search와 별도 화면으로 디자인 필요.
+3. **"오늘의 흐름" 페이지** — 인증된 사용자가 처음 만나는 환영 페이지. 최근 piece 미니카드 + 빠른 New Piece 진입 등.
 
-- container-padding: `spacing/24`
-- gap: `spacing/12`
-- align: `center`
-
-#### Section: BrandHeader
-
-**Slot: appLogo**
-
-- ref: `<Custom name="AppLogoMark">`
-- size: `64×64`
-- alt: `DailyPiece 로고`
-
-**Slot: appName**
-
-- text-variant: `text/title2`
-- color: `color/label/strong`
-- content: `DailyPiece`
-
-### Region: Content
-
-#### Layout 토큰
-
-- container-padding: `spacing/16`
-- gap: `spacing/16`
-
-#### Section: MonthHeader
-
-**Slot: monthLabel**
-
-- text-variant: `text/headline2`
-- color: `color/label/normal`
-- content: `{{currentMonth | format("MMMM yyyy")}}` (예: "March 2026")
-
-#### Section: LatestPieceCard
-
-- ref: `design_system/docs/components/06-card.md`
-- bindings:
-  - thumbnail src: `{{latestPiece.imageUrl}}`
-  - caption content: `{{latestPiece.caption}}` (예: "Beautiful sunset over the mountains. Nature always finds a way to amaze me.")
-  - caption text-variant: `text/body2`
-  - caption color: `color/label/normal`
-  - date content: `{{latestPiece.date | format("MMM d")}}` (예: "Mar 10")
-  - date text-variant: `text/caption1`
-  - date color: `color/label/alternative`
-  - on-tap: `screen-flow → 05-piece-details.md (pieceId: latestPiece.id)`
-
-### Region: Footer (BottomNav)
-
-(01-profile.md와 동일 — 현재 활성: My Pieces 또는 Home 탭)
+옵션 1이라면 본 문서는 폐기 가능. 옵션 2/3이라면 Figma에 새 frame을 추가하고 본 문서를 채워야 한다.
 
 ---
 
-## 3. Intent
+## 임시 구현 메모
 
-### 사용자 의도
-
-앱을 열어 가장 최근 자신의 piece를 즉시 본다. "오늘 또는 가장 가까운 날의 한 조각"에 빠르게 도달하는 게 목적.
-
-### 진입 / 이탈
-
-- **진입**: 앱 시작 (인증된 상태) / Splash 직후
-- **이탈**: 카드 탭 → 05-piece-details.md / BottomNav 탭 → 다른 화면
-
-### 핵심 액션 우선순위
-
-1. 카드 탭 (가장 최근 piece 보기)
-2. BottomNav 탭으로 다른 화면 진입
-
-### 접근성
-
-- **포커스 순서**: appLogo → appName → monthLabel → LatestPieceCard → BottomNav
-- **카드 alt**: caption + date 조합
-- **터치 타겟**: 카드 영역 ≥ 44px
-
-### Reactive Behavior
-
-- **로딩**: BrandHeader는 정적 즉시 표시, LatestPieceCard 영역만 Skeleton
-- **빈 상태**: piece 0개면 → `<FallbackView>` ("첫 piece를 만들어보세요" + "New Piece 만들기" 버튼 → 07-new-piece.md)
-- **에러**: Snackbar variant=error
-
----
-
-## 검증 체크리스트
-
-- [x] frontmatter / 5단계 위계
-- [ ] AppLogoMark는 wanted DS에 없음 — 도메인 자산이라 별도
-- [x] Bindings Semantic
-- [ ] 본 frame의 sub-screen 분리는 sparse metadata로 어려움 — 후속 sub-tree 콜로 정확도 향상 가능
+코드 측은 현재 `features/collection/`(=캘린더 직전의 그리드 + 무한 스크롤)이 사실상 "My Pieces 같은 역할"을 한다. 디자인 결정 후 `features/collection/` ↔ My Pieces 매핑을 명확히 한다.

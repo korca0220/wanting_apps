@@ -12,11 +12,11 @@ viewport:
   responsive: [mobile]
 ---
 
-# Screen: My Pieces
+# Screen: Search
 
 ## 개요
 
-사용자의 일별 한 조각(daily piece) 콘텐츠를 시간순으로 보여주는 메인 피드. 상단에 검색 입력 + 월별 필터 칩, 본문에 콘텐츠 카드 리스트, 하단 BottomNav. 앱의 첫 진입 화면.
+BottomNav의 **Search 탭**. 상단에 검색 입력("Search captions...") + 월별 필터 칩(All / January / February / March), 본문에 검색 결과 카드 리스트, 하단 BottomNav. 사용자가 자신의 piece를 캡션 텍스트나 날짜 범위로 빠르게 찾는 화면.
 
 > ⚠️ sparse metadata 기반 시범 명세.
 
@@ -123,7 +123,7 @@ Page (viewport: mobile, 375×840)
 
 ### Region: Footer (BottomNav, 4탭)
 
-(01-profile.md와 동일 구조 — 현재 활성: My Pieces)
+(01-profile.md와 동일 구조 — 현재 활성: Search)
 
 ---
 
@@ -135,8 +135,8 @@ Page (viewport: mobile, 375×840)
 
 ### 진입 / 이탈
 
-- **진입**: 앱 시작 시 첫 화면 / BottomNav의 My Pieces 탭
-- **이탈**: 카드 탭 → Piece Details / SearchBar 입력 → 결과 필터링 (현재 화면 유지) / 월 칩 → 필터링 / BottomNav 탭
+- **진입**: BottomNav의 Search 탭 클릭
+- **이탈**: 카드 탭 → Piece Details / SearchBar 입력 → 결과 필터링 (현재 화면 유지) / 월 칩 → 필터링 / BottomNav 다른 탭
 
 ### 핵심 액션 우선순위
 
@@ -165,6 +165,3 @@ Page (viewport: mobile, 375×840)
 - [x] frontmatter / 5단계 위계 / Slot→Component 종결 / 토큰 Semantic 사용
 - [ ] 일부 영역(SearchBar의 leadingContent icon)은 wanted 아이콘 시스템에 매핑 필요
 
-## Figma
-
-https://www.figma.com/design/ThGKok9Zm1OzXpsKTyo7hN/DailyPiece?node-id=2-513&t=2SsB9yTpe6fjdj7N-4

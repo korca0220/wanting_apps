@@ -5,7 +5,7 @@ imports: []
 source:
   type: figma
   url: https://www.figma.com/design/ThGKok9Zm1OzXpsKTyo7hN/DailyPiece
-  node_id: "2:513 (혼합 frame)"
+  node_id: "2:856"
   link: https://www.figma.com/design/ThGKok9Zm1OzXpsKTyo7hN/DailyPiece?node-id=2-856&t=2SsB9yTpe6fjdj7N-4
 viewport:
   primary: mobile
