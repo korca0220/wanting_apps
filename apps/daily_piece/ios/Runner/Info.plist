@@ -47,5 +47,7 @@
 	<true/>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>오늘의 Piece에 담을 사진을 골라요.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>오늘의 Piece에 담을 사진을 찍어요.</string>
 </dict>
 </plist>

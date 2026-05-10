@@ -4,10 +4,9 @@ import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/data/cache/signed_url_cache_provider.dart';
-import '../../../../core/data/media/media_pipeline.dart';
+import '../../../../core/data/media/photo_picker.dart';
 import '../../../../core/data/repositories/piece_repository_impl.dart';
 import '../../../../core/domain/entities/piece.dart';
 import '../../../collection/presentation/providers/collection_feed_provider.dart';
@@ -29,7 +28,6 @@ class DetailScaffold extends ConsumerStatefulWidget {
 class _DetailScaffoldState extends ConsumerState<DetailScaffold> {
   late Future<String> _signedUrl;
   late TextEditingController _commentCtrl;
-  final _picker = ImagePicker();
 
   /// Locally-staged replacement photo. Non-null while in edit mode and the
   /// user has just picked a new image — committed on save.
@@ -93,17 +91,11 @@ class _DetailScaffoldState extends ConsumerState<DetailScaffold> {
     });
 
     try {
-      final picked = await _picker.pickImage(source: ImageSource.gallery);
-      if (picked == null) {
-        if (mounted) setState(() => _busy = false);
-        return;
-      }
-
-      final bytes = await processForUpload(picked.path);
+      final bytes = await pickAndProcessPhoto(context);
       if (!mounted) return;
 
       setState(() {
-        _pendingPhotoBytes = bytes;
+        if (bytes != null) _pendingPhotoBytes = bytes;
         _busy = false;
       });
     } catch (e) {

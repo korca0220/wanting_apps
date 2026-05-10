@@ -3,12 +3,11 @@ import 'dart:typed_data';
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:image_picker/image_picker.dart';
 
+import '../../../../core/data/media/photo_picker.dart';
 import '../../../../core/data/repositories/piece_repository_impl.dart';
 import '../../../../core/domain/entities/piece.dart';
 import '../../../../core/domain/exceptions/piece_exceptions.dart';
-import '../../../../core/data/media/media_pipeline.dart';
 import '../providers/today_piece_provider.dart';
 import 'photo_placeholder.dart';
 
@@ -22,7 +21,6 @@ class ComposeView extends ConsumerStatefulWidget {
 
 class _ComposeViewState extends ConsumerState<ComposeView> {
   final _comment = TextEditingController();
-  final _picker = ImagePicker();
   Uint8List? _photoBytes;
   bool _busy = false;
   String? _error;
@@ -41,17 +39,11 @@ class _ComposeViewState extends ConsumerState<ComposeView> {
     });
 
     try {
-      final picked = await _picker.pickImage(source: ImageSource.gallery);
-      if (picked == null) {
-        if (mounted) setState(() => _busy = false);
-        return;
-      }
-
-      final bytes = await processForUpload(picked.path);
+      final bytes = await pickAndProcessPhoto(context);
       if (!mounted) return;
 
       setState(() {
-        _photoBytes = bytes;
+        if (bytes != null) _photoBytes = bytes;
         _busy = false;
       });
     } catch (e) {

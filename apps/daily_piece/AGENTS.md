@@ -214,7 +214,7 @@ python3 ../../../design-system-gen/skills/screen-spec-gen/scripts/validate_scree
 | Today: 작성 흐름 (compose) | ✅ 코드, ✅ 실기 sweep 통과 | pick → compress → upload → INSERT |
 | Today: 조회 (view 모드) | ✅ 코드, ✅ 실기 sweep 통과 | signed URL 이미지 로드 |
 | Detail: edit comment + 사진 교체 + delete | ✅ 코드, ❌ 실기 미검증 | 편집 모드에서 사진 탭 → 교체 / 코멘트 수정 / 저장 시 photo + comment 동시 처리. 날짜 변경은 deferred (UNIQUE(user_id,date)) |
-| 카메라 캡처 | ❌ | 갤러리만. `ImageSource.camera` 추가 시 iOS `NSCameraUsageDescription` + Android `CAMERA` permission 필요 |
+| 카메라 캡처 | ✅ 코드, ❌ 실기 미검증 | 사진 픽 진입 시 갤러리/카메라 chooser 바텀시트. iOS `NSCameraUsageDescription` + Android `CAMERA` permission 추가됨. 헬퍼: [`core/data/media/photo_picker.dart`](lib/core/data/media/photo_picker.dart) |
 | Collection 화면 | ✅ 코드, ❌ 실기 미검증 | `date desc` keyset 페이지네이션(30/페이지), 3열 그리드, 빈 상태 CTA, 썸네일은 1h signed URL — 화면 재진입 시 재발급 |
 | Piece detail 화면 | ✅ 코드, ❌ 실기 미검증 | `/collection/:pieceId` (Collection 브랜치 nested). `pieceByIdProvider(family)` → 큰 사진 + 코멘트 + 날짜. row 없음(RLS/삭제) → "찾을 수 없어요" + 컬렉션 복귀 CTA |
 | Settings 화면 | ✅ 코드, ❌ 실기 미검증 | 테마(System/Light/Dark) + 로그아웃. 테마는 `SharedPreferences`로 영속 (재시작 후 유지) |
@@ -228,9 +228,9 @@ python3 ../../../design-system-gen/skills/screen-spec-gen/scripts/validate_scree
 
 ### 다음 합리적 단계 (권장 순서)
 
-1. **누적 회귀 sweep** — 가입 → /today → 작성 → 컬렉션 → 디테일 → 코멘트 수정 + 사진 교체 → 저장 → 삭제 → 설정 → 테마 토글 / 로그아웃 → /sign-in 사이클. 50자 입력 한도(WdsTextField.maxLength) + Storage 객체 라이프사이클(이전 사진 정리)도 함께 확인.
-2. **카메라 캡처** (선택) — 갤러리에 더해 ImageSource.camera 옵션. iOS NSCameraUsageDescription + Android CAMERA permission 추가 필요.
-3. **위젯 테스트 보강** — feature 단위로 mocking된 repository 사용해 핵심 흐름 검증.
+1. **카메라 캡처 실기 검증** — 실기기에서 카메라 권한 다이얼로그 → 촬영 → 압축 → 업로드 흐름 + Today/Detail 양쪽에서 동작 확인.
+2. **분석/크래시 리포팅** — 운영 시작 전 결정 (Sentry / Firebase Crashlytics 등).
+3. **딥링크 매니페스트** — iOS Universal Links / Android App Links. ADR 0002 후속으로 분리.
 
 ### 선택
 - **Supabase CLI 부트스트랩** — `supabase init/link/db pull`로 SQL-파일 기반 마이그레이션 관리. (현재는 MCP `apply_migration` + 수동 `supabase/migrations/*.sql` 보관 중.)
