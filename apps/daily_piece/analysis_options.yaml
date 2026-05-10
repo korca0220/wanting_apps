@@ -1,2 +1,6 @@
 # Inherits the repo-wide baseline. Add app-specific overrides below.
 include: ../../analysis_options.yaml
+
+analyzer:
+  plugins:
+    - custom_lint
