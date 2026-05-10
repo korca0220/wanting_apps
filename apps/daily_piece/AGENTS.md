@@ -45,7 +45,7 @@
 
 - **상태관리 / DI**: Riverpod (`flutter_riverpod` + `riverpod_annotation` codegen) — [ADR 0001](docs/adr/0001-state-management.md). 신규 provider는 `@Riverpod(...)` 함수/클래스로 작성. `riverpod_lint`가 `custom_lint` 플러그인으로 활성화돼 있어 forgot-to-watch / 누락된 keepAlive 등을 잡아준다.
 - **라우팅**: go_router — [ADR 0002](docs/adr/0002-routing.md). 라우터 정의는 `lib/app/router.dart` 단일 진입.
-- **레이어 컨벤션**: Clean Architecture. 각 피처 / `core/` 하위는 `data / domain / presentation` 3-레이어로 분리하고, 그 아래는 역할별 디렉토리 (`entities / repositories / exceptions / datasources / pages / widgets / providers` …)로 나눈다. cross-feature 공유는 `lib/core/` (피스 도메인은 여러 화면에서 쓰이므로 여기에 둠).
+- **레이어 컨벤션**: Clean Architecture — [ADR 0006](docs/adr/0006-clean-architecture-layout.md). 각 피처 / `core/` 하위는 `data / domain / presentation` 3-레이어로 분리하고, 그 아래는 역할별 디렉토리 (`entities / repositories / exceptions / datasources / pages / widgets / providers` …)로 나눈다. cross-feature 공유는 `lib/core/` (피스 도메인은 여러 화면에서 쓰이므로 여기에 둠).
 - **DIP**: 도메인은 `repositories/` 아래 abstract 인터페이스만 둠. 데이터 레이어가 구현 + Riverpod provider를 노출하고, 프레젠테이션은 abstract 타입으로 받는다. 인터페이스 mock이 필요하기 전엔 fake provider override로 충분.
 - **Use case 클래스는 미도입**. Riverpod provider가 use case 역할을 하므로 trivial wrapper UseCase는 만들지 않는다. 도메인 규칙이 여러 provider에 걸쳐 흐트러질 때 도입을 재평가.
 
@@ -69,11 +69,13 @@ lib/
 │   └── env/                 # envied 기반 SUPABASE_URL/ANON_KEY (.env)
 └── features/
     ├── auth/            # Sign in / Sign up (구현됨, CA 미분리 — 후속 정리)
-    ├── today/           # 아래 today/ 내부 구조 참고
-    ├── collection/      # 타임라인 (stub)
-    ├── piece_detail/    # Piece 상세 (stub)
+    ├── today/           # 작성/조회 (구현됨)
+    ├── collection/      # 타임라인 그리드 (구현됨)
+    ├── piece_detail/    # Piece 상세 read-only (구현됨)
     └── settings/        # 설정 (stub)
 ```
+
+`features/<feature>/`는 모두 같은 골격: `presentation/{pages,widgets,providers}/` + 필요 시 `data/` (피처 전용 데이터, 예: Today의 `media_pipeline`) + 필요 시 `domain/` (피처 한정 도메인 규칙).
 
 ### today/ 내부 구조
 

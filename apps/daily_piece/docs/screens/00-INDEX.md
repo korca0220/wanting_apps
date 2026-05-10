@@ -5,7 +5,29 @@
 - ⏳ Pending: 0
 - ⚠️ 사용된 Figma 콜: **1** (한도 절약을 위해 sparse metadata 1콜로 10개 화면 모두 처리)
 
+> **명세 vs 구현**: 본 명세는 **풀 디자인 타깃**. 현재 구현은 MVP 부분집합이다 — 매핑은 [`MVP 구현 매핑`](#mvp-구현-매핑) 섹션 참고. 명세는 그대로 두고, 구현이 따라잡으면 매핑 표를 갱신한다.
+
 DailyPiece 앱은 인증 흐름(3 화면) + 메인 앱 흐름(7 화면)으로 구성:
+
+---
+
+## MVP 구현 매핑
+
+현재 구현은 7 화면 명세를 4 화면으로 압축한 MVP. 누락된 화면은 의도적 미구현(deferred)이며 명세는 보존된다.
+
+| 명세 (Spec) | 구현 (Built) | 코드 위치 | 비고 |
+|---|---|---|---|
+| 06 Home + 07 New Piece + 04 Edit Piece | **TodayPage** | [`features/today/presentation/pages/today_page.dart`](../../lib/features/today/presentation/pages/today_page.dart) | compose / view 단일 상태머신. edit는 deferred (UNIQUE(user_id, date) 제약 + Storage 정리 필요) |
+| 02 My Pieces | **CollectionPage** | [`features/collection/presentation/pages/collection_page.dart`](../../lib/features/collection/presentation/pages/collection_page.dart) | 3열 그리드 + 키셋 페이지네이션. 명세의 월별 칩 필터는 deferred |
+| 05 Piece Details | **PieceDetailPage** | [`features/piece_detail/presentation/pages/piece_detail_page.dart`](../../lib/features/piece_detail/presentation/pages/piece_detail_page.dart) | read-only. edit/delete 액션 deferred |
+| 08 Create Account | **SignUpPage** | [`features/auth/sign_up_page.dart`](../../lib/features/auth/sign_up_page.dart) | 이메일 + 비밀번호. 명세의 사용자명/약관은 deferred |
+| 09 Welcome Back | **SignInPage** | [`features/auth/sign_in_page.dart`](../../lib/features/auth/sign_in_page.dart) | 이메일 + 비밀번호. Forgot password 링크 deferred |
+| (없음) | **Bottom Navigation** | [`app/shell/main_shell_page.dart`](../../lib/app/shell/main_shell_page.dart) | 3-탭 (Today / Collection / Settings). 명세에는 4-탭(Home/MyPieces/Calendar/Profile) |
+| 01 Profile | (stub) | [`features/settings/settings_page.dart`](../../lib/features/settings/settings_page.dart) | 라우트만 존재 — Sign out / 다크모드 등 deferred |
+| 03 Calendar | ❌ 없음 | — | deferred. 그리드(02 My Pieces)로 시작 |
+| 10 Reset Password | ❌ 없음 | — | deferred |
+
+레이아웃 컨벤션은 [ADR 0006](../adr/0006-clean-architecture-layout.md) 참고.
 
 ---
 

@@ -39,4 +39,6 @@ DailyPiece의 화면 토폴로지는 단순하다 — 진입(인증), 오늘의 
 - 라우터 자체를 Riverpod Provider로 노출 — `MaterialApp.router(routerConfig: ref.watch(appRouterProvider))`.
 - 인증 redirect: `redirect: (ctx, state) => ref.read(authProvider).isSignedIn ? null : '/sign-in'`.
 - 라우트 path는 도메인 명사로: `/today`, `/collection`, `/collection/:pieceId`, `/settings`, `/sign-in`.
+- BottomNav는 `StatefulShellRoute.indexedStack`으로 구현 — 3 브랜치(Today / Collection / Settings) 각자 navigator를 보유해 탭 전환 후 복귀 시 sub-route 백스택이 유지된다. `/collection/:pieceId`는 Collection 브랜치 nested route라 detail에서 back 시 그리드로 자연 복귀.
+- Auth 화면(`/sign-in`, `/sign-up`)은 shell 밖에 둔다 — 사인인 전엔 바텀바가 의미 없음.
 - 딥링크 매니페스트(iOS Universal Links / Android App Links)는 추후 백엔드 결정 시 ADR로 분리.
