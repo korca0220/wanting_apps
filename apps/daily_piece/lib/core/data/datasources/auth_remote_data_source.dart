@@ -36,4 +36,8 @@ class AuthRemoteDataSource {
   }
 
   Future<void> signOut() => _client.auth.signOut();
+
+  Future<void> resetPasswordForEmail(String email) {
+    return _client.auth.resetPasswordForEmail(email);
+  }
 }

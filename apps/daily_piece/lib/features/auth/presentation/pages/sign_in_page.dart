@@ -56,20 +56,36 @@ class _SignInPageState extends ConsumerState<SignInPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.wdsColors;
     final spacing = context.wdsSpacing;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Sign in')),
+      backgroundColor: colors.backgroundNormalNormal,
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () => context.pop(),
+          icon: const Icon(Icons.chevron_left),
+          tooltip: '뒤로',
+        ),
+      ),
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: EdgeInsets.all(spacing.componentXl),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              const WdsText('Welcome Back', style: WdsTextStyle.title1),
+              SizedBox(height: spacing.componentSm),
+              const WdsText(
+                'Sign in to continue your journey',
+                style: WdsTextStyle.body1,
+                color: WdsTextColor.alternative,
+              ),
+              SizedBox(height: spacing.componentXl),
               WdsTextField(
                 controller: _email,
-                label: '이메일',
-                placeholder: 'you@example.com',
+                label: 'Email',
+                placeholder: 'your@email.com',
                 keyboardType: TextInputType.emailAddress,
                 textInputAction: TextInputAction.next,
                 disabled: _busy,
@@ -77,7 +93,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
               SizedBox(height: spacing.componentMd),
               WdsTextField(
                 controller: _password,
-                label: '비밀번호',
+                label: 'Password',
                 placeholder: '••••••••',
                 obscureText: true,
                 textInputAction: TextInputAction.done,
@@ -86,17 +102,49 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                 errorText: _error,
                 invalid: _error != null,
               ),
-              SizedBox(height: spacing.componentXl),
-              WdsButton(
-                onPressed: _busy ? null : _submit,
-                loading: _busy,
-                child: const Text('로그인'),
+              SizedBox(height: spacing.componentSm),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: _busy
+                      ? null
+                      : () => context.push('/reset-password'),
+                  child: const Text('Forgot password?'),
+                ),
               ),
               SizedBox(height: spacing.componentMd),
               WdsButton(
-                onPressed: _busy ? null : () => context.go('/sign-up'),
-                variant: WdsButtonVariant.outlined,
-                child: const Text('계정이 없어요 — 가입하기'),
+                onPressed: _busy ? null : _submit,
+                loading: _busy,
+                child: const Text('Sign In'),
+              ),
+              SizedBox(height: spacing.componentLg),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const WdsText(
+                    "Don't have an account?",
+                    style: WdsTextStyle.body2,
+                    color: WdsTextColor.alternative,
+                  ),
+                  const SizedBox(width: 4),
+                  GestureDetector(
+                    onTap: _busy ? null : () => context.push('/sign-up'),
+                    child: const WdsText(
+                      'Create Account',
+                      style: WdsTextStyle.body2,
+                      color: WdsTextColor.primary,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: spacing.componentXl),
+              const Center(
+                child: WdsText(
+                  'By signing in, you agree to our Terms of Service and Privacy Policy',
+                  style: WdsTextStyle.caption1,
+                  color: WdsTextColor.alternative,
+                ),
               ),
             ],
           ),

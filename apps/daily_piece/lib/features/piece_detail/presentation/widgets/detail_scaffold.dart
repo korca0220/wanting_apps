@@ -1,20 +1,32 @@
-import 'dart:typed_data';
-
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/data/cache/signed_url_cache_provider.dart';
-import '../../../../core/data/media/photo_picker.dart';
 import '../../../../core/data/repositories/piece_repository_impl.dart';
 import '../../../../core/domain/entities/piece.dart';
 import '../../../my_pieces/presentation/providers/my_pieces_feed_provider.dart';
 import '../providers/piece_by_id_provider.dart';
 
-/// Owns the full scaffold once a Piece is loaded — AppBar actions(edit/delete)
-/// + inline edit mode for both the comment and the photo + signed URL fetch
-/// for the photo when not previewing a replacement.
+const _months = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
+
+/// Read-only Piece detail. Photo + caption + meta + Edit / Delete tiles.
+/// Edit pushes /my-pieces/:id/edit (separate modal screen). Delete confirms
+/// in-place.
 class DetailScaffold extends ConsumerStatefulWidget {
   const DetailScaffold({super.key, required this.piece});
 
@@ -26,13 +38,6 @@ class DetailScaffold extends ConsumerStatefulWidget {
 
 class _DetailScaffoldState extends ConsumerState<DetailScaffold> {
   late Future<String> _signedUrl;
-  late TextEditingController _commentCtrl;
-
-  /// Locally-staged replacement photo. Non-null while in edit mode and the
-  /// user has just picked a new image — committed on save.
-  Uint8List? _pendingPhotoBytes;
-
-  bool _editing = false;
   bool _busy = false;
   String? _error;
 
@@ -41,127 +46,14 @@ class _DetailScaffoldState extends ConsumerState<DetailScaffold> {
     super.initState();
 
     _signedUrl = ref.read(signedUrlCacheProvider).get(widget.piece.photoPath);
-    _commentCtrl = TextEditingController(text: widget.piece.comment);
   }
 
   @override
   void didUpdateWidget(DetailScaffold old) {
     super.didUpdateWidget(old);
 
-    // Provider invalidation pushes a fresh Piece in — re-resolve the signed
-    // URL for the new path and re-seed the comment controller so the next
-    // edit starts from the latest state.
     if (old.piece.photoPath != widget.piece.photoPath) {
       _signedUrl = ref.read(signedUrlCacheProvider).get(widget.piece.photoPath);
-    }
-    if (!_editing && old.piece.comment != widget.piece.comment) {
-      _commentCtrl.text = widget.piece.comment;
-    }
-  }
-
-  @override
-  void dispose() {
-    _commentCtrl.dispose();
-
-    super.dispose();
-  }
-
-  void _startEdit() {
-    setState(() {
-      _editing = true;
-      _error = null;
-      _pendingPhotoBytes = null;
-      _commentCtrl.text = widget.piece.comment;
-    });
-  }
-
-  void _cancelEdit() {
-    setState(() {
-      _editing = false;
-      _error = null;
-      _pendingPhotoBytes = null;
-    });
-  }
-
-  Future<void> _pickReplacementPhoto() async {
-    setState(() {
-      _busy = true;
-      _error = null;
-    });
-
-    try {
-      final bytes = await pickAndProcessPhoto(context);
-      if (!mounted) return;
-
-      setState(() {
-        if (bytes != null) _pendingPhotoBytes = bytes;
-        _busy = false;
-      });
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _error = '사진 처리에 실패했어요: $e';
-          _busy = false;
-        });
-      }
-    }
-  }
-
-  Future<void> _saveEdit() async {
-    final next = _commentCtrl.text.trim();
-    if (next.isEmpty) {
-      setState(() => _error = '코멘트를 입력해주세요.');
-      return;
-    }
-
-    final commentChanged = next != widget.piece.comment;
-    final photoChanged = _pendingPhotoBytes != null;
-    if (!commentChanged && !photoChanged) {
-      _cancelEdit();
-      return;
-    }
-
-    setState(() {
-      _busy = true;
-      _error = null;
-    });
-
-    final repo = ref.read(pieceRepositoryProvider);
-
-    try {
-      // Photo first — it's the bigger / failure-prone operation. If it
-      // throws, no DB write happened, so the comment isn't half-applied.
-      if (photoChanged) {
-        final oldPath = widget.piece.photoPath;
-
-        await repo.replacePhoto(
-          id: widget.piece.id,
-          oldPhotoPath: oldPath,
-          newPhotoBytes: _pendingPhotoBytes!,
-        );
-
-        ref.read(signedUrlCacheProvider).invalidate(oldPath);
-      }
-      if (commentChanged) {
-        await repo.updateComment(id: widget.piece.id, comment: next);
-      }
-
-      _invalidatePieceCaches();
-
-      if (mounted) {
-        setState(() {
-          _editing = false;
-          _busy = false;
-          _pendingPhotoBytes = null;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _error = '저장에 실패했어요: $e';
-          _busy = false;
-        });
-      }
     }
   }
 
@@ -197,7 +89,8 @@ class _DetailScaffoldState extends ConsumerState<DetailScaffold> {
           .delete(id: widget.piece.id, photoPath: widget.piece.photoPath);
 
       ref.read(signedUrlCacheProvider).invalidate(widget.piece.photoPath);
-      _invalidatePieceCaches();
+      ref.invalidate(pieceByIdProvider(widget.piece.id));
+      ref.invalidate(myPiecesFeedProvider);
 
       if (mounted) context.go('/my-pieces');
     } catch (e) {
@@ -210,128 +103,84 @@ class _DetailScaffoldState extends ConsumerState<DetailScaffold> {
     }
   }
 
-  /// Fanout to providers that may be holding this Piece — by-id and the
-  /// My Pieces feed. Cheap to over-invalidate.
-  void _invalidatePieceCaches() {
-    ref.invalidate(pieceByIdProvider(widget.piece.id));
-    ref.invalidate(myPiecesFeedProvider);
-  }
-
   @override
   Widget build(BuildContext context) {
     final colors = context.wdsColors;
     final spacing = context.wdsSpacing;
     final d = widget.piece.date;
-    final dateLabel =
-        '${d.year.toString().padLeft(4, '0')}. ${d.month.toString().padLeft(2, '0')}. ${d.day.toString().padLeft(2, '0')}';
+    final dateLabel = '${_months[d.month - 1]} ${d.day}, ${d.year}';
 
     return Scaffold(
       backgroundColor: colors.backgroundNormalNormal,
       appBar: AppBar(
-        actions: _editing
-            ? [
-                TextButton(
-                  onPressed: _busy ? null : _cancelEdit,
-                  child: const Text('취소'),
-                ),
-                TextButton(
-                  onPressed: _busy ? null : _saveEdit,
-                  child: const Text('저장'),
-                ),
-              ]
-            : [
-                IconButton(
-                  onPressed: _busy ? null : _startEdit,
-                  icon: const Icon(Icons.edit_outlined),
-                  tooltip: '수정',
-                ),
-                IconButton(
-                  onPressed: _busy ? null : _confirmDelete,
-                  icon: const Icon(Icons.delete_outline),
-                  tooltip: '삭제',
-                ),
-              ],
+        leading: IconButton(
+          onPressed: () => context.pop(),
+          icon: const Icon(Icons.chevron_left),
+          tooltip: '뒤로',
+        ),
+        title: const Text('Piece'),
+        centerTitle: true,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: spacing.componentXl),
+          padding: EdgeInsets.all(spacing.componentXl),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              AspectRatio(
-                aspectRatio: 1,
-                child: GestureDetector(
-                  onTap: (_editing && !_busy) ? _pickReplacementPhoto : null,
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(16),
-                        child: _pendingPhotoBytes != null
-                            ? Image.memory(
-                                _pendingPhotoBytes!,
-                                fit: BoxFit.cover,
-                              )
-                            : FutureBuilder<String>(
-                                future: _signedUrl,
-                                builder: (context, snap) {
-                                  if (!snap.hasData) {
-                                    return const Center(child: WdsSpinner());
-                                  }
-                                  return Image.network(
-                                    snap.data!,
-                                    fit: BoxFit.cover,
-                                  );
-                                },
-                              ),
-                      ),
-                      if (_editing)
-                        Positioned(
-                          right: 12,
-                          bottom: 12,
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              color: colors.backgroundElevatedNormal,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 6,
-                              ),
-                              child: WdsText(
-                                _pendingPhotoBytes == null
-                                    ? '탭해서 사진 교체'
-                                    : '교체할 사진 선택됨',
-                                style: WdsTextStyle.caption1,
-                              ),
-                            ),
-                          ),
-                        ),
-                    ],
+              ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: AspectRatio(
+                  aspectRatio: 1,
+                  child: ColoredBox(
+                    color: colors.backgroundNormalAlternative,
+                    child: FutureBuilder<String>(
+                      future: _signedUrl,
+                      builder: (context, snap) {
+                        if (!snap.hasData) {
+                          return const Center(child: WdsSpinner());
+                        }
+                        return Image.network(snap.data!, fit: BoxFit.cover);
+                      },
+                    ),
                   ),
                 ),
               ),
               SizedBox(height: spacing.componentLg),
-              if (_editing)
-                WdsTextField(
-                  controller: _commentCtrl,
-                  label: '코멘트',
-                  placeholder: '오늘을 한 줄로 (최대 ${Piece.commentMaxLength}자)',
-                  maxLength: Piece.commentMaxLength,
-                  disabled: _busy,
-                  errorText: _error,
-                  invalid: _error != null,
-                )
-              else
-                WdsText(widget.piece.comment, style: WdsTextStyle.headline2),
+              WdsText(widget.piece.comment, style: WdsTextStyle.heading1),
               SizedBox(height: spacing.componentSm),
-              WdsText(
-                dateLabel,
-                style: WdsTextStyle.body2,
-                color: WdsTextColor.alternative,
+              Row(
+                children: [
+                  Icon(
+                    Icons.calendar_today_outlined,
+                    size: 14,
+                    color: colors.labelAlternative,
+                  ),
+                  const SizedBox(width: 6),
+                  WdsText(
+                    dateLabel,
+                    style: WdsTextStyle.caption1,
+                    color: WdsTextColor.alternative,
+                  ),
+                ],
               ),
-              if (!_editing && _error != null) ...[
+              SizedBox(height: spacing.componentXl),
+              _ActionTile(
+                label: 'Edit Piece',
+                icon: Icons.edit_outlined,
+                tone: _ActionTone.primary,
+                disabled: _busy,
+                onTap: () =>
+                    context.push('/my-pieces/${widget.piece.id}/edit'),
+              ),
+              SizedBox(height: spacing.componentSm),
+              _ActionTile(
+                label: 'Delete Piece',
+                icon: Icons.delete_outline,
+                tone: _ActionTone.negative,
+                disabled: _busy,
+                onTap: _confirmDelete,
+              ),
+              if (_error != null) ...[
                 SizedBox(height: spacing.componentMd),
                 WdsText(
                   _error!,
@@ -339,9 +188,67 @@ class _DetailScaffoldState extends ConsumerState<DetailScaffold> {
                   color: WdsTextColor.alternative,
                 ),
               ],
-              SizedBox(height: spacing.componentXl),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+enum _ActionTone { primary, negative }
+
+class _ActionTile extends StatelessWidget {
+  const _ActionTile({
+    required this.label,
+    required this.icon,
+    required this.tone,
+    required this.disabled,
+    required this.onTap,
+  });
+
+  final String label;
+  final IconData icon;
+  final _ActionTone tone;
+  final bool disabled;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.wdsColors;
+    final spacing = context.wdsSpacing;
+    final color = tone == _ActionTone.primary
+        ? colors.primaryNormal
+        : colors.statusNegative;
+
+    return InkWell(
+      onTap: disabled ? null : onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        decoration: BoxDecoration(
+          color: colors.backgroundElevatedNormal,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: colors.lineNormalNeutral),
+        ),
+        padding: EdgeInsets.symmetric(
+          horizontal: spacing.componentLg,
+          vertical: spacing.componentMd,
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: color),
+            SizedBox(width: spacing.componentMd),
+            Expanded(
+              child: Text(
+                label,
+                style: TextStyle(
+                  color: color,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            Icon(Icons.chevron_right, color: colors.labelAlternative),
+          ],
         ),
       ),
     );

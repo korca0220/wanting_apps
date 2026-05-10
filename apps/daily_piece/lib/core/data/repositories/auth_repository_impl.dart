@@ -49,4 +49,13 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<void> signOut() => _remote.signOut();
+
+  @override
+  Future<void> resetPassword({required String email}) async {
+    try {
+      await _remote.resetPasswordForEmail(email);
+    } on AuthException catch (e) {
+      throw AuthFailure(e.message);
+    }
+  }
 }

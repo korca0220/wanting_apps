@@ -15,16 +15,20 @@ class SignUpPage extends ConsumerStatefulWidget {
 }
 
 class _SignUpPageState extends ConsumerState<SignUpPage> {
+  final _name = TextEditingController();
   final _email = TextEditingController();
   final _password = TextEditingController();
+  final _confirmPassword = TextEditingController();
   bool _busy = false;
   String? _error;
   bool _confirmationSent = false;
 
   @override
   void dispose() {
+    _name.dispose();
     _email.dispose();
     _password.dispose();
+    _confirmPassword.dispose();
 
     super.dispose();
   }
@@ -32,12 +36,18 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
   Future<void> _submit() async {
     final email = _email.text.trim();
     final password = _password.text;
+    final confirm = _confirmPassword.text;
+
     if (email.isEmpty || password.isEmpty) {
       setState(() => _error = '이메일과 비밀번호를 입력해주세요.');
       return;
     }
-    if (password.length < 6) {
-      setState(() => _error = '비밀번호는 6자 이상이어야 해요.');
+    if (password.length < 8) {
+      setState(() => _error = '비밀번호는 8자 이상이어야 해요.');
+      return;
+    }
+    if (password != confirm) {
+      setState(() => _error = '비밀번호가 일치하지 않아요.');
       return;
     }
 
@@ -57,7 +67,6 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
         return;
       }
 
-      // Confirm email = ON: 메일 확인 안내로 전환.
       setState(() => _confirmationSent = true);
     } on AuthFailure catch (e) {
       if (mounted) setState(() => _error = e.message);
@@ -70,12 +79,20 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.wdsColors;
     final spacing = context.wdsSpacing;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Sign up')),
+      backgroundColor: colors.backgroundNormalNormal,
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () => context.pop(),
+          icon: const Icon(Icons.chevron_left),
+          tooltip: '뒤로',
+        ),
+      ),
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: EdgeInsets.all(spacing.componentXl),
           child: _confirmationSent
               ? ConfirmationSentView(email: _email.text.trim())
@@ -91,10 +108,26 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        const WdsText('Create Account', style: WdsTextStyle.title1),
+        SizedBox(height: spacing.componentSm),
+        const WdsText(
+          'Start your daily photo journal',
+          style: WdsTextStyle.body1,
+          color: WdsTextColor.alternative,
+        ),
+        SizedBox(height: spacing.componentXl),
+        WdsTextField(
+          controller: _name,
+          label: 'Name (Optional)',
+          placeholder: 'Enter your name',
+          textInputAction: TextInputAction.next,
+          disabled: _busy,
+        ),
+        SizedBox(height: spacing.componentMd),
         WdsTextField(
           controller: _email,
-          label: '이메일',
-          placeholder: 'you@example.com',
+          label: 'Email',
+          placeholder: 'your@email.com',
           keyboardType: TextInputType.emailAddress,
           textInputAction: TextInputAction.next,
           disabled: _busy,
@@ -102,8 +135,17 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
         SizedBox(height: spacing.componentMd),
         WdsTextField(
           controller: _password,
-          label: '비밀번호',
-          placeholder: '6자 이상',
+          label: 'Password',
+          placeholder: 'Minimum 8 characters',
+          obscureText: true,
+          textInputAction: TextInputAction.next,
+          disabled: _busy,
+        ),
+        SizedBox(height: spacing.componentMd),
+        WdsTextField(
+          controller: _confirmPassword,
+          label: 'Confirm Password',
+          placeholder: 'Re-enter your password',
           obscureText: true,
           textInputAction: TextInputAction.done,
           disabled: _busy,
@@ -115,13 +157,35 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
         WdsButton(
           onPressed: _busy ? null : _submit,
           loading: _busy,
-          child: const Text('가입하기'),
+          child: const Text('Create Account'),
         ),
-        SizedBox(height: spacing.componentMd),
-        WdsButton(
-          onPressed: _busy ? null : () => context.go('/sign-in'),
-          variant: WdsButtonVariant.outlined,
-          child: const Text('이미 계정이 있어요 — 로그인'),
+        SizedBox(height: spacing.componentLg),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const WdsText(
+              'Already have an account?',
+              style: WdsTextStyle.body2,
+              color: WdsTextColor.alternative,
+            ),
+            const SizedBox(width: 4),
+            GestureDetector(
+              onTap: _busy ? null : () => context.go('/sign-in'),
+              child: const WdsText(
+                'Sign In',
+                style: WdsTextStyle.body2,
+                color: WdsTextColor.primary,
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: spacing.componentXl),
+        const Center(
+          child: WdsText(
+            'By creating an account, you agree to our Terms of Service and Privacy Policy',
+            style: WdsTextStyle.caption1,
+            color: WdsTextColor.alternative,
+          ),
         ),
       ],
     );

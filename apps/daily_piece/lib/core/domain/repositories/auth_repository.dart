@@ -19,4 +19,9 @@ abstract class AuthRepository {
   Future<bool> signUp({required String email, required String password});
 
   Future<void> signOut();
+
+  /// Sends a password reset email. The presentation layer should show a
+  /// generic "if an account exists" success message regardless, so the
+  /// account-existence side channel isn't exposed.
+  Future<void> resetPassword({required String email});
 }

@@ -13,7 +13,7 @@ void main() {
     prefs = await SharedPreferences.getInstance();
   });
 
-  testWidgets('signed-out start lands on Sign in', (tester) async {
+  testWidgets('signed-out start lands on Welcome', (tester) async {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -26,7 +26,8 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    expect(find.text('Sign in'), findsWidgets);
+    expect(find.text('Create Account'), findsWidgets);
+    expect(find.text('Sign In'), findsWidgets);
   });
 
   testWidgets('signed-in start lands on My Pieces', (tester) async {
