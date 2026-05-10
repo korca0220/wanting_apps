@@ -2,11 +2,12 @@ import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/data/repositories/piece_repository_impl.dart';
+import '../../../../core/data/cache/signed_url_cache_provider.dart';
 import '../../../../core/domain/entities/piece.dart';
 
-/// One tile in the timeline grid. Resolves a 1h signed URL on first build —
-/// re-resolved each time the widget is created (cheap; bucket is private).
+/// One tile in the timeline grid. Signed URL goes through the shared cache so
+/// re-mounting the tile (scroll, tab switch) reuses the same URL within its
+/// 1h TTL — that's what lets `Image.network` hit Flutter's ImageCache.
 class PieceThumbnail extends ConsumerStatefulWidget {
   const PieceThumbnail({super.key, required this.piece, this.onTap});
 
@@ -24,9 +25,7 @@ class _PieceThumbnailState extends ConsumerState<PieceThumbnail> {
   void initState() {
     super.initState();
 
-    _signedUrl = ref
-        .read(pieceRepositoryProvider)
-        .signedPhotoUrl(widget.piece.photoPath);
+    _signedUrl = ref.read(signedUrlCacheProvider).get(widget.piece.photoPath);
   }
 
   @override

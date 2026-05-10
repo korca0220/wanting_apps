@@ -2,7 +2,7 @@ import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/data/repositories/piece_repository_impl.dart';
+import '../../../../core/data/cache/signed_url_cache_provider.dart';
 import '../../../../core/domain/entities/piece.dart';
 
 /// View mode — today's Piece already saved. Read-only for now (edit/delete is
@@ -22,9 +22,7 @@ class _PieceViewState extends ConsumerState<PieceView> {
   void initState() {
     super.initState();
 
-    _signedUrl = ref
-        .read(pieceRepositoryProvider)
-        .signedPhotoUrl(widget.piece.photoPath);
+    _signedUrl = ref.read(signedUrlCacheProvider).get(widget.piece.photoPath);
   }
 
   @override

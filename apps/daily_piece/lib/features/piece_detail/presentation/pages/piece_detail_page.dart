@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/data/repositories/piece_repository_impl.dart';
+import '../../../../core/data/cache/signed_url_cache_provider.dart';
 import '../../../../core/domain/entities/piece.dart';
 import '../providers/piece_by_id_provider.dart';
 
@@ -50,9 +50,7 @@ class _DetailBodyState extends ConsumerState<_DetailBody> {
   void initState() {
     super.initState();
 
-    _signedUrl = ref
-        .read(pieceRepositoryProvider)
-        .signedPhotoUrl(widget.piece.photoPath);
+    _signedUrl = ref.read(signedUrlCacheProvider).get(widget.piece.photoPath);
   }
 
   @override

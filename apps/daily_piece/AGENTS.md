@@ -105,7 +105,7 @@ features/today/
 | 백엔드 / DB / 스토리지 | **Supabase** ([ADR 0003](docs/adr/0003-backend.md)) — Postgres + Auth + Storage. SDK: `supabase_flutter`. |
 | 인증 | Supabase Auth — 이메일/비밀번호 (OAuth 미적용). 세션은 `sessionProvider` (`@Riverpod(keepAlive: true)` Stream). dev 프로젝트는 **Confirm email = OFF** (가입 즉시 세션 발급), 운영은 ON 예정. |
 | 미디어 스토리지 (사진) | Supabase Storage (`pieces` 버킷, `{user_id}/{piece_id}.jpg`). 클라이언트 파이프라인: 긴 변 1080px / JPEG q80 / EXIF 전체 제거 — [ADR 0004](docs/adr/0004-media-client-policy.md). 라이브러리: `flutter_image_compress`. |
-| 로컬 영속화 / 오프라인 | TBD ([ADR 0005] 예정 — drift / Hive / in-memory 결정) |
+| 로컬 캐시 / 오프라인 | In-memory signed URL 캐시 + Flutter `ImageCache`에 위임 — [ADR 0005](docs/adr/0005-local-cache-policy.md). 디스크 캐시 / 로컬 DB / 재시도 큐는 통증 보고되기 전까지 도입하지 않음. |
 | 분석/크래시 리포팅 | TBD |
 | 푸시 알림 | TBD |
 
@@ -218,16 +218,18 @@ python3 ../../../design-system-gen/skills/screen-spec-gen/scripts/validate_scree
 | Settings 화면 | ❌ stub | |
 | Bottom navigation (Today / Collection / Settings) | ✅ 코드, ❌ 실기 미검증 | `StatefulShellRoute.indexedStack`으로 3-탭. 각 브랜치 독립 navigator → 탭 전환 후 복귀 시 sub-route 백스택 유지 |
 | 위젯 테스트 | 🟡 router redirect 2개만 | feature 단위 테스트 추가 필요 |
-| ADR 0005 (영속 캐시 / 재시도 큐) | ❌ deferred | **데이터 레이어 임시 정책** 참고 |
+| ADR 0005 (캐시 정책) | ✅ Accepted | [ADR 0005](docs/adr/0005-local-cache-policy.md). signed URL in-memory 캐시 + Flutter ImageCache. 디스크 캐시/로컬 DB/재시도 큐는 보류 |
+| 사진 재로딩 통증 (sweep) | ✅ 해결 | `signedUrlCacheProvider` 도입으로 같은 path = 같은 URL 1h 동안 → ImageCache 히트 |
 
-### 데이터 레이어 임시 정책
-Today/Collection 첫 컷은 **캐시 없이 Supabase 직결**. Riverpod이 watch되는 동안의 in-memory만으로 시작. 실제 UX 통증(앱 재시작 깜박임, 비행기모드 저장 실패 등)을 본 뒤에 ADR 0005에서 결정.
+### 데이터 레이어 정책 (현 시점)
+[ADR 0005](docs/adr/0005-local-cache-policy.md). Piece 메타데이터는 Riverpod의 in-memory feed가 watch되는 동안 유지. 사진은 path 기준 signed URL 캐시(1h TTL) → Flutter ImageCache가 같은 URL = 같은 키로 히트. 디스크 캐시 / 로컬 DB / 오프라인 큐는 추가 통증 보고되기 전까지 보류.
 
 ### 다음 합리적 단계 (권장 순서)
 
-1. **풀 흐름 실기 sweep** — 가입 → Today 작성 → 컬렉션 탭 → 그리드 → 디테일 → 백 → 탭 전환 사이클. 30+ Piece에서 페이지네이션 + signed URL 만료(1h) 인내 확인.
-2. **ADR 0005** — 위 sweep에서 본 통증(앱 재시작 깜박임 / 비행기모드 저장 / signed URL 만료 / 그리드 깜박임 등)을 근거로 영속 캐시·재시도 큐 정책 결정.
-3. **Piece edit / delete** — 디테일 화면에 추가. UNIQUE(user_id, date) 제약 때문에 같은 날짜 안에서만 수정 가능. delete는 Storage 객체도 함께 정리 필요.
+1. **Piece edit / delete** — 디테일 화면에 추가. 코멘트 수정은 단순(같은 날짜 내). 사진 교체/삭제는 Storage 정리 + DB UPDATE/DELETE + `signedUrlCacheProvider.invalidate(path)` 호출.
+2. **AuthRepository 분리** — `features/auth/`의 Supabase Auth 직호출을 `core/data/`로 끌어내림(같은 CA 패턴).
+3. **Settings 페이지 실구현** — 현재 stub. Sign out, 다크모드 토글 정도가 1차.
+4. **WdsTextField maxLength prop 추가** (선택) — 코멘트 50자 입력단 강제. 현재 서버 varchar(50) 거부에만 의존.
 
 ### 선택
 - **Supabase CLI 부트스트랩** — `supabase init/link/db pull`로 SQL-파일 기반 마이그레이션 관리. (현재는 MCP `apply_migration` + 수동 `supabase/migrations/*.sql` 보관 중.)
