@@ -11,8 +11,9 @@ part 'session_provider.g.dart';
 /// start. `keepAlive` because auth state should outlive any single screen.
 @Riverpod(keepAlive: true)
 Stream<Session?> session(Ref ref) {
-  return Supabase.instance.client.auth.onAuthStateChange
-      .map((event) => event.session);
+  return Supabase.instance.client.auth.onAuthStateChange.map(
+    (event) => event.session,
+  );
 }
 
 /// Boolean projection used by the router redirect guard. Tests can

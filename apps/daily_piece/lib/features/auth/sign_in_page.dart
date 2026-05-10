@@ -36,8 +36,10 @@ class _SignInPageState extends ConsumerState<SignInPage> {
       _error = null;
     });
     try {
-      await Supabase.instance.client.auth
-          .signInWithPassword(email: email, password: password);
+      await Supabase.instance.client.auth.signInWithPassword(
+        email: email,
+        password: password,
+      );
       // sessionProvider stream → router redirect가 /today로 보냄.
     } on AuthException catch (e) {
       if (mounted) setState(() => _error = e.message);

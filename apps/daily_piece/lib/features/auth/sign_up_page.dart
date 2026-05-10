@@ -41,8 +41,10 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
       _error = null;
     });
     try {
-      final res = await Supabase.instance.client.auth
-          .signUp(email: email, password: password);
+      final res = await Supabase.instance.client.auth.signUp(
+        email: email,
+        password: password,
+      );
       if (!mounted) return;
       if (res.session != null) {
         // Confirm email이 OFF인 프로젝트면 즉시 로그인 → router redirect.
@@ -120,10 +122,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const WdsText(
-          '확인 메일을 보냈어요.',
-          style: WdsTextStyle.headline2,
-        ),
+        const WdsText('확인 메일을 보냈어요.', style: WdsTextStyle.headline2),
         SizedBox(height: spacing.componentSm),
         WdsText(
           '${_email.text.trim()} 으로 보낸 링크를 누르면 가입이 완료돼요.',
