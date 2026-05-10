@@ -24,8 +24,8 @@ class MissingView extends StatelessWidget {
             ),
             SizedBox(height: spacing.componentXl),
             WdsButton(
-              onPressed: () => context.go('/collection'),
-              child: const Text('컬렉션으로'),
+              onPressed: () => context.go('/my-pieces'),
+              child: const Text('My Pieces로'),
             ),
           ],
         ),

@@ -18,14 +18,14 @@ class EmptyView extends StatelessWidget {
             const WdsText('아직 Piece가 없어요.', style: WdsTextStyle.headline2),
             SizedBox(height: spacing.componentSm),
             const WdsText(
-              '오늘에서 첫 Piece를 만들어보세요.',
+              '오늘의 첫 Piece를 만들어보세요.',
               style: WdsTextStyle.body2,
               color: WdsTextColor.alternative,
             ),
             SizedBox(height: spacing.componentXl),
             WdsButton(
-              onPressed: () => context.go('/today'),
-              child: const Text('오늘로 가기'),
+              onPressed: () => context.push('/new-piece'),
+              child: const Text('첫 Piece 만들기'),
             ),
           ],
         ),

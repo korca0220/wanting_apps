@@ -2,10 +2,10 @@ import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../providers/collection_feed_provider.dart';
+import '../providers/my_pieces_feed_provider.dart';
 import 'piece_thumbnail.dart';
 
-/// Sliver-based 3-column grid that hosts the timeline feed plus a
+/// Sliver-based 3-column grid that hosts the My Pieces feed plus a
 /// `loadingMore` footer when the feed notifier is fetching the next page.
 class TimelineGrid extends StatelessWidget {
   const TimelineGrid({
@@ -14,7 +14,7 @@ class TimelineGrid extends StatelessWidget {
     required this.controller,
   });
 
-  final CollectionFeedState state;
+  final MyPiecesFeedState state;
   final ScrollController controller;
 
   @override
@@ -38,7 +38,7 @@ class TimelineGrid extends StatelessWidget {
               final piece = state.items[i];
               return PieceThumbnail(
                 piece: piece,
-                onTap: () => context.go('/collection/${piece.id}'),
+                onTap: () => context.go('/my-pieces/${piece.id}'),
               );
             }, childCount: state.items.length),
           ),

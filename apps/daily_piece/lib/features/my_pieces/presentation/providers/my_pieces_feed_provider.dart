@@ -4,14 +4,14 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../../core/data/repositories/piece_repository_impl.dart';
 import '../../../../core/domain/entities/piece.dart';
 
-part 'collection_feed_provider.g.dart';
+part 'my_pieces_feed_provider.g.dart';
 
-/// Snapshot of the timeline feed — items so far, whether more pages remain,
+/// Snapshot of the My Pieces feed — items so far, whether more pages remain,
 /// and whether a `loadMore` is currently in flight (so the UI can show a
-/// footer spinner without flipping the whole grid into loading state).
+/// footer spinner without flipping the whole list into loading state).
 @immutable
-class CollectionFeedState {
-  const CollectionFeedState({
+class MyPiecesFeedState {
+  const MyPiecesFeedState({
     required this.items,
     required this.hasMore,
     required this.loadingMore,
@@ -21,12 +21,12 @@ class CollectionFeedState {
   final bool hasMore;
   final bool loadingMore;
 
-  CollectionFeedState copyWith({
+  MyPiecesFeedState copyWith({
     List<Piece>? items,
     bool? hasMore,
     bool? loadingMore,
   }) {
-    return CollectionFeedState(
+    return MyPiecesFeedState(
       items: items ?? this.items,
       hasMore: hasMore ?? this.hasMore,
       loadingMore: loadingMore ?? this.loadingMore,
@@ -36,18 +36,18 @@ class CollectionFeedState {
 
 /// Paged feed of the user's Pieces, ordered `date desc`. `loadMore` keyset-
 /// paginates on the last item's date. Initial load returns to AsyncLoading
-/// (full-grid spinner); subsequent pages flip `loadingMore` only.
+/// (full-screen spinner); subsequent pages flip `loadingMore` only.
 @Riverpod(keepAlive: false)
-class CollectionFeed extends _$CollectionFeed {
+class MyPiecesFeed extends _$MyPiecesFeed {
   static const int _pageSize = 30;
 
   @override
-  Future<CollectionFeedState> build() async {
+  Future<MyPiecesFeedState> build() async {
     final items = await ref
         .read(pieceRepositoryProvider)
         .list(limit: _pageSize);
 
-    return CollectionFeedState(
+    return MyPiecesFeedState(
       items: items,
       hasMore: items.length == _pageSize,
       loadingMore: false,
@@ -66,16 +66,13 @@ class CollectionFeed extends _$CollectionFeed {
           .list(limit: _pageSize, before: current.items.last.date);
 
       state = AsyncData(
-        CollectionFeedState(
+        MyPiecesFeedState(
           items: [...current.items, ...more],
           hasMore: more.length == _pageSize,
           loadingMore: false,
         ),
       );
     } catch (_) {
-      // Keep loaded items visible. Surfacing the error inline (snackbar / retry
-      // tile) is a follow-up; for now the footer just reverts and another
-      // scroll attempt re-runs the request.
       state = AsyncData(current.copyWith(loadingMore: false));
     }
   }

@@ -6,7 +6,7 @@ import '../data/repositories/preferences_repository_impl.dart';
 part 'theme_mode_provider.g.dart';
 
 /// Read by `app/app.dart` to drive `MaterialApp.themeMode`, mutated by the
-/// settings screen. Persistence flows through `preferencesRepository` —
+/// profile screen. Persistence flows through `preferencesRepository` —
 /// this controller doesn't know about SharedPreferences.
 @Riverpod(keepAlive: true)
 class ThemeModeController extends _$ThemeModeController {

@@ -1,23 +1,23 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
-import '../providers/collection_feed_provider.dart';
+import '../providers/my_pieces_feed_provider.dart';
 import '../widgets/empty_view.dart';
 import '../widgets/error_view.dart';
 import '../widgets/timeline_grid.dart';
 
-/// Timeline grid of the user's Pieces. Three columns, keyset-paginated by
-/// scroll. Empty state nudges the user back to /today to create their first
-/// Piece.
-class CollectionPage extends ConsumerStatefulWidget {
-  const CollectionPage({super.key});
+/// Authenticated landing — paged feed of the user's Pieces. Empty state nudges
+/// the user to create their first Piece.
+class MyPiecesPage extends ConsumerStatefulWidget {
+  const MyPiecesPage({super.key});
 
   @override
-  ConsumerState<CollectionPage> createState() => _CollectionPageState();
+  ConsumerState<MyPiecesPage> createState() => _MyPiecesPageState();
 }
 
-class _CollectionPageState extends ConsumerState<CollectionPage> {
+class _MyPiecesPageState extends ConsumerState<MyPiecesPage> {
   final _scroll = ScrollController();
 
   @override
@@ -37,31 +37,34 @@ class _CollectionPageState extends ConsumerState<CollectionPage> {
   }
 
   void _onScroll() {
-    // Trigger near the bottom so the next page lands before the user hits it.
     if (_scroll.position.pixels >= _scroll.position.maxScrollExtent - 400) {
-      ref.read(collectionFeedProvider.notifier).loadMore();
+      ref.read(myPiecesFeedProvider.notifier).loadMore();
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final colors = context.wdsColors;
-    final feed = ref.watch(collectionFeedProvider);
+    final feed = ref.watch(myPiecesFeedProvider);
 
     return Scaffold(
       backgroundColor: colors.backgroundNormalNormal,
-      appBar: AppBar(title: const Text('Collection')),
+      appBar: AppBar(title: const Text('DailyPiece')),
       body: SafeArea(
         child: feed.when(
           loading: () => const Center(child: WdsSpinner()),
           error: (e, _) => ErrorView(
             error: e,
-            onRetry: () => ref.invalidate(collectionFeedProvider),
+            onRetry: () => ref.invalidate(myPiecesFeedProvider),
           ),
           data: (state) => state.items.isEmpty
               ? const EmptyView()
               : TimelineGrid(state: state, controller: _scroll),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => context.push('/new-piece'),
+        child: const Icon(Icons.add),
       ),
     );
   }

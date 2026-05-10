@@ -44,7 +44,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
       await ref
           .read(authRepositoryProvider)
           .signIn(email: email, password: password);
-      // signedInStream → router redirect가 /today로 보냄.
+      // signedInStream → router redirect가 /my-pieces로 보냄.
     } on AuthFailure catch (e) {
       if (mounted) setState(() => _error = e.message);
     } catch (_) {

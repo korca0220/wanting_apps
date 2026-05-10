@@ -29,7 +29,7 @@ void main() {
     expect(find.text('Sign in'), findsWidgets);
   });
 
-  testWidgets('signed-in start lands on Today', (tester) async {
+  testWidgets('signed-in start lands on My Pieces', (tester) async {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -42,6 +42,6 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    expect(find.text('Today'), findsWidgets);
+    expect(find.text('DailyPiece'), findsWidgets);
   });
 }

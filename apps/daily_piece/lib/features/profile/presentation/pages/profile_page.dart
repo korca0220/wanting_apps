@@ -5,8 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/sign_out_tile.dart';
 import '../widgets/theme_mode_section.dart';
 
-class SettingsPage extends ConsumerWidget {
-  const SettingsPage({super.key});
+class ProfilePage extends ConsumerWidget {
+  const ProfilePage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -15,7 +15,7 @@ class SettingsPage extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: colors.backgroundNormalNormal,
-      appBar: AppBar(title: const Text('설정')),
+      appBar: AppBar(title: const Text('Profile')),
       body: SafeArea(
         child: ListView(
           children: [

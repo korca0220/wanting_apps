@@ -25,19 +25,24 @@ class MainShellPage extends StatelessWidget {
         ),
         items: const [
           WdsBottomNavigationItem(
-            icon: Icon(Icons.today_outlined),
-            activeIcon: Icon(Icons.today),
-            label: '오늘',
+            icon: Icon(Icons.photo_library_outlined),
+            activeIcon: Icon(Icons.photo_library),
+            label: 'My Pieces',
           ),
           WdsBottomNavigationItem(
-            icon: Icon(Icons.grid_view_outlined),
-            activeIcon: Icon(Icons.grid_view),
-            label: '컬렉션',
+            icon: Icon(Icons.calendar_today_outlined),
+            activeIcon: Icon(Icons.calendar_today),
+            label: 'Calendar',
+          ),
+          WdsBottomNavigationItem(
+            icon: Icon(Icons.search_outlined),
+            activeIcon: Icon(Icons.search),
+            label: 'Search',
           ),
           WdsBottomNavigationItem(
             icon: Icon(Icons.person_outline),
             activeIcon: Icon(Icons.person),
-            label: '설정',
+            label: 'Profile',
           ),
         ],
       ),
