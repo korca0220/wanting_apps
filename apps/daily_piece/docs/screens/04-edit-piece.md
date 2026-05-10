@@ -6,6 +6,8 @@ source:
   type: figma
   url: https://www.figma.com/design/ThGKok9Zm1OzXpsKTyo7hN/DailyPiece
   node_id: "2:367"
+  link: https://www.figma.com/design/ThGKok9Zm1OzXpsKTyo7hN/DailyPiece?node-id=2-367&t=2SsB9yTpe6fjdj7N-4
+  spec_basis: screenshot
 viewport:
   primary: mobile
   responsive: [mobile]
@@ -15,155 +17,187 @@ viewport:
 
 ## 개요
 
-기존 daily piece의 사진과 캡션을 편집하는 폼 화면. 사진 교체(Replace Photo) + 캡션 수정 + Cancel/Save 액션. "You can only have one photo per piece. Replacing will update this piece's photo." 안내 포함.
+기존 piece의 사진/캡션을 수정하는 화면. 모달 형태 — TopBar에 Cancel(좌) / Save(우) 텍스트 버튼이 있고 BottomNav 없음. 사진 위 floating "Replace Photo" 버튼으로 교체, 캡션은 기존 텍스트 prefill된 textarea, 카운터 0/50.
 
-> ⚠️ sparse metadata 기반 시범 명세.
+날짜는 수정 불가 (UNIQUE(user_id, date) 도메인 invariant).
 
 ---
 
 ## 1. Skeleton
 
 ```
-Page (viewport: mobile, 375×772)
-├── Region: Header
-│   └── Section: TopBar
-│       └── Slot: title
-│           ↳ component: design_system/docs/components/16-label.md
-├── Region: Content
-│   ├── Section: PhotoField
-│   │   ├── Slot: label
-│   │   │   ↳ component: design_system/docs/components/16-label.md
-│   │   ├── Slot: requiredBadge
-│   │   │   ↳ component: design_system/docs/components/14-content-badge.md
-│   │   ├── Slot: imageUploader
-│   │   │   ↳ component: design_system/docs/components/27-image-uploader.md (mode: preview)
-│   │   └── Slot: helperText
-│   │       ↳ component: design_system/docs/components/16-label.md
-│   └── Section: CaptionField
-│       ├── Slot: label
-│       │   ↳ component: design_system/docs/components/16-label.md
-│       ├── Slot: textarea
-│       │   ↳ component: design_system/docs/components/10-textarea.md
-│       └── Slot: counter
-│           ↳ component: design_system/docs/components/16-label.md
-└── Region: Footer (액션 영역)
-    └── Section: ActionBar
-        ├── Slot: cancelButton
-        │   ↳ component: design_system/docs/components/01-button.md
-        └── Slot: saveButton
-            ↳ component: design_system/docs/components/01-button.md
+Page (viewport: mobile, no BottomNav)
+├── Region: TopBar
+│   ├── Slot: cancelButton                  # 텍스트 버튼
+│   │   ↳ component: design_system/docs/components/01-button.md (variant: text)
+│   ├── Slot: title
+│   │   ↳ component: design_system/docs/components/16-label.md
+│   └── Slot: saveButton                    # 텍스트 버튼, primary 컬러
+│       ↳ component: design_system/docs/components/01-button.md (variant: text)
+├── Region: Content (24 padding, vertical scroll)
+│   ├── Section: PhotoBlock
+│   │   ├── Section: PhotoHeader
+│   │   │   ├── Slot: label
+│   │   │   │   ↳ component: design_system/docs/components/16-label.md
+│   │   │   └── Slot: requiredBadge
+│   │   │       ↳ component: design_system/docs/components/14-content-badge.md
+│   │   ├── Section: PhotoFrame             # 사진 + floating action
+│   │   │   ├── Slot: photo
+│   │   │   │   ↳ <Custom name="DailyPiecePhoto">
+│   │   │   └── Slot: replacePhotoButton    # absolute positioned
+│   │   │       ↳ component: design_system/docs/components/01-button.md (variant: solid filled-tonal)
+│   │   └── Section: InfoNote
+│   │       ├── Slot: infoIcon
+│   │       └── Slot: noteText
+│   │           ↳ component: design_system/docs/components/16-label.md
+│   └── Section: CaptionBlock
+│       ├── Section: CaptionHeader
+│       │   ├── Slot: label
+│       │   │   ↳ component: design_system/docs/components/16-label.md
+│       │   └── Slot: counter
+│       │       ↳ component: design_system/docs/components/16-label.md
+│       └── Slot: textarea
+│           ↳ component: design_system/docs/components/10-textarea.md
+└── (BottomNav 없음)
 ```
 
 ---
 
 ## 2. Bindings
 
-### Region: Header
+### Region: TopBar
 
-#### Section: TopBar
+- height: 56
+- padding-x: `spacing/16`
+- background: `color/background/normal/normal`
+- bottom-border: `1px color/line/normal/neutral`
+- layout: 3-segment — 좌 / 중 / 우
+
+**Slot: cancelButton**
+
+- ref: `01-button.md` variant `text`
+- size: `medium`
+- color: `neutral` (`color/label/strong`)
+- content: `Cancel`
+- on-tap: `screen-flow → pop` (변경사항 있으면 confirm 후 pop)
 
 **Slot: title**
 
 - text-variant: `text/heading2`
-- color: `color/label/normal`
+- color: `color/label/strong`
 - content: `Edit Piece`
+- align: center
+
+**Slot: saveButton**
+
+- ref: `01-button.md` variant `text`
+- size: `medium`
+- color: `primary` (`color/primary/normal`)
+- content: `Save`
+- disabled: `{{!form.canSubmit}}` — 캡션이 비어있지 않거나 사진이 교체된 경우 활성
+- loading: `{{state.saving}}`
+- on-tap: `api: PATCH /pieces/{id} (photo? + caption) → screen-flow → pop → invalidate(piece detail/feed)`
 
 ### Region: Content
 
-#### Layout 토큰
+- container-padding: `spacing/24`
+- block-gap: `spacing/24`
 
-- container-padding: `spacing/16`
-- section-gap: `spacing/24`
+#### Section: PhotoBlock
 
-#### Section: PhotoField
+##### Section: PhotoHeader
+
+- layout: `space-between`, align center
+- bottom-padding: `spacing/12`
 
 **Slot: label**
 
-- text-variant: `text/label1`
-- color: `color/label/normal`
+- text-variant: `text/heading3`
+- color: `color/label/strong`
 - content: `Photo`
 
 **Slot: requiredBadge**
 
-- ref: `design_system/docs/components/14-content-badge.md`
-- variant: `outlined`
-- color: `accent`
-- accentColor: `color/status/negative`
-- size: `xsmall`
+- ref: `14-content-badge.md`
+- variant: `subtle`
+- color: `color/label/alternative`
 - content: `Required`
 
-**Slot: imageUploader**
+> ℹ️ 스크린샷에선 텍스트형태로 보이지만 의미상 "필수" 인디케이터. DS에 어울리는 variant이 없으면 단순 label로 fallback 가능.
 
-- ref: `design_system/docs/components/27-image-uploader.md`
-- variant: `default`
-- aspect: `1:1` (검수 필요 — 디자인에서 추정)
-- size: `medium`
-- value: `{{form.photoUrl}}` (preview 모드 진입)
-- alt: `현재 piece 사진`
-- onChange: `state: form.photoFile = $value` (Replace Photo 액션 — 우상단 edit IconButton 또는 영역 탭으로 시스템 픽커)
-- onRemove: `(없음 — Edit Piece에선 사진 필수, 제거 불가)`
+##### Section: PhotoFrame
 
-> 별도 "Replace Photo" 버튼 슬롯 불필요 — ImageUploader의 preview 모드 우상단 액션이 동일 역할 수행.
+- container: relative positioning
+- aspect-ratio: 4:5 또는 3:4
+- shape: `radius/lg`
+- overflow: clip
 
-**Slot: helperText**
+**Slot: photo**
+
+- ref: `<Custom name="DailyPiecePhoto">`
+- src: `{{piece.imageUrl}}` (편집 시작 시) / `{{state.pendingPhotoBytes}}` (교체 후)
+- fit: cover
+
+**Slot: replacePhotoButton**
+
+- ref: `01-button.md` variant `solid filled-tonal`
+- size: `small`
+- background: `color/background/elevated/alternative` (rgba dark, semi-transparent)
+- text color: `color/static/white` 또는 `color/label/strong`
+- leading-icon: `camera` (16, color `color/primary/normal`)
+- content: `Replace Photo`
+- position: `absolute`, `right: spacing/16, bottom: spacing/16`
+- shape: `radius/md` (~12px capsule-ish)
+- on-tap: `pickAndProcessPhoto(context)` (camera/gallery chooser → image_picker → ADR 0004 압축) → state: `pendingPhotoBytes = bytes`
+
+##### Section: InfoNote
+
+- layout: 가로 (icon + text), gap `spacing/8`, align top
+- top-padding: `spacing/12`
+
+**Slot: infoIcon**
+
+- icon: `info` (16, `color/label/alternative`)
+
+**Slot: noteText**
 
 - text-variant: `text/caption1`
 - color: `color/label/alternative`
 - content: `You can only have one photo per piece. Replacing will update this piece's photo.`
 
-#### Section: CaptionField
+---
+
+#### Section: CaptionBlock
+
+##### Section: CaptionHeader
+
+- layout: `space-between`, align center
+- bottom-padding: `spacing/12`
 
 **Slot: label**
 
-- text-variant: `text/label1`
-- color: `color/label/normal`
+- text-variant: `text/heading3`
+- color: `color/label/strong`
 - content: `Caption`
-
-**Slot: textarea**
-
-- ref: `design_system/docs/components/10-textarea.md`
-- value: `{{form.caption}}`
-- maxLength: `50`
-- minRows: `3`
-- maxRows: `5`
-- on-change: `state: form.caption = $value`
-- placeholder: `caption을 작성하세요...`
 
 **Slot: counter**
 
 - text-variant: `text/caption1`
-- color: `{{form.caption.length > 50 ? color/status/negative : color/label/alternative}}`
-- align: `right`
+- color: `color/label/alternative`
 - content: `{{form.caption.length}}/50`
+- align: right
 
-### Region: Footer (ActionBar)
+##### Slot: textarea
 
-#### Layout 토큰
-
-- container-padding: `spacing/16`
-- gap: `spacing/12`
-- bg-color: `color/background/elevated/normal`
-- border-top: `1px color/line/normal/neutral`
-
-**Slot: cancelButton**
-
-- ref: `design_system/docs/components/01-button.md`
-- variant: `outlined`
-- color: `assistive`
-- size: `medium`
-- content: `Cancel`
-- on-tap: `state: form.dirty ? confirm: 변경 취소 → screen-flow back : screen-flow back`
-
-**Slot: saveButton**
-
-- ref: `design_system/docs/components/01-button.md`
-- variant: `solid`
-- color: `primary`
-- size: `medium`
-- content: `Save`
-- disabled: `{{!form.valid || form.caption.length > 50}}`
-- loading: `{{state.saving}}`
-- on-tap: `api: PATCH /pieces/{id} (form) → screen-flow back → snackbar: variant=success "저장됐어요"`
+- ref: `10-textarea.md`
+- value: `{{form.caption}}` (initial: piece.caption)
+- placeholder: `Write a short caption (max 50 chars)...`
+- maxLength: `50`
+- minLines: 4
+- on-change: `state: form.caption = $value`
+- background: `color/background/elevated/normal`
+- border: `1px color/line/normal/neutral`
+- shape: `radius/md`
 
 ---
 
@@ -171,45 +205,47 @@ Page (viewport: mobile, 375×772)
 
 ### 사용자 의도
 
-실수로 잘못 작성한 캡션을 빠르게 고치거나, 사진을 다른 것으로 바꾼다. 단순한 1단계 폼이지만 사진 1장 제약과 50자 제한을 명확히 인지시킨다.
+이미 저장한 piece의 사진/캡션을 수정. 날짜는 immutable.
 
 ### 진입 / 이탈
 
-- **진입**: Piece Details(05)에서 Edit Piece 버튼 탭
+- **진입**: 05 Piece Details의 Edit Piece 행 탭
 - **이탈**:
-  - Cancel → 직전 화면 (변경사항 있으면 confirm)
-  - Save → API 성공 시 직전 화면 + 성공 Snackbar
-  - 시스템 백 버튼 → Cancel과 동일
+  - Cancel → 변경 있으면 confirm → pop
+  - Save 성공 → pop + Detail 화면 invalidate
+  - back gesture → Cancel과 동일 처리
 
 ### 핵심 액션 우선순위
 
-1. **Save** — 가장 중요, 솔리드 primary
-2. **Replace Photo** — 자주 사용되진 않으나 폼의 핵심
-3. **Cancel** — 약하게 노출
+1. **Save** (우상단 primary text 버튼)
+2. Replace Photo (사진 위 floating)
+3. Caption 편집 (textarea)
+4. Cancel (좌상단)
 
 ### 접근성
 
-- **포커스 순서**: title → Photo label → Required badge → photo preview → Replace button → helperText → Caption label → textarea → counter → Cancel → Save
-- **textarea**: aria-describedby로 helperText/counter 연결, aria-invalid는 50자 초과 시
-- **터치 타겟**: 모든 버튼 ≥ 44px
-- **키보드**: textarea에서 Tab 빠져나가기 가능, Esc는 Cancel과 동일
+- **포커스 순서**: cancelButton → title → saveButton → photo header → photo (replace 버튼) → infoNote → caption header (counter) → textarea
+- **터치 타겟**: TopBar 버튼 ≥ 44, replacePhoto ≥ 44, textarea 자체로 큼
+- **변경 보호**: 변경사항이 있는 상태에서 Cancel/back → confirm dialog ("Discard changes?")
+- **카운터 변화**: 입력 시 counter live update — 50 도달 시 색상 강조 (옵션)
 
 ### Reactive Behavior
 
-- **로딩**: PhotoPreview 영역 Skeleton variant=rectangle, textarea는 skeleton 없이 즉시 표시
-- **저장 중**: Save 버튼 loading=true (자식 hidden + spinner)
-- **에러**: Snackbar variant=error, 재시도 버튼
-- **글자 수 초과**: counter 색이 `color/status/negative`로, textarea 보더 invalid 상태, Save 버튼 disabled
+- **사진 교체 처리 중**: photoFrame 위 spinner 오버레이 + replacePhoto 버튼 disabled
+- **저장 중**: saveButton loading + 모든 입력 disabled
+- **저장 실패**: Snackbar variant=error + 재시도. saveButton 다시 활성.
+- **캡션 비움**: Save 비활성 (캡션은 필수)
 
 ---
 
 ## 검증 체크리스트
 
-- [x] 5단계 위계 / Slot 종결
-- [ ] PhotoPreview는 wanted DS의 thumbnail 합성 컴포넌트로 매핑 가능 — 후속 합류 후보
-- [x] Bindings Semantic 토큰
-- [x] 폼 검증 + 에러 명시
-
-## Figma
-
-https://www.figma.com/design/ThGKok9Zm1OzXpsKTyo7hN/DailyPiece?node-id=2-367&t=2SsB9yTpe6fjdj7N-4
+- [x] frontmatter / 위계
+- [x] TopBar 3-segment (Cancel / 제목 / Save text 버튼)
+- [x] Photo `Required` 인디케이터
+- [x] Replace Photo floating 버튼 (camera icon + 라벨)
+- [x] Counter 0/50 우측 정렬
+- [x] Textarea prefill + maxLength
+- [x] BottomNav 없음 (모달/편집 모드)
+- [ ] DS의 `01-button.md`에 text variant 정의 확인
+- [ ] DS의 `14-content-badge.md`에 subtle variant 또는 대체 패턴 확인
