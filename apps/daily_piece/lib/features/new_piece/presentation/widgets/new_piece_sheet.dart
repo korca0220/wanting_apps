@@ -68,12 +68,14 @@ class _NewPieceSheetState extends ConsumerState<NewPieceSheet> {
         if (bytes != null) _photoBytes = bytes;
         _busy = false;
       });
-    } catch (e) {
+    } catch (_) {
       if (mounted) {
-        setState(() {
-          _error = '사진 처리에 실패했어요: $e';
-          _busy = false;
-        });
+        setState(() => _busy = false);
+        WdsSnackbar.show(
+          context: context,
+          message: '사진 처리에 실패했어요.',
+          variant: WdsSnackbarVariant.error,
+        );
       }
     }
   }
@@ -118,12 +120,14 @@ class _NewPieceSheetState extends ConsumerState<NewPieceSheet> {
           _busy = false;
         });
       }
-    } catch (e) {
+    } catch (_) {
       if (mounted) {
-        setState(() {
-          _error = '저장에 실패했어요: $e';
-          _busy = false;
-        });
+        setState(() => _busy = false);
+        WdsSnackbar.show(
+          context: context,
+          message: '저장에 실패했어요. 잠시 후 다시 시도해주세요.',
+          variant: WdsSnackbarVariant.error,
+        );
       }
     }
   }

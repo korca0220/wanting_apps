@@ -41,7 +41,6 @@ class DetailScaffold extends ConsumerStatefulWidget {
 class _DetailScaffoldState extends ConsumerState<DetailScaffold> {
   late Future<String> _signedUrl;
   bool _busy = false;
-  String? _error;
 
   @override
   void initState() {
@@ -58,6 +57,8 @@ class _DetailScaffoldState extends ConsumerState<DetailScaffold> {
       _signedUrl = ref.read(signedUrlCacheProvider).get(widget.piece.photoPath);
     }
   }
+
+  // Inline error UI is gone — transport failures go through WdsSnackbar.
 
   Future<void> _confirmDelete() async {
     final confirmed = await showDialog<bool>(
@@ -80,10 +81,7 @@ class _DetailScaffoldState extends ConsumerState<DetailScaffold> {
 
     if (confirmed != true || !mounted) return;
 
-    setState(() {
-      _busy = true;
-      _error = null;
-    });
+    setState(() => _busy = true);
 
     try {
       await ref
@@ -99,12 +97,14 @@ class _DetailScaffoldState extends ConsumerState<DetailScaffold> {
       ref.invalidate(monthPiecesProvider(year: d.year, month: d.month));
 
       if (mounted) context.go('/my-pieces');
-    } catch (e) {
+    } catch (_) {
       if (mounted) {
-        setState(() {
-          _error = '삭제에 실패했어요: $e';
-          _busy = false;
-        });
+        setState(() => _busy = false);
+        WdsSnackbar.show(
+          context: context,
+          message: '삭제에 실패했어요. 잠시 후 다시 시도해주세요.',
+          variant: WdsSnackbarVariant.error,
+        );
       }
     }
   }
@@ -186,14 +186,6 @@ class _DetailScaffoldState extends ConsumerState<DetailScaffold> {
                 disabled: _busy,
                 onTap: _confirmDelete,
               ),
-              if (_error != null) ...[
-                SizedBox(height: spacing.componentMd),
-                WdsText(
-                  _error!,
-                  style: WdsTextStyle.body2,
-                  color: WdsTextColor.alternative,
-                ),
-              ],
             ],
           ),
         ),
