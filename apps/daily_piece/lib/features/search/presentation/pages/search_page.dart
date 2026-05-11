@@ -1,10 +1,11 @@
+import 'dart:async';
+
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/domain/entities/piece.dart';
-import '../providers/all_pieces_provider.dart';
+import '../providers/search_providers.dart';
 import '../widgets/result_card.dart';
 
 const _monthsLong = [
@@ -22,20 +23,6 @@ const _monthsLong = [
   'December',
 ];
 
-/// Filter values used by the month chip row. `all` means no month
-/// constraint; otherwise the chip filters on `${year}-${month}`.
-class _MonthFilter {
-  const _MonthFilter.all() : year = null, month = null;
-  const _MonthFilter.month(this.year, this.month);
-
-  final int? year;
-  final int? month;
-
-  bool get isAll => year == null;
-  String get key => isAll ? 'all' : '${year!}-${month!.toString().padLeft(2, '0')}';
-  String get label => isAll ? 'All' : _monthsLong[month! - 1];
-}
-
 class SearchPage extends ConsumerStatefulWidget {
   const SearchPage({super.key});
 
@@ -44,154 +31,172 @@ class SearchPage extends ConsumerStatefulWidget {
 }
 
 class _SearchPageState extends ConsumerState<SearchPage> {
-  final _query = TextEditingController();
-  _MonthFilter _selected = const _MonthFilter.all();
+  final _queryCtrl = TextEditingController();
+  SearchFilter _filter = const SearchFilter();
+  Timer? _debounce;
 
   @override
   void initState() {
     super.initState();
 
-    _query.addListener(() => setState(() {}));
+    _queryCtrl.addListener(_onQueryChanged);
   }
 
   @override
   void dispose() {
-    _query.dispose();
+    _debounce?.cancel();
+    _queryCtrl
+      ..removeListener(_onQueryChanged)
+      ..dispose();
 
     super.dispose();
+  }
+
+  void _onQueryChanged() {
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 300), () {
+      final next = _queryCtrl.text.trim();
+      if (next == _filter.query) return;
+      setState(() {
+        _filter = SearchFilter(
+          query: next,
+          year: _filter.year,
+          month: _filter.month,
+        );
+      });
+    });
+  }
+
+  void _selectMonth({int? year, int? month}) {
+    setState(() {
+      _filter = SearchFilter(
+        query: _filter.query,
+        year: year,
+        month: month,
+      );
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final colors = context.wdsColors;
     final spacing = context.wdsSpacing;
-    final asyncPieces = ref.watch(allPiecesProvider);
+    final monthsAsync = ref.watch(pieceMonthsProvider);
+    final resultsAsync = ref.watch(searchResultsProvider(filter: _filter));
 
     return Scaffold(
       backgroundColor: colors.backgroundNormalNormal,
       appBar: AppBar(title: const Text('Search')),
       body: SafeArea(
-        child: asyncPieces.when(
-          loading: () => const Center(child: WdsSpinner()),
-          error: (e, _) => Center(
-            child: Padding(
-              padding: EdgeInsets.all(spacing.componentXl),
-              child: WdsText(
-                'Failed to load: $e',
-                style: WdsTextStyle.body2,
-                color: WdsTextColor.alternative,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: EdgeInsets.fromLTRB(
+                spacing.componentXl,
+                spacing.componentMd,
+                spacing.componentXl,
+                spacing.componentSm,
+              ),
+              child: WdsTextField(
+                controller: _queryCtrl,
+                placeholder: 'Search captions...',
               ),
             ),
-          ),
-          data: (pieces) => _Body(
-            pieces: pieces,
-            queryCtrl: _query,
-            selected: _selected,
-            onSelect: (f) => setState(() => _selected = f),
-          ),
+            SizedBox(
+              height: 40,
+              child: monthsAsync.when(
+                loading: () => const SizedBox.shrink(),
+                error: (_, _) => const SizedBox.shrink(),
+                data: (months) => _MonthChips(
+                  months: months,
+                  selectedYear: _filter.year,
+                  selectedMonth: _filter.month,
+                  onSelect: _selectMonth,
+                ),
+              ),
+            ),
+            SizedBox(height: spacing.componentMd),
+            Expanded(
+              child: resultsAsync.when(
+                loading: () => const Center(child: WdsSpinner()),
+                error: (e, _) => Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(spacing.componentXl),
+                    child: WdsText(
+                      'Failed to search: $e',
+                      style: WdsTextStyle.body2,
+                      color: WdsTextColor.alternative,
+                    ),
+                  ),
+                ),
+                data: (pieces) => pieces.isEmpty
+                    ? _EmptyResults(query: _filter.query)
+                    : ListView.separated(
+                        padding: EdgeInsets.fromLTRB(
+                          spacing.componentXl,
+                          spacing.componentSm,
+                          spacing.componentXl,
+                          spacing.componentXl,
+                        ),
+                        itemCount: pieces.length,
+                        separatorBuilder: (_, _) =>
+                            SizedBox(height: spacing.componentMd),
+                        itemBuilder: (context, i) {
+                          final p = pieces[i];
+                          return SearchResultCard(
+                            piece: p,
+                            onTap: () => context.go('/my-pieces/${p.id}'),
+                          );
+                        },
+                      ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-class _Body extends StatelessWidget {
-  const _Body({
-    required this.pieces,
-    required this.queryCtrl,
-    required this.selected,
+class _MonthChips extends StatelessWidget {
+  const _MonthChips({
+    required this.months,
+    required this.selectedYear,
+    required this.selectedMonth,
     required this.onSelect,
   });
 
-  final List<Piece> pieces;
-  final TextEditingController queryCtrl;
-  final _MonthFilter selected;
-  final ValueChanged<_MonthFilter> onSelect;
+  final List<({int year, int month})> months;
+  final int? selectedYear;
+  final int? selectedMonth;
+  final void Function({int? year, int? month}) onSelect;
 
   @override
   Widget build(BuildContext context) {
     final spacing = context.wdsSpacing;
-    final query = queryCtrl.text.trim().toLowerCase();
-    final months = _distinctMonths(pieces);
-    final filtered = pieces.where((p) {
-      if (!selected.isAll &&
-          (p.date.year != selected.year || p.date.month != selected.month)) {
-        return false;
-      }
-      if (query.isEmpty) return true;
-      return p.comment.toLowerCase().contains(query);
-    }).toList(growable: false);
+    final entries = <({String label, int? year, int? month})>[
+      (label: 'All', year: null, month: null),
+      ...months.map(
+        (m) => (label: _monthsLong[m.month - 1], year: m.year, month: m.month),
+      ),
+    ];
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Padding(
-          padding: EdgeInsets.fromLTRB(
-            spacing.componentXl,
-            spacing.componentMd,
-            spacing.componentXl,
-            spacing.componentSm,
-          ),
-          child: WdsTextField(
-            controller: queryCtrl,
-            placeholder: 'Search captions...',
-          ),
-        ),
-        SizedBox(
-          height: 40,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            padding: EdgeInsets.symmetric(horizontal: spacing.componentXl),
-            itemCount: months.length,
-            separatorBuilder: (_, _) => SizedBox(width: spacing.componentSm),
-            itemBuilder: (_, i) {
-              final m = months[i];
-              final active = m.key == selected.key;
-              return _Chip(
-                label: m.label,
-                active: active,
-                onTap: () => onSelect(m),
-              );
-            },
-          ),
-        ),
-        SizedBox(height: spacing.componentMd),
-        Expanded(
-          child: filtered.isEmpty
-              ? _EmptyResults(query: queryCtrl.text)
-              : ListView.separated(
-                  padding: EdgeInsets.fromLTRB(
-                    spacing.componentXl,
-                    spacing.componentSm,
-                    spacing.componentXl,
-                    spacing.componentXl,
-                  ),
-                  itemCount: filtered.length,
-                  separatorBuilder: (_, _) =>
-                      SizedBox(height: spacing.componentMd),
-                  itemBuilder: (context, i) {
-                    final p = filtered[i];
-                    return SearchResultCard(
-                      piece: p,
-                      onTap: () => context.go('/my-pieces/${p.id}'),
-                    );
-                  },
-                ),
-        ),
-      ],
+    return ListView.separated(
+      scrollDirection: Axis.horizontal,
+      padding: EdgeInsets.symmetric(horizontal: spacing.componentXl),
+      itemCount: entries.length,
+      separatorBuilder: (_, _) => SizedBox(width: spacing.componentSm),
+      itemBuilder: (_, i) {
+        final e = entries[i];
+        final active = e.year == selectedYear && e.month == selectedMonth;
+        return _Chip(
+          label: e.label,
+          active: active,
+          onTap: () => onSelect(year: e.year, month: e.month),
+        );
+      },
     );
-  }
-
-  List<_MonthFilter> _distinctMonths(List<Piece> pieces) {
-    final set = <String>{};
-    final out = <_MonthFilter>[const _MonthFilter.all()];
-    for (final p in pieces) {
-      final key = '${p.date.year}-${p.date.month.toString().padLeft(2, '0')}';
-      if (set.add(key)) {
-        out.add(_MonthFilter.month(p.date.year, p.date.month));
-      }
-    }
-    return out;
   }
 }
 
@@ -242,7 +247,7 @@ class _EmptyResults extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final spacing = context.wdsSpacing;
-    final msg = query.trim().isEmpty
+    final msg = query.isEmpty
         ? '아직 저장된 piece가 없어요.'
         : "'$query'에 대한 결과가 없어요.";
 

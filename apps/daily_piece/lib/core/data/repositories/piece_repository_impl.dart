@@ -72,6 +72,50 @@ class PieceRepositoryImpl implements PieceRepository {
   }
 
   @override
+  Future<List<Piece>> search({
+    String? query,
+    int? year,
+    int? month,
+    int limit = 100,
+  }) async {
+    final userId = _remote.currentUserId;
+    if (userId == null) return const [];
+
+    String? fromDate;
+    String? toDate;
+    if (year != null && month != null) {
+      fromDate = _localDateString(DateTime(year, month, 1));
+      toDate = _localDateString(DateTime(year, month + 1, 0));
+    }
+
+    final rows = await _remote.searchRows(
+      userId: userId,
+      query: query?.trim().isEmpty == true ? null : query?.trim(),
+      fromDate: fromDate,
+      toDate: toDate,
+      limit: limit,
+    );
+
+    return rows.map(_mapRow).toList(growable: false);
+  }
+
+  @override
+  Future<List<({int year, int month})>> listPieceMonths() async {
+    final userId = _remote.currentUserId;
+    if (userId == null) return const [];
+
+    final rows = await _remote.listAllDateRows(userId: userId);
+    final seen = <int>{};
+    final out = <({int year, int month})>[];
+    for (final r in rows) {
+      final d = DateTime.parse(r['date'] as String);
+      final key = d.year * 100 + d.month;
+      if (seen.add(key)) out.add((year: d.year, month: d.month));
+    }
+    return out;
+  }
+
+  @override
   Future<List<Piece>> listByMonth({
     required int year,
     required int month,

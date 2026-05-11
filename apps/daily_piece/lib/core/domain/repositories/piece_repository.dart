@@ -24,6 +24,20 @@ abstract class PieceRepository {
   /// Used by the Calendar screen to render the dot map.
   Future<List<Piece>> listByMonth({required int year, required int month});
 
+  /// Server-side caption search with optional month constraint. Either
+  /// filter can be null/omitted. Returns `date desc`, capped at [limit].
+  Future<List<Piece>> search({
+    String? query,
+    int? year,
+    int? month,
+    int limit = 100,
+  });
+
+  /// Distinct (year, month) pairs the signed-in user has Pieces in,
+  /// ordered newest-first. Used by Search to derive the month chip row
+  /// without paging the full feed client-side.
+  Future<List<({int year, int month})>> listPieceMonths();
+
   /// Short-lived signed URL for displaying a private Piece photo.
   Future<String> signedPhotoUrl(String path, {int expiresInSeconds = 3600});
 

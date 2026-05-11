@@ -9,6 +9,7 @@ import '../../../../core/data/repositories/piece_repository_impl.dart';
 import '../../../../core/domain/entities/piece.dart';
 import '../../../../core/domain/exceptions/piece_exceptions.dart';
 import '../../../my_pieces/presentation/providers/my_pieces_feed_provider.dart';
+import '../../../search/presentation/providers/search_providers.dart';
 import 'photo_picker_tile.dart';
 
 /// Modal bottom sheet for creating a new Piece. Pick photo → caption → save.
@@ -101,6 +102,8 @@ class _NewPieceSheetState extends ConsumerState<NewPieceSheet> {
           );
 
       ref.invalidate(myPiecesFeedProvider);
+      ref.invalidate(pieceMonthsProvider);
+      ref.invalidate(searchResultsProvider);
 
       if (mounted) Navigator.of(context).pop();
     } on PieceAlreadyExistsToday {

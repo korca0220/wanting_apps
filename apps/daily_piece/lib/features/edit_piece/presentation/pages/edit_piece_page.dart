@@ -11,6 +11,7 @@ import '../../../../core/data/repositories/piece_repository_impl.dart';
 import '../../../../core/domain/entities/piece.dart';
 import '../../../my_pieces/presentation/providers/my_pieces_feed_provider.dart';
 import '../../../piece_detail/presentation/providers/piece_by_id_provider.dart';
+import '../../../search/presentation/providers/search_providers.dart';
 import '../../../piece_detail/presentation/widgets/error_view.dart';
 import '../../../piece_detail/presentation/widgets/missing_view.dart';
 
@@ -151,6 +152,9 @@ class _EditFormState extends ConsumerState<_EditForm> {
 
       ref.invalidate(pieceByIdProvider(widget.piece.id));
       ref.invalidate(myPiecesFeedProvider);
+      // Caption edits change what searchResults match; month set is
+      // unchanged (date is immutable) so pieceMonths can stay.
+      ref.invalidate(searchResultsProvider);
 
       if (mounted) context.pop();
     } catch (e) {
