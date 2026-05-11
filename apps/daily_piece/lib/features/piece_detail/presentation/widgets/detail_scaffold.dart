@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/data/cache/signed_url_cache_provider.dart';
 import '../../../../core/data/repositories/piece_repository_impl.dart';
 import '../../../../core/domain/entities/piece.dart';
+import '../../../calendar/presentation/providers/month_pieces_provider.dart';
 import '../../../my_pieces/presentation/providers/my_pieces_feed_provider.dart';
 import '../../../search/presentation/providers/search_providers.dart';
 import '../providers/piece_by_id_provider.dart';
@@ -89,11 +90,13 @@ class _DetailScaffoldState extends ConsumerState<DetailScaffold> {
           .read(pieceRepositoryProvider)
           .delete(id: widget.piece.id, photoPath: widget.piece.photoPath);
 
+      final d = widget.piece.date;
       ref.read(signedUrlCacheProvider).invalidate(widget.piece.photoPath);
       ref.invalidate(pieceByIdProvider(widget.piece.id));
       ref.invalidate(myPiecesFeedProvider);
       ref.invalidate(pieceMonthsProvider);
       ref.invalidate(searchResultsProvider);
+      ref.invalidate(monthPiecesProvider(year: d.year, month: d.month));
 
       if (mounted) context.go('/my-pieces');
     } catch (e) {

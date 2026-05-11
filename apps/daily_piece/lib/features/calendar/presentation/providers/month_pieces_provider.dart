@@ -9,7 +9,10 @@ part 'month_pieces_provider.g.dart';
 /// Pieces for a given calendar month, keyed by `yyyy-mm-dd` for O(1) cell
 /// lookups. `(year, month)` is the family key so the cache survives month
 /// scrubbing without re-fetching adjacent months on every step.
-@Riverpod(keepAlive: false)
+///
+/// `keepAlive: true` so prefetched neighbor months stay warm even when
+/// nothing watches them — the user typically scrubs ±1 month at a time.
+@Riverpod(keepAlive: true)
 Future<Map<String, Piece>> monthPieces(
   Ref ref, {
   required int year,

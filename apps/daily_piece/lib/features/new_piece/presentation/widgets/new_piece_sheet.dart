@@ -8,6 +8,7 @@ import '../../../../core/data/media/photo_picker.dart';
 import '../../../../core/data/repositories/piece_repository_impl.dart';
 import '../../../../core/domain/entities/piece.dart';
 import '../../../../core/domain/exceptions/piece_exceptions.dart';
+import '../../../calendar/presentation/providers/month_pieces_provider.dart';
 import '../../../my_pieces/presentation/providers/my_pieces_feed_provider.dart';
 import '../../../search/presentation/providers/search_providers.dart';
 import 'photo_picker_tile.dart';
@@ -101,9 +102,13 @@ class _NewPieceSheetState extends ConsumerState<NewPieceSheet> {
             date: widget.forDate,
           );
 
+      final date = widget.forDate ?? DateTime.now();
       ref.invalidate(myPiecesFeedProvider);
       ref.invalidate(pieceMonthsProvider);
       ref.invalidate(searchResultsProvider);
+      ref.invalidate(
+        monthPiecesProvider(year: date.year, month: date.month),
+      );
 
       if (mounted) Navigator.of(context).pop();
     } on PieceAlreadyExistsToday {

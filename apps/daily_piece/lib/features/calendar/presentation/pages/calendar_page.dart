@@ -43,18 +43,34 @@ class _CalendarPageState extends ConsumerState<CalendarPage> {
     final now = DateTime.now();
     _visibleMonth = DateTime(now.year, now.month);
     _selectedDate = DateTime(now.year, now.month, now.day);
+
+    // Warm the neighbors so the first prev/next tap renders without a spinner.
+    WidgetsBinding.instance.addPostFrameCallback((_) => _prefetchNeighbors());
+  }
+
+  /// Fire-and-forget reads of the ±1 months. `ref.read(.future)` kicks the
+  /// HTTP request off without subscribing; `keepAlive: true` on the
+  /// provider keeps the result cached for later tap.
+  void _prefetchNeighbors() {
+    if (!mounted) return;
+    final prev = DateTime(_visibleMonth.year, _visibleMonth.month - 1);
+    final next = DateTime(_visibleMonth.year, _visibleMonth.month + 1);
+    ref.read(monthPiecesProvider(year: prev.year, month: prev.month).future);
+    ref.read(monthPiecesProvider(year: next.year, month: next.month).future);
   }
 
   void _prev() {
     setState(() {
       _visibleMonth = DateTime(_visibleMonth.year, _visibleMonth.month - 1);
     });
+    _prefetchNeighbors();
   }
 
   void _next() {
     setState(() {
       _visibleMonth = DateTime(_visibleMonth.year, _visibleMonth.month + 1);
     });
+    _prefetchNeighbors();
   }
 
   void _jumpToToday() {
@@ -63,6 +79,7 @@ class _CalendarPageState extends ConsumerState<CalendarPage> {
       _visibleMonth = DateTime(now.year, now.month);
       _selectedDate = DateTime(now.year, now.month, now.day);
     });
+    _prefetchNeighbors();
   }
 
   void _onCellTap(DateTime cellDate, bool inCurrentMonth, dynamic piece) {
@@ -71,6 +88,7 @@ class _CalendarPageState extends ConsumerState<CalendarPage> {
         _visibleMonth = DateTime(cellDate.year, cellDate.month);
         _selectedDate = cellDate;
       });
+      _prefetchNeighbors();
       return;
     }
 
@@ -79,15 +97,8 @@ class _CalendarPageState extends ConsumerState<CalendarPage> {
     if (piece != null) {
       context.go('/my-pieces/${piece.id}');
     } else {
-      showNewPieceSheet(context, forDate: cellDate).then((_) {
-        // After the sheet closes, the feed and month map both invalidate.
-        ref.invalidate(
-          monthPiecesProvider(
-            year: _visibleMonth.year,
-            month: _visibleMonth.month,
-          ),
-        );
-      });
+      // NewPieceSheet invalidates the matching monthPieces entry on save.
+      showNewPieceSheet(context, forDate: cellDate);
     }
   }
 
