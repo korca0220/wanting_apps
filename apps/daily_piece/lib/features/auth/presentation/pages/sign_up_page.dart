@@ -59,7 +59,11 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
     try {
       final immediate = await ref
           .read(authRepositoryProvider)
-          .signUp(email: email, password: password);
+          .signUp(
+            email: email,
+            password: password,
+            name: _name.text,
+          );
       if (!mounted) return;
 
       if (immediate) {

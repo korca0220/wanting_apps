@@ -16,7 +16,14 @@ abstract class AuthRepository {
   /// `true` when the project has Confirm email = OFF (session granted
   /// immediately). `false` when a confirmation email was sent — the UI should
   /// then show a "check your inbox" state.
-  Future<bool> signUp({required String email, required String password});
+  ///
+  /// [name] is stored in the user's metadata when supplied; Profile reads
+  /// it back from `auth.user.userMetadata['name']`.
+  Future<bool> signUp({
+    required String email,
+    required String password,
+    String? name,
+  });
 
   Future<void> signOut();
 

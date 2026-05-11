@@ -33,8 +33,13 @@ class AuthRemoteDataSource {
   Future<AuthResponse> signUp({
     required String email,
     required String password,
+    Map<String, dynamic>? data,
   }) {
-    return _client.auth.signUp(email: email, password: password);
+    return _client.auth.signUp(
+      email: email,
+      password: password,
+      data: data,
+    );
   }
 
   Future<void> signOut() => _client.auth.signOut();

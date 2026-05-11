@@ -37,9 +37,20 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<bool> signUp({required String email, required String password}) async {
+  Future<bool> signUp({
+    required String email,
+    required String password,
+    String? name,
+  }) async {
     try {
-      final res = await _remote.signUp(email: email, password: password);
+      final trimmed = name?.trim();
+      final res = await _remote.signUp(
+        email: email,
+        password: password,
+        data: (trimmed != null && trimmed.isNotEmpty)
+            ? {'name': trimmed}
+            : null,
+      );
 
       return res.session != null;
     } on AuthException catch (e) {
