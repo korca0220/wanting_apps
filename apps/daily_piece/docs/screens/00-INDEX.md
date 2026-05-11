@@ -13,8 +13,8 @@ DailyPiece 앱은 인증 흐름 4 화면(Welcome / Sign In / Sign Up / Reset Pas
 ## 명세 ↔ 구현 매핑
 
 | 명세 (Spec)       | 구현 (Built)              | 코드 위치                                                                                                                                              | 비고                                                                                                              |
-| ----------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
-| 01 Profile        | **ProfilePage**           | [`features/profile/presentation/pages/profile_page.dart`](../../lib/features/profile/presentation/pages/profile_page.dart)                             | Profile / Settings / Account 카드 + 버전 풋터. App Theme은 잠금 대신 System↔Light↔Dark cycle (의도적 차이)        |
+| ----------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | -----------------------------------------------ㄱ------------------------------------------------------------------ |
+| 01 Profile        | **ProfilePage**           | [`features/profile/presentation/pages/profile_page.dart`](../../lib/features/profile/presentation/pages/profile_page.dart)                             | Profile / Settings / Account 카드 + 버전 풋터. Export Data·Delete Account는 의도적 미구현. App Theme은 cycle      |
 | 02 Search         | **SearchPage**            | [`features/search/presentation/pages/search_page.dart`](../../lib/features/search/presentation/pages/search_page.dart)                                 | Caption substring + 동적 월 칩 (사용자의 piece 보유 월). 결과는 가로 카드. 클라이언트 필터링 (≤1000건 가정)       |
 | 03 Calendar       | **CalendarPage**          | [`features/calendar/presentation/pages/calendar_page.dart`](../../lib/features/calendar/presentation/pages/calendar_page.dart)                         | 7-col 그리드 + 5-state 셀 + InfoCard. 빈 칸 탭 → 날짜 prefill된 New Piece 시트                                    |
 | 04 Edit Piece     | **EditPiecePage** (별도)  | [`features/edit_piece/presentation/pages/edit_piece_page.dart`](../../lib/features/edit_piece/presentation/pages/edit_piece_page.dart)                 | `/my-pieces/:id/edit` 라우트. TopBar Cancel/Save text + Photo Required + Replace Photo + Caption counter          |
@@ -31,8 +31,9 @@ DailyPiece 앱은 인증 흐름 4 화면(Welcome / Sign In / Sign Up / Reset Pas
 
 ### 의도적 차이 (spec vs 코드)
 
-- **App Theme 행 (01 Profile)**: 명세는 "Dark 잠금" 정적 표시. 코드는 기존 `themeModeController`가 작동하므로 tap-cycle (System → Light → Dark)로 유지. trailing 라벨이 현재 모드를 반영. 잠금 시 사용자 경험이 후퇴하므로 의도적 결정.
-- **Delete Account**: Supabase admin 삭제 엔드포인트가 없어 confirm 후 Sign Out으로 대체 + 안내 SnackBar. 서버측 admin endpoint 합류 시 실제 삭제로 교체.
+- **App Theme 행 (01 Profile)**: 명세는 "Dark 잠금" 정적 표시. 코드는 기존 `themeModeController`가 작동하므로 tap-cycle (System → Light → Dark)로 유지. trailing 라벨이 현재 모드를 반영.
+- **Export Data 행 (01 Profile)**: 의도적 미구현 — 명세에선 정의돼 있지만 v1 범위에서 제외. UI 행도 제거 (placeholder 행을 두는 것보다 낫다고 판단).
+- **Delete Account 행 (01 Profile)**: 의도적 미구현 — Supabase admin endpoint 없이는 진짜 삭제가 안 됨. 가짜 삭제(=Sign Out)를 두는 게 더 위험하다고 판단해 행 자체를 제거.
 
 ---
 
@@ -151,9 +152,12 @@ flowchart TD
 
 리뉴얼은 끝났지만 아래 항목은 명세 대비 미완 / 추후 합류 대상:
 
-1. **Export Data** — Profile의 Export 행은 SnackBar placeholder. 실제 ZIP/JSON 다운로드 엔드포인트 + 클라이언트 구현 필요.
-2. **Delete Account** — Supabase admin endpoint(서버 함수) 합류 후 placeholder 자리 교체.
-3. **App Theme 잠금 (01 Profile)**: 현재는 cycle. 잠금이 정말 필요하면 `themeModeController`를 freeze + lock 아이콘으로 회귀.
-4. **검색 서버측 필터링**: 현재 클라이언트 필터링(≤1000건). piece가 늘면 `repository.search(query, year, month)` 신규 메서드 + Postgres `ilike` / range 필터로 회귀.
-5. **`DailyPieceThumbnail` 합류**: Custom 표기 → DS 컴포넌트 합류 가능성 검토.
-6. **사용자 메타데이터 (name)**: `auth.user.userMetadata['name']`을 SignUp 시 저장하도록 후속 — 현재 ProfileCard는 fallback으로 email local-part 사용.
+1. **사용자 메타데이터 (name)**: SignUp의 Name 필드가 입력만 받고 저장 안 됨. `auth.signUp(data: {'name': ...})`로 metadata 저장하도록 연결. 현재 ProfileCard는 fallback으로 email local-part 사용.
+2. **서버측 검색**: 현재 `list(limit: 1000)` + 클라이언트 필터. piece가 늘면 깨짐. `repository.search(query, year, month)` 추가 + Postgres `ilike` + 월 범위.
+3. **Calendar 인접 월 prefetch**: 좌우 스크러빙 시 미세 깜빡임. 현재 월 ± 1 미리 fetch 정책 검토.
+4. **에러 surfacing 일관화**: inline `_error` 텍스트 + 일부 SnackBar 혼재. WdsSnackBar로 통일.
+5. **위젯 테스트 확장**: 현재 라우팅 2개만. New Piece sheet 저장, Calendar 셀 탭, Search 필터 추가 권장.
+6. **실기기 sweep**: 4-탭 / FAB / 시트 / Calendar / Search / Edit Piece 전부 디바이스에서 한 번 확인.
+7. **App Theme 잠금**: 현재는 cycle. 잠금이 정말 필요하면 controller freeze + lock 아이콘으로 회귀.
+8. **`DailyPieceThumbnail` / `CalendarDayCell` 합류**: Custom 표기 → 정식 DS 컴포넌트 검토.
+9. **`PhotoPickerTile` dashed border**: 현재 solid. DS에 `DottedBorder` 추가 후 회귀하면 spec 100%.

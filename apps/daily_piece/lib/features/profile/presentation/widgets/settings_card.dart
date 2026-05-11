@@ -20,17 +20,6 @@ class SettingsCard extends ConsumerWidget {
       title: 'Settings',
       children: [
         SettingRow(
-          icon: Icons.download_outlined,
-          title: 'Export Data',
-          caption: 'Download your archive',
-          onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Export coming soon')),
-            );
-          },
-        ),
-        Container(height: 1, color: colors.lineNormalNeutral),
-        SettingRow(
           icon: Icons.dark_mode_outlined,
           title: 'App Theme',
           caption: _label(mode),
