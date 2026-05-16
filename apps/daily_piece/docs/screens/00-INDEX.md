@@ -12,20 +12,20 @@ DailyPiece 앱은 인증 흐름 4 화면(Welcome / Sign In / Sign Up / Reset Pas
 
 ## 명세 ↔ 구현 매핑
 
-| 명세 (Spec)       | 구현 (Built)              | 코드 위치                                                                                                                                              | 비고                                                                                                              |
-| ----------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | -----------------------------------------------ㄱ------------------------------------------------------------------ |
-| 01 Profile        | **ProfilePage**           | [`features/profile/presentation/pages/profile_page.dart`](../../lib/features/profile/presentation/pages/profile_page.dart)                             | Profile / Settings / Account 카드 + 버전 풋터. Export Data·Delete Account는 의도적 미구현. App Theme은 cycle      |
-| 02 Search         | **SearchPage**            | [`features/search/presentation/pages/search_page.dart`](../../lib/features/search/presentation/pages/search_page.dart)                                 | Caption substring + 동적 월 칩 (사용자의 piece 보유 월). 결과는 가로 카드. 클라이언트 필터링 (≤1000건 가정)       |
-| 03 Calendar       | **CalendarPage**          | [`features/calendar/presentation/pages/calendar_page.dart`](../../lib/features/calendar/presentation/pages/calendar_page.dart)                         | 7-col 그리드 + 5-state 셀 + InfoCard. 빈 칸 탭 → 날짜 prefill된 New Piece 시트                                    |
-| 04 Edit Piece     | **EditPiecePage** (별도)  | [`features/edit_piece/presentation/pages/edit_piece_page.dart`](../../lib/features/edit_piece/presentation/pages/edit_piece_page.dart)                 | `/piece/:id/edit` 라우트. TopBar Cancel/Save text + Photo Required + Replace Photo + Caption counter              |
-| 05 Piece Details  | **PieceDetailPage**       | [`features/piece_detail/presentation/pages/piece_detail_page.dart`](../../lib/features/piece_detail/presentation/pages/piece_detail_page.dart)         | 사진 + 코멘트 + 메타. Edit/Delete tile 행. 인라인 edit는 04로 분리                                                |
-| 06 My Pieces      | **MyPiecesPage**          | [`features/my_pieces/presentation/pages/my_pieces_page.dart`](../../lib/features/my_pieces/presentation/pages/my_pieces_page.dart)                     | AppBar(DailyPiece + 월 라벨 + 종 아이콘) + 풀폭 카드 피드 + FAB(+) → New Piece 시트                               |
-| 07 New Piece      | **NewPieceSheet** (시트)  | [`features/new_piece/presentation/widgets/new_piece_sheet.dart`](../../lib/features/new_piece/presentation/widgets/new_piece_sheet.dart)               | `showModalBottomSheet`. 라우트 없음 — FAB / Calendar 빈칸 탭 / EmptyView CTA에서 호출. `forDate` 옵션 prefill 지원 |
-| 08 Create Account | **SignUpPage**            | [`features/auth/presentation/pages/sign_up_page.dart`](../../lib/features/auth/presentation/pages/sign_up_page.dart)                                   | Name(Optional) / Email / Password(≥8) / Confirm Password + 일치 검증 + ToS 풋터                                   |
-| 09 Welcome Back   | **SignInPage**            | [`features/auth/presentation/pages/sign_in_page.dart`](../../lib/features/auth/presentation/pages/sign_in_page.dart)                                   | Email / Password + Forgot password? → /reset-password + ToS 풋터                                                  |
-| 10 Reset Password | **ResetPasswordPage**     | [`features/auth/presentation/pages/reset_password_page.dart`](../../lib/features/auth/presentation/pages/reset_password_page.dart)                     | `auth.resetPasswordForEmail`. 성공/실패 모두 일반화된 메시지 (account-existence side-channel 회피)                |
-| 11 Welcome        | **WelcomePage**           | [`features/welcome/presentation/pages/welcome_page.dart`](../../lib/features/welcome/presentation/pages/welcome_page.dart)                             | 미인증 진입점. 라우터 redirect 타깃이 `/sign-in` → `/welcome`으로 이전                                            |
-| BottomNav         | **MainShellPage** (4-탭)  | [`app/shell/main_shell_page.dart`](../../lib/app/shell/main_shell_page.dart)                                                                           | My Pieces / Calendar / Search / Profile — 명세 100%                                                               |
+| 명세 (Spec)       | 구현 (Built)             | 코드 위치                                                                                                                                      | 비고                                                                                                               |
+| ----------------- | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| 01 Profile        | **ProfilePage**          | [`features/profile/presentation/pages/profile_page.dart`](../../lib/features/profile/presentation/pages/profile_page.dart)                     | Profile / Settings / Account 카드 + 버전 풋터. Export Data·Delete Account는 의도적 미구현. App Theme은 cycle       |
+| 02 Search         | **SearchPage**           | [`features/search/presentation/pages/search_page.dart`](../../lib/features/search/presentation/pages/search_page.dart)                         | Caption substring + 동적 월 칩 (사용자의 piece 보유 월). 결과는 가로 카드. 서버사이드 검색 (`search(query, year, month)`) |
+| 03 Calendar       | **CalendarPage**         | [`features/calendar/presentation/pages/calendar_page.dart`](../../lib/features/calendar/presentation/pages/calendar_page.dart)                 | 7-col 그리드 + 5-state 셀 + InfoCard. 빈 칸 탭 → 날짜 prefill된 New Piece 시트                                     |
+| 04 Edit Piece     | **EditPiecePage** (별도) | [`features/edit_piece/presentation/pages/edit_piece_page.dart`](../../lib/features/edit_piece/presentation/pages/edit_piece_page.dart)         | `/piece/:id/edit` 공용 경로 + `/my-pieces/:id/edit` 탭 내부 경로. TopBar Cancel/Save text + Photo Required + Replace Photo + Caption counter |
+| 05 Piece Details  | **PieceDetailPage**      | [`features/piece_detail/presentation/pages/piece_detail_page.dart`](../../lib/features/piece_detail/presentation/pages/piece_detail_page.dart) | 사진 + 코멘트 + 메타. Edit/Delete tile 행. 인라인 edit는 04로 분리                                                 |
+| 06 My Pieces      | **MyPiecesPage**         | [`features/my_pieces/presentation/pages/my_pieces_page.dart`](../../lib/features/my_pieces/presentation/pages/my_pieces_page.dart)             | AppBar(DailyPiece + 월 라벨 + 종 아이콘) + 풀폭 카드 피드 + FAB(+) → New Piece 시트                                |
+| 07 New Piece      | **NewPieceSheet** (시트) | [`features/new_piece/presentation/widgets/new_piece_sheet.dart`](../../lib/features/new_piece/presentation/widgets/new_piece_sheet.dart)       | `showModalBottomSheet`. 라우트 없음 — FAB / Calendar 빈칸 탭 / EmptyView CTA에서 호출. `forDate` 옵션 prefill 지원 |
+| 08 Create Account | **SignUpPage**           | [`features/auth/presentation/pages/sign_up_page.dart`](../../lib/features/auth/presentation/pages/sign_up_page.dart)                           | Name(Optional) / Email / Password(≥8) / Confirm Password + 일치 검증 + ToS 풋터                                    |
+| 09 Welcome Back   | **SignInPage**           | [`features/auth/presentation/pages/sign_in_page.dart`](../../lib/features/auth/presentation/pages/sign_in_page.dart)                           | Email / Password + Forgot password? → /reset-password + ToS 풋터                                                   |
+| 10 Reset Password | **ResetPasswordPage**    | [`features/auth/presentation/pages/reset_password_page.dart`](../../lib/features/auth/presentation/pages/reset_password_page.dart)             | `auth.resetPasswordForEmail`. 성공/실패 모두 일반화된 메시지 (account-existence side-channel 회피)                 |
+| 11 Welcome        | **WelcomePage**          | [`features/welcome/presentation/pages/welcome_page.dart`](../../lib/features/welcome/presentation/pages/welcome_page.dart)                     | 미인증 진입점. 라우터 redirect 타깃이 `/sign-in` → `/welcome`으로 이전                                             |
+| BottomNav         | **MainShellPage** (4-탭) | [`app/shell/main_shell_page.dart`](../../lib/app/shell/main_shell_page.dart)                                                                   | My Pieces / Calendar / Search / Profile — 명세 100%                                                                |
 
 레이아웃 컨벤션은 [ADR 0006](../adr/0006-clean-architecture-layout.md) 참고.
 
@@ -98,21 +98,21 @@ flowchart TD
 
 ## 🛣️ 라우트 표
 
-| Path                          | Page / Sheet                                                                            | 진입 가드      |
-| ----------------------------- | --------------------------------------------------------------------------------------- | -------------- |
-| `/welcome`                    | WelcomePage                                                                             | 미인증 only    |
-| `/sign-in`                    | SignInPage                                                                              | 미인증 only    |
-| `/sign-up`                    | SignUpPage                                                                              | 미인증 only    |
-| `/reset-password`             | ResetPasswordPage                                                                       | 미인증 only    |
-| `/my-pieces`                  | MyPiecesPage (shell branch 1)                                                           | 인증 only      |
-| `/my-pieces/:pieceId`         | PieceDetailPage (My Pieces 탭 내부 진입 경로)                                           | 인증 only      |
-| `/my-pieces/:pieceId/edit`    | EditPiecePage (My Pieces 탭 내부 진입 경로)                                             | 인증 only      |
-| `/piece/:pieceId`             | PieceDetailPage (공용 상세 경로: Calendar/Search에서 탭 유지)                           | 인증 only      |
-| `/piece/:pieceId/edit`        | EditPiecePage (공용 상세 경로의 편집 하위 경로)                                         | 인증 only      |
-| `/calendar`                   | CalendarPage (shell branch 2)                                                           | 인증 only      |
-| `/search`                     | SearchPage (shell branch 3)                                                             | 인증 only      |
-| `/profile`                    | ProfilePage (shell branch 4)                                                            | 인증 only      |
-| (route 없음)                  | NewPieceSheet — `showNewPieceSheet(context, forDate?)`                                  | 인증 only (시트 호출 컨텍스트 안에서만) |
+| Path                       | Page / Sheet                                           | 진입 가드                               |
+| -------------------------- | ------------------------------------------------------ | --------------------------------------- |
+| `/welcome`                 | WelcomePage                                            | 미인증 only                             |
+| `/sign-in`                 | SignInPage                                             | 미인증 only                             |
+| `/sign-up`                 | SignUpPage                                             | 미인증 only                             |
+| `/reset-password`          | ResetPasswordPage                                      | 미인증 only                             |
+| `/my-pieces`               | MyPiecesPage (shell branch 1)                          | 인증 only                               |
+| `/my-pieces/:pieceId`      | PieceDetailPage (My Pieces 탭 내부 진입 경로)          | 인증 only                               |
+| `/my-pieces/:pieceId/edit` | EditPiecePage (My Pieces 탭 내부 진입 경로)            | 인증 only                               |
+| `/piece/:pieceId`          | PieceDetailPage (공용 상세 경로: Calendar/Search 탭 유지) | 인증 only                            |
+| `/piece/:pieceId/edit`     | EditPiecePage (공용 상세 경로의 편집 하위 경로)        | 인증 only                               |
+| `/calendar`                | CalendarPage (shell branch 2)                          | 인증 only                               |
+| `/search`                  | SearchPage (shell branch 3)                            | 인증 only                               |
+| `/profile`                 | ProfilePage (shell branch 4)                           | 인증 only                               |
+| (route 없음)               | NewPieceSheet — `showNewPieceSheet(context, forDate?)` | 인증 only (시트 호출 컨텍스트 안에서만) |
 
 `initialLocation`: `/my-pieces`. 미인증 시 `/welcome`으로 redirect, 인증 시 `_publicPaths`(welcome/sign-in/sign-up/reset-password)에서 `/my-pieces`로 redirect.
 
@@ -154,12 +154,10 @@ flowchart TD
 
 리뉴얼은 끝났지만 아래 항목은 명세 대비 미완 / 추후 합류 대상:
 
-1. **사용자 메타데이터 (name)**: SignUp의 Name 필드가 입력만 받고 저장 안 됨. `auth.signUp(data: {'name': ...})`로 metadata 저장하도록 연결. 현재 ProfileCard는 fallback으로 email local-part 사용.
-2. **서버측 검색**: 현재 `list(limit: 1000)` + 클라이언트 필터. piece가 늘면 깨짐. `repository.search(query, year, month)` 추가 + Postgres `ilike` + 월 범위.
-3. **Calendar 인접 월 prefetch**: 좌우 스크러빙 시 미세 깜빡임. 현재 월 ± 1 미리 fetch 정책 검토.
-4. **에러 surfacing 일관화**: inline `_error` 텍스트 + 일부 SnackBar 혼재. WdsSnackBar로 통일.
-5. **위젯 테스트 확장**: 현재 라우팅 2개만. New Piece sheet 저장, Calendar 셀 탭, Search 필터 추가 권장.
-6. **실기기 sweep**: 4-탭 / FAB / 시트 / Calendar / Search / Edit Piece 전부 디바이스에서 한 번 확인.
-7. **App Theme 잠금**: 현재는 cycle. 잠금이 정말 필요하면 controller freeze + lock 아이콘으로 회귀.
-8. **`DailyPieceThumbnail` / `CalendarDayCell` 합류**: Custom 표기 → 정식 DS 컴포넌트 검토.
-9. **`PhotoPickerTile` dashed border**: 현재 solid. DS에 `DottedBorder` 추가 후 회귀하면 spec 100%.
+1. **Calendar 인접 월 prefetch**: 좌우 스크러빙 시 미세 깜빡임. 현재 월 ± 1 미리 fetch 정책 검토.
+2. **에러 surfacing 일관화**: inline `_error` 텍스트 + 일부 SnackBar 혼재. WdsSnackBar로 통일.
+3. **위젯 테스트 확장**: 현재 라우팅 2개만. New Piece sheet 저장, Calendar 셀 탭, Search 필터 추가 권장.
+4. **실기기 sweep**: 4-탭 / FAB / 시트 / Calendar / Search / Edit Piece 전부 디바이스에서 한 번 확인.
+5. **App Theme 잠금**: 현재는 cycle. 잠금이 정말 필요하면 controller freeze + lock 아이콘으로 회귀.
+6. **`DailyPieceThumbnail` / `CalendarDayCell` 합류**: Custom 표기 → 정식 DS 컴포넌트 검토.
+7. **`PhotoPickerTile` dashed border**: 현재 solid. DS에 `DottedBorder` 추가 후 회귀하면 spec 100%.
