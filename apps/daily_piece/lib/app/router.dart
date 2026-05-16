@@ -33,20 +33,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/welcome', builder: (_, _) => const WelcomePage()),
       GoRoute(path: '/sign-in', builder: (_, _) => const SignInPage()),
       GoRoute(path: '/sign-up', builder: (_, _) => const SignUpPage()),
-      GoRoute(
-        path: '/reset-password',
-        builder: (_, _) => const ResetPasswordPage(),
-      ),
+      GoRoute(path: '/reset-password', builder: (_, _) => const ResetPasswordPage()),
       // Global detail routes that should not force a tab switch.
       GoRoute(
         path: '/piece/:pieceId',
-        builder: (_, state) =>
-            PieceDetailPage(pieceId: state.pathParameters['pieceId']!),
+        builder: (_, state) => PieceDetailPage(pieceId: state.pathParameters['pieceId']!),
         routes: [
           GoRoute(
             path: 'edit',
-            builder: (_, state) =>
-                EditPiecePage(pieceId: state.pathParameters['pieceId']!),
+            builder: (_, state) => EditPiecePage(pieceId: state.pathParameters['pieceId']!),
           ),
         ],
       ),
@@ -64,15 +59,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 routes: [
                   GoRoute(
                     path: ':pieceId',
-                    builder: (_, state) => PieceDetailPage(
-                      pieceId: state.pathParameters['pieceId']!,
-                    ),
+                    builder: (_, state) => PieceDetailPage(pieceId: state.pathParameters['pieceId']!),
                     routes: [
                       GoRoute(
                         path: 'edit',
-                        builder: (_, state) => EditPiecePage(
-                          pieceId: state.pathParameters['pieceId']!,
-                        ),
+                        builder: (_, state) => EditPiecePage(pieceId: state.pathParameters['pieceId']!),
                       ),
                     ],
                   ),
@@ -81,25 +72,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             ],
           ),
           StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: '/calendar',
-                builder: (_, _) => const CalendarPage(),
-              ),
-            ],
+            routes: [GoRoute(path: '/calendar', builder: (_, _) => const CalendarPage())],
           ),
           StatefulShellBranch(
-            routes: [
-              GoRoute(path: '/search', builder: (_, _) => const SearchPage()),
-            ],
+            routes: [GoRoute(path: '/search', builder: (_, _) => const SearchPage())],
           ),
           StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: '/profile',
-                builder: (_, _) => const ProfilePage(),
-              ),
-            ],
+            routes: [GoRoute(path: '/profile', builder: (_, _) => const ProfilePage())],
           ),
         ],
       ),
