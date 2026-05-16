@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/theme_mode_provider.dart';
 import 'setting_row.dart';
+import 'settings_section_card.dart';
 
 /// Settings card — Export Data row + Theme row. Theme cycles through
 /// System / Light / Dark on tap; the trailing label reflects the current
@@ -16,7 +17,7 @@ class SettingsCard extends ConsumerWidget {
     final colors = context.wdsColors;
     final mode = ref.watch(themeModeControllerProvider);
 
-    return _Card(
+    return SettingsSectionCard(
       title: 'Settings',
       children: [
         SettingRow(
@@ -36,38 +37,6 @@ class SettingsCard extends ConsumerWidget {
               .set(_next(mode)),
         ),
       ],
-    );
-  }
-}
-
-class _Card extends StatelessWidget {
-  const _Card({required this.title, required this.children});
-
-  final String title;
-  final List<Widget> children;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.wdsColors;
-
-    return Container(
-      decoration: BoxDecoration(
-        color: colors.backgroundElevatedNormal,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colors.lineNormalNeutral),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
-            child: WdsText(title, style: WdsTextStyle.heading1),
-          ),
-          Container(height: 1, color: colors.lineNormalNeutral),
-          ...children,
-        ],
-      ),
     );
   }
 }

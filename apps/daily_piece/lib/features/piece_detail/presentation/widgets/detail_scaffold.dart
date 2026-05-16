@@ -9,6 +9,7 @@ import '../../../../core/domain/entities/piece.dart';
 import '../../../calendar/presentation/providers/month_pieces_provider.dart';
 import '../../../my_pieces/presentation/providers/my_pieces_feed_provider.dart';
 import '../../../search/presentation/providers/search_providers.dart';
+import 'action_tile.dart';
 import '../providers/piece_by_id_provider.dart';
 
 const _months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -133,74 +134,23 @@ class _DetailScaffoldState extends ConsumerState<DetailScaffold> {
                 ],
               ),
               SizedBox(height: spacing.componentXl),
-              _ActionTile(
+              ActionTile(
                 label: 'Edit Piece',
                 icon: Icons.edit_outlined,
-                tone: _ActionTone.primary,
+                tone: ActionTone.primary,
                 disabled: _busy,
                 onTap: () => context.push('/piece/${widget.piece.id}/edit'),
               ),
               SizedBox(height: spacing.componentSm),
-              _ActionTile(
+              ActionTile(
                 label: 'Delete Piece',
                 icon: Icons.delete_outline,
-                tone: _ActionTone.negative,
+                tone: ActionTone.negative,
                 disabled: _busy,
                 onTap: _confirmDelete,
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-enum _ActionTone { primary, negative }
-
-class _ActionTile extends StatelessWidget {
-  const _ActionTile({
-    required this.label,
-    required this.icon,
-    required this.tone,
-    required this.disabled,
-    required this.onTap,
-  });
-
-  final String label;
-  final IconData icon;
-  final _ActionTone tone;
-  final bool disabled;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.wdsColors;
-    final spacing = context.wdsSpacing;
-    final color = tone == _ActionTone.primary ? colors.primaryNormal : colors.statusNegative;
-
-    return InkWell(
-      onTap: disabled ? null : onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        decoration: BoxDecoration(
-          color: colors.backgroundElevatedNormal,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: colors.lineNormalNeutral),
-        ),
-        padding: EdgeInsets.symmetric(horizontal: spacing.componentLg, vertical: spacing.componentMd),
-        child: Row(
-          children: [
-            Icon(icon, color: color),
-            SizedBox(width: spacing.componentMd),
-            Expanded(
-              child: Text(
-                label,
-                style: TextStyle(color: color, fontWeight: FontWeight.w600),
-              ),
-            ),
-            Icon(Icons.chevron_right, color: colors.labelAlternative),
-          ],
         ),
       ),
     );
