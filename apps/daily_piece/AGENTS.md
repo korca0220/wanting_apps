@@ -30,7 +30,7 @@
 
 | 경로 | 역할 |
 |---|---|
-| [`docs/screens/`](docs/screens/) | 화면 명세 11개 (framework-neutral .md) — Profile, MyPieces, Calendar, EditPiece, PieceDetails, Home, NewPiece, CreateAccount, WelcomeBack, ResetPassword |
+| [`docs/screens/`](docs/screens/) | 화면 명세 11개 (framework-neutral .md) — Profile, MyPieces, Calendar, EditPiece, PieceDetails, NewPiece, CreateAccount, WelcomeBack, ResetPassword, Welcome, Search |
 | [`docs/screens/00-INDEX.md`](docs/screens/00-INDEX.md) | 화면 인덱스 + 통계 |
 | [`docs/screens/TEMPLATE.md`](docs/screens/TEMPLATE.md) | 새 화면 템플릿 |
 | `lib/` | Flutter 구현 — [구현 상태](#-구현-상태) 참고 |
@@ -44,7 +44,7 @@
 확정된 결정:
 
 - **상태관리 / DI**: Riverpod (`flutter_riverpod` + `riverpod_annotation` codegen) — [ADR 0001](docs/adr/0001-state-management.md). 신규 provider는 `@Riverpod(...)` 함수/클래스로 작성. `riverpod_lint`가 `custom_lint` 플러그인으로 활성화돼 있어 forgot-to-watch / 누락된 keepAlive 등을 잡아준다.
-- **라우팅**: go_router — [ADR 0002](docs/adr/0002-routing.md). 라우터 정의는 `lib/app/router.dart` 단일 진입.
+- **라우팅**: go_router — [ADR 0002](docs/adr/0002-routing.md). 라우터 정의는 `lib/app/router.dart` 단일 진입. 4-탭 shell은 `StatefulShellRoute.indexedStack` — 탭 전환 후 복귀 시 각 브랜치의 back stack 유지. 라우트: `/welcome`, `/sign-in`, `/sign-up`, `/reset-password`(비인증 공개), `/my-pieces`(+ `/:pieceId` + `/:pieceId/edit`), `/calendar`, `/search`, `/profile`(인증 전용).
 - **레이어 컨벤션**: Clean Architecture — [ADR 0006](docs/adr/0006-clean-architecture-layout.md). 각 피처 / `core/` 하위는 `data / domain / presentation` 3-레이어로 분리하고, 그 아래는 역할별 디렉토리 (`entities / repositories / exceptions / datasources / pages / widgets / providers` …)로 나눈다. cross-feature 공유는 `lib/core/` (피스 도메인은 여러 화면에서 쓰이므로 여기에 둠).
 - **DIP**: 도메인은 `repositories/` 아래 abstract 인터페이스만 둠. 데이터 레이어가 구현 + Riverpod provider를 노출하고, 프레젠테이션은 abstract 타입으로 받는다. 인터페이스 mock이 필요하기 전엔 fake provider override로 충분.
 - **Use case 클래스는 미도입**. Riverpod provider가 use case 역할을 하므로 trivial wrapper UseCase는 만들지 않는다. 도메인 규칙이 여러 provider에 걸쳐 흐트러질 때 도입을 재평가.
@@ -57,46 +57,37 @@ lib/
 ├── main.dart            # ProviderScope + Supabase.initialize + MaterialApp.router
 ├── app/
 │   ├── app.dart         # MaterialApp.router widget
-│   └── router.dart      # GoRouter + redirect 가드 (auth 기반)
+│   ├── router.dart      # GoRouter + redirect 가드 (auth 기반)
+│   └── shell/
+│       └── main_shell_page.dart  # 4-탭 BottomNav (StatefulShellRoute 호스트)
 ├── core/
-│   ├── auth/            # signedInStream / isSignedIn (router redirect용 derived provider)
+│   ├── auth/            # isSignedInProvider (router redirect용 derived provider)
 │   ├── domain/
 │   │   ├── entities/        # Piece 등 도메인 엔티티 (프레임워크 free)
-│   │   ├── repositories/    # abstract Port (Piece/Auth Repository)
+│   │   ├── repositories/    # abstract Port (Piece/Auth/Preferences Repository)
 │   │   └── exceptions/      # PieceAlreadyExistsToday, AuthFailure 등 도메인 예외
 │   ├── data/
-│   │   ├── datasources/     # Supabase 호출만 하는 thin pipe (Piece/Auth)
+│   │   ├── datasources/     # Supabase 호출만 하는 thin pipe (Piece/Auth/Preferences)
 │   │   ├── repositories/    # *Impl + Riverpod provider, mapping/에러 변환
-│   │   └── cache/           # signed URL 캐시 (ADR 0005)
-│   └── env/                 # envied 기반 SUPABASE_URL/ANON_KEY (.env)
+│   │   ├── cache/           # signed URL 캐시 (ADR 0005)
+│   │   └── media/           # media_pipeline.dart + photo_picker.dart (ADR 0004)
+│   ├── theme/           # themeModeProvider (SharedPreferences 영속)
+│   └── env/             # envied 기반 SUPABASE_URL/ANON_KEY (.env)
 └── features/
-    ├── auth/            # Sign in / Sign up (CA 분리 완료 — authRepository 경유)
-    ├── today/           # 작성/조회 (구현됨)
-    ├── collection/      # 타임라인 그리드 (구현됨)
-    ├── piece_detail/    # Piece 상세 read-only (구현됨)
-    └── settings/        # 설정 (stub)
+    ├── auth/            # Sign in / Sign up / Reset password (authRepository 경유)
+    ├── welcome/         # 비인증 진입점 — 로그인/회원가입 CTA
+    ├── my_pieces/       # 전체 Piece 피드 (full-width 카드, keyset 페이지네이션) + FAB → NewPiece
+    ├── new_piece/       # 바텀시트 (NewPieceSheet) — My Pieces FAB / Calendar 빈 셀 탭
+    ├── calendar/        # 월 그리드 — dot map, ±1개월 prefetch, 빈 셀 탭 → NewPieceSheet
+    ├── search/          # 서버사이드 검색 — caption ilike + month 범위 필터
+    ├── piece_detail/    # Piece 상세 read-only (/my-pieces/:pieceId)
+    ├── edit_piece/      # Piece 편집 (/my-pieces/:pieceId/edit) — 사진 교체 + 코멘트
+    └── profile/         # 프로필 카드 + 설정 (테마, 로그아웃)
 ```
 
-`features/<feature>/`는 모두 같은 골격: `presentation/{pages,widgets,providers}/` + 필요 시 `data/` (피처 전용 데이터, 예: Today의 `media_pipeline`) + 필요 시 `domain/` (피처 한정 도메인 규칙).
+`features/<feature>/`는 모두 같은 골격: `presentation/{pages,widgets,providers}/` + 필요 시 `data/` + 필요 시 `domain/`. `new_piece`는 라우트 없이 바텀시트만 노출하므로 `pages/` 없이 `widgets/`만 존재한다.
 
-### today/ 내부 구조
-
-```
-features/today/
-├── data/
-│   └── media/
-│       └── media_pipeline.dart  # ADR 0004 — 1080px / JPEG q80 / EXIF strip
-└── presentation/
-    ├── pages/
-    │   └── today_page.dart      # AsyncValue 분기 → loading / error / Compose / View
-    ├── widgets/
-    │   ├── compose_view.dart    # Pick → preview → comment → save 상태머신
-    │   └── piece_view.dart      # 저장된 Piece read-only (signed URL FutureBuilder)
-    └── providers/
-        └── today_piece_provider.dart  # @riverpod Future<Piece?>, pieceRepository 위임
-```
-
-`PieceRepository`(abstract)와 `pieceRepositoryProvider`는 [`core/`](lib/core/) 아래 공유 — Today/Collection/PieceDetail이 같은 `pieces` 애그리거트를 다루므로 피처별 분산 대신 도메인 레이어로 끌어올렸다. 신규 도메인 작업(예: Collection 페이지네이션) 시 `core/data/datasources/` + `core/data/repositories/`에 메서드를 추가하고, 피처는 그 인터페이스만 의존한다.
+`PieceRepository`(abstract)와 `pieceRepositoryProvider`는 [`core/`](lib/core/) 아래 공유 — My Pieces/Calendar/Search/PieceDetail이 같은 `pieces` 애그리거트를 다루므로 피처별 분산 대신 도메인 레이어로 끌어올렸다. 신규 도메인 작업 시 `core/data/datasources/` + `core/data/repositories/`에 메서드를 추가하고, 피처는 그 인터페이스만 의존한다.
 
 ---
 
@@ -208,33 +199,34 @@ python3 ../../../design-system-gen/skills/screen-spec-gen/scripts/validate_scree
 | 영역 | 상태 | 비고 |
 |---|---|---|
 | Supabase client bootstrap | ✅ | `main.dart`에서 `Supabase.initialize` |
-| `pieces` 테이블 + RLS | ✅ | [`supabase/migrations/0001`](supabase/migrations/0001_create_pieces_table.sql). MCP로 dev 프로젝트에 적용됨 |
+| `pieces` 테이블 + RLS | ✅ | [`supabase/migrations/0001`](supabase/migrations/0001_create_pieces_table.sql). dev 프로젝트에 적용됨 |
 | `pieces` Storage bucket + policies | ✅ | [`supabase/migrations/0002`](supabase/migrations/0002_create_pieces_bucket.sql). private, owner-only |
-| Sign in / Sign up | ✅ 코드, 🟡 실기 sweep 완료 (가입 → /today 도달 확인) | `authRepository` 경유. `AuthFailure(message)`로 도메인 예외 단일화. Confirm email 분기 양쪽 처리 |
-| Today: 작성 흐름 (compose) | ✅ 코드, ✅ 실기 sweep 통과 | pick → compress → upload → INSERT |
-| Today: 조회 (view 모드) | ✅ 코드, ✅ 실기 sweep 통과 | signed URL 이미지 로드 |
-| Detail: edit comment + 사진 교체 + delete | ✅ 코드, ❌ 실기 미검증 | 편집 모드에서 사진 탭 → 교체 / 코멘트 수정 / 저장 시 photo + comment 동시 처리. 날짜 변경은 deferred (UNIQUE(user_id,date)) |
-| 카메라 캡처 | ✅ 코드, ❌ 실기 미검증 | 사진 픽 진입 시 갤러리/카메라 chooser 바텀시트. iOS `NSCameraUsageDescription` + Android `CAMERA` permission 추가됨. 헬퍼: [`core/data/media/photo_picker.dart`](lib/core/data/media/photo_picker.dart) |
-| Collection 화면 | ✅ 코드, ❌ 실기 미검증 | `date desc` keyset 페이지네이션(30/페이지), 3열 그리드, 빈 상태 CTA, 썸네일은 1h signed URL — 화면 재진입 시 재발급 |
-| Piece detail 화면 | ✅ 코드, ❌ 실기 미검증 | `/collection/:pieceId` (Collection 브랜치 nested). `pieceByIdProvider(family)` → 큰 사진 + 코멘트 + 날짜. row 없음(RLS/삭제) → "찾을 수 없어요" + 컬렉션 복귀 CTA |
-| Settings 화면 | ✅ 코드, ❌ 실기 미검증 | 테마(System/Light/Dark) + 로그아웃. 테마는 `SharedPreferences`로 영속 (재시작 후 유지) |
-| Bottom navigation (Today / Collection / Settings) | ✅ 코드, ❌ 실기 미검증 | `StatefulShellRoute.indexedStack`으로 3-탭. 각 브랜치 독립 navigator → 탭 전환 후 복귀 시 sub-route 백스택 유지 |
+| Sign in / Sign up (이름 저장 포함) | ✅ 코드 | `authRepository` 경유. `AuthFailure(message)`로 도메인 예외 단일화. 회원가입 시 이름 → user metadata 저장 |
+| Welcome / WelcomeBack / Reset Password | ✅ 코드 | `/welcome` 비인증 진입점. `/sign-in`, `/sign-up`, `/reset-password` |
+| My Pieces 피드 | ✅ 코드 | `date desc` keyset 페이지네이션, 전체 너비 카드, 빈 상태 CTA, FAB → NewPieceSheet |
+| New Piece (바텀시트) | ✅ 코드 | `NewPieceSheet` — pick → compress → upload → INSERT. My Pieces FAB / Calendar 빈 셀 탭에서 호출 |
+| Calendar 화면 | ✅ 코드 | 월 그리드 + dot map. `monthPiecesProvider(keepAlive: true)` — ±1개월 prefetch. 빈 셀 탭 → NewPieceSheet(forDate) |
+| Search 화면 | ✅ 코드 | 서버사이드 caption ilike + month 범위 필터. `pieceMonths`로 month 칩 렌더링 |
+| Piece detail 화면 | ✅ 코드 | `/my-pieces/:pieceId`. `pieceByIdProvider(family)` → 큰 사진 + 코멘트 + 날짜. 없는 row → "찾을 수 없어요" CTA |
+| Edit Piece 화면 | ✅ 코드 | `/my-pieces/:pieceId/edit`. 사진 교체 + 코멘트 수정. 날짜 변경은 deferred (UNIQUE 제약) |
+| Profile 화면 | ✅ 코드 | 프로필 카드(이름/이메일) + 테마(System/Light/Dark) + 로그아웃. 테마는 `SharedPreferences` 영속 |
+| Bottom navigation (My Pieces / Calendar / Search / Profile) | ✅ 코드 | `StatefulShellRoute.indexedStack` 4-탭. 탭 재탭 시 브랜치 루트로 pop |
+| 카메라 캡처 | ✅ 코드, ❌ 실기 미검증 | 갤러리/카메라 chooser 바텀시트. iOS `NSCameraUsageDescription` + Android `CAMERA` permission. 헬퍼: [`core/data/media/photo_picker.dart`](lib/core/data/media/photo_picker.dart) |
+| 오류 snackbar 통일 | ✅ | `WdsSnackbar`로 transport 에러 단일 노출 |
 | 위젯 테스트 | 🟡 router redirect 2개만 | feature 단위 테스트 추가 필요 |
-| ADR 0005 (캐시 정책) | ✅ Accepted | [ADR 0005](docs/adr/0005-local-cache-policy.md). signed URL in-memory 캐시 + Flutter ImageCache. 디스크 캐시/로컬 DB/재시도 큐는 보류 |
-| 사진 재로딩 통증 (sweep) | ✅ 해결 | `signedUrlCacheProvider` 도입으로 같은 path = 같은 URL 1h 동안 → ImageCache 히트 |
+| ADR 0005 (캐시 정책) | ✅ Accepted | [ADR 0005](docs/adr/0005-local-cache-policy.md). `signedUrlCacheProvider` 1h TTL → ImageCache 히트. 디스크 캐시/로컬 DB/재시도 큐는 보류 |
 
 ### 데이터 레이어 정책 (현 시점)
-[ADR 0005](docs/adr/0005-local-cache-policy.md). Piece 메타데이터는 Riverpod의 in-memory feed가 watch되는 동안 유지. 사진은 path 기준 signed URL 캐시(1h TTL) → Flutter ImageCache가 같은 URL = 같은 키로 히트. 디스크 캐시 / 로컬 DB / 오프라인 큐는 추가 통증 보고되기 전까지 보류.
+[ADR 0005](docs/adr/0005-local-cache-policy.md). Piece 메타데이터는 Riverpod in-memory provider가 watch되는 동안 유지. 사진은 path 기준 signed URL 캐시(1h TTL, `signedUrlCacheProvider`) → Flutter ImageCache가 같은 URL = 같은 키로 히트. Calendar는 `monthPiecesProvider(keepAlive: true)`로 ±1개월 warm 유지. 디스크 캐시 / 로컬 DB / 오프라인 큐는 추가 통증 보고되기 전까지 보류.
 
 ### 다음 합리적 단계 (권장 순서)
 
-1. **카메라 캡처 실기 검증** — 실기기에서 카메라 권한 다이얼로그 → 촬영 → 압축 → 업로드 흐름 + Today/Detail 양쪽에서 동작 확인.
+1. **전체 흐름 실기 sweep** — 가입 → My Pieces → New Piece(갤러리/카메라) → Calendar → Search → Edit/Delete → Profile 탭 순서로 golden path 검증.
 2. **분석/크래시 리포팅** — 운영 시작 전 결정 (Sentry / Firebase Crashlytics 등).
 3. **딥링크 매니페스트** — iOS Universal Links / Android App Links. ADR 0002 후속으로 분리.
 
 ### 선택
 - **Supabase CLI 부트스트랩** — `supabase init/link/db pull`로 SQL-파일 기반 마이그레이션 관리. (현재는 MCP `apply_migration` + 수동 `supabase/migrations/*.sql` 보관 중.)
-- **카메라 캡처** — UX 결정과 묶어서.
 
 ---
 
