@@ -146,7 +146,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                           final p = pieces[i];
                           return SearchResultCard(
                             piece: p,
-                            onTap: () => context.go('/my-pieces/${p.id}'),
+                            onTap: () => context.push('/piece/${p.id}'),
                           );
                         },
                       ),

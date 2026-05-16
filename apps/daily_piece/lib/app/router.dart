@@ -37,6 +37,19 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/reset-password',
         builder: (_, _) => const ResetPasswordPage(),
       ),
+      // Global detail routes that should not force a tab switch.
+      GoRoute(
+        path: '/piece/:pieceId',
+        builder: (_, state) =>
+            PieceDetailPage(pieceId: state.pathParameters['pieceId']!),
+        routes: [
+          GoRoute(
+            path: 'edit',
+            builder: (_, state) =>
+                EditPiecePage(pieceId: state.pathParameters['pieceId']!),
+          ),
+        ],
+      ),
       // Bottom-nav shell. Each branch keeps its own navigator so deep links
       // into a tab (e.g. /my-pieces/:pieceId) keep their back stack when the
       // user switches tabs and comes back.

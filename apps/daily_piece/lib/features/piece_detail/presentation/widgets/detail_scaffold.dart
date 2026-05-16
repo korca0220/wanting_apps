@@ -27,7 +27,7 @@ const _months = [
 ];
 
 /// Read-only Piece detail. Photo + caption + meta + Edit / Delete tiles.
-/// Edit pushes /my-pieces/:id/edit (separate modal screen). Delete confirms
+/// Edit pushes `.../:id/edit` (separate screen). Delete confirms
 /// in-place.
 class DetailScaffold extends ConsumerStatefulWidget {
   const DetailScaffold({super.key, required this.piece});
@@ -175,8 +175,7 @@ class _DetailScaffoldState extends ConsumerState<DetailScaffold> {
                 icon: Icons.edit_outlined,
                 tone: _ActionTone.primary,
                 disabled: _busy,
-                onTap: () =>
-                    context.push('/my-pieces/${widget.piece.id}/edit'),
+                onTap: () => context.push('edit'),
               ),
               SizedBox(height: spacing.componentSm),
               _ActionTile(

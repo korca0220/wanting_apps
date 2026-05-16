@@ -95,7 +95,7 @@ class _CalendarPageState extends ConsumerState<CalendarPage> {
     setState(() => _selectedDate = cellDate);
 
     if (piece != null) {
-      context.go('/my-pieces/${piece.id}');
+      context.push('/piece/${piece.id}');
     } else {
       // NewPieceSheet invalidates the matching monthPieces entry on save.
       showNewPieceSheet(context, forDate: cellDate);
