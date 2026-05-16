@@ -44,7 +44,7 @@
 확정된 결정:
 
 - **상태관리 / DI**: Riverpod (`flutter_riverpod` + `riverpod_annotation` codegen) — [ADR 0001](docs/adr/0001-state-management.md). 신규 provider는 `@Riverpod(...)` 함수/클래스로 작성. `riverpod_lint`가 `custom_lint` 플러그인으로 활성화돼 있어 forgot-to-watch / 누락된 keepAlive 등을 잡아준다.
-- **라우팅**: go_router — [ADR 0002](docs/adr/0002-routing.md). 라우터 정의는 `lib/app/router.dart` 단일 진입. 4-탭 shell은 `StatefulShellRoute.indexedStack` — 탭 전환 후 복귀 시 각 브랜치의 back stack 유지. 라우트: `/welcome`, `/sign-in`, `/sign-up`, `/reset-password`(비인증 공개), `/my-pieces`(+ `/:pieceId` + `/:pieceId/edit`), `/calendar`, `/search`, `/profile`(인증 전용).
+- **라우팅**: go_router — [ADR 0002](docs/adr/0002-routing.md). 라우터 정의는 `lib/app/router.dart` 단일 진입. 4-탭 shell은 `StatefulShellRoute.indexedStack` — 탭 전환 후 복귀 시 각 브랜치의 back stack 유지. 라우트: `/welcome`, `/sign-in`, `/sign-up`, `/reset-password`(비인증 공개), `/my-pieces`(+ `/:pieceId` + `/:pieceId/edit`), `/piece/:pieceId`(+ `/edit`), `/calendar`, `/search`, `/profile`(인증 전용).
 - **레이어 컨벤션**: Clean Architecture — [ADR 0006](docs/adr/0006-clean-architecture-layout.md). 각 피처 / `core/` 하위는 `data / domain / presentation` 3-레이어로 분리하고, 그 아래는 역할별 디렉토리 (`entities / repositories / exceptions / datasources / pages / widgets / providers` …)로 나눈다. cross-feature 공유는 `lib/core/` (피스 도메인은 여러 화면에서 쓰이므로 여기에 둠).
 - **DIP**: 도메인은 `repositories/` 아래 abstract 인터페이스만 둠. 데이터 레이어가 구현 + Riverpod provider를 노출하고, 프레젠테이션은 abstract 타입으로 받는다. 인터페이스 mock이 필요하기 전엔 fake provider override로 충분.
 - **Use case 클래스는 미도입**. Riverpod provider가 use case 역할을 하므로 trivial wrapper UseCase는 만들지 않는다. 도메인 규칙이 여러 provider에 걸쳐 흐트러질 때 도입을 재평가.
@@ -80,8 +80,8 @@ lib/
     ├── new_piece/       # 바텀시트 (NewPieceSheet) — My Pieces FAB / Calendar 빈 셀 탭
     ├── calendar/        # 월 그리드 — dot map, ±1개월 prefetch, 빈 셀 탭 → NewPieceSheet
     ├── search/          # 서버사이드 검색 — caption ilike + month 범위 필터
-    ├── piece_detail/    # Piece 상세 read-only (/my-pieces/:pieceId)
-    ├── edit_piece/      # Piece 편집 (/my-pieces/:pieceId/edit) — 사진 교체 + 코멘트
+    ├── piece_detail/    # Piece 상세 read-only (/piece/:pieceId, /my-pieces/:pieceId)
+    ├── edit_piece/      # Piece 편집 (/piece/:pieceId/edit, /my-pieces/:pieceId/edit) — 사진 교체 + 코멘트
     └── profile/         # 프로필 카드 + 설정 (테마, 로그아웃)
 ```
 
@@ -207,8 +207,8 @@ python3 ../../../design-system-gen/skills/screen-spec-gen/scripts/validate_scree
 | New Piece (바텀시트) | ✅ 코드 | `NewPieceSheet` — pick → compress → upload → INSERT. My Pieces FAB / Calendar 빈 셀 탭에서 호출 |
 | Calendar 화면 | ✅ 코드 | 월 그리드 + dot map. `monthPiecesProvider(keepAlive: true)` — ±1개월 prefetch. 빈 셀 탭 → NewPieceSheet(forDate) |
 | Search 화면 | ✅ 코드 | 서버사이드 caption ilike + month 범위 필터. `pieceMonths`로 month 칩 렌더링 |
-| Piece detail 화면 | ✅ 코드 | `/my-pieces/:pieceId`. `pieceByIdProvider(family)` → 큰 사진 + 코멘트 + 날짜. 없는 row → "찾을 수 없어요" CTA |
-| Edit Piece 화면 | ✅ 코드 | `/my-pieces/:pieceId/edit`. 사진 교체 + 코멘트 수정. 날짜 변경은 deferred (UNIQUE 제약) |
+| Piece detail 화면 | ✅ 코드 | `/piece/:pieceId`(공용) + `/my-pieces/:pieceId`(탭 내부). `pieceByIdProvider(family)` → 큰 사진 + 코멘트 + 날짜. 없는 row → "찾을 수 없어요" CTA |
+| Edit Piece 화면 | ✅ 코드 | `/piece/:pieceId/edit`(공용) + `/my-pieces/:pieceId/edit`(탭 내부). 사진 교체 + 코멘트 수정. 날짜 변경은 deferred (UNIQUE 제약) |
 | Profile 화면 | ✅ 코드 | 프로필 카드(이름/이메일) + 테마(System/Light/Dark) + 로그아웃. 테마는 `SharedPreferences` 영속 |
 | Bottom navigation (My Pieces / Calendar / Search / Profile) | ✅ 코드 | `StatefulShellRoute.indexedStack` 4-탭. 탭 재탭 시 브랜치 루트로 pop |
 | 카메라 캡처 | ✅ 코드, ❌ 실기 미검증 | 갤러리/카메라 chooser 바텀시트. iOS `NSCameraUsageDescription` + Android `CAMERA` permission. 헬퍼: [`core/data/media/photo_picker.dart`](lib/core/data/media/photo_picker.dart) |

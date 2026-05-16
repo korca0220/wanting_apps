@@ -17,7 +17,7 @@ DailyPiece 앱은 인증 흐름 4 화면(Welcome / Sign In / Sign Up / Reset Pas
 | 01 Profile        | **ProfilePage**           | [`features/profile/presentation/pages/profile_page.dart`](../../lib/features/profile/presentation/pages/profile_page.dart)                             | Profile / Settings / Account 카드 + 버전 풋터. Export Data·Delete Account는 의도적 미구현. App Theme은 cycle      |
 | 02 Search         | **SearchPage**            | [`features/search/presentation/pages/search_page.dart`](../../lib/features/search/presentation/pages/search_page.dart)                                 | Caption substring + 동적 월 칩 (사용자의 piece 보유 월). 결과는 가로 카드. 클라이언트 필터링 (≤1000건 가정)       |
 | 03 Calendar       | **CalendarPage**          | [`features/calendar/presentation/pages/calendar_page.dart`](../../lib/features/calendar/presentation/pages/calendar_page.dart)                         | 7-col 그리드 + 5-state 셀 + InfoCard. 빈 칸 탭 → 날짜 prefill된 New Piece 시트                                    |
-| 04 Edit Piece     | **EditPiecePage** (별도)  | [`features/edit_piece/presentation/pages/edit_piece_page.dart`](../../lib/features/edit_piece/presentation/pages/edit_piece_page.dart)                 | `/my-pieces/:id/edit` 라우트. TopBar Cancel/Save text + Photo Required + Replace Photo + Caption counter          |
+| 04 Edit Piece     | **EditPiecePage** (별도)  | [`features/edit_piece/presentation/pages/edit_piece_page.dart`](../../lib/features/edit_piece/presentation/pages/edit_piece_page.dart)                 | `/piece/:id/edit` 라우트. TopBar Cancel/Save text + Photo Required + Replace Photo + Caption counter              |
 | 05 Piece Details  | **PieceDetailPage**       | [`features/piece_detail/presentation/pages/piece_detail_page.dart`](../../lib/features/piece_detail/presentation/pages/piece_detail_page.dart)         | 사진 + 코멘트 + 메타. Edit/Delete tile 행. 인라인 edit는 04로 분리                                                |
 | 06 My Pieces      | **MyPiecesPage**          | [`features/my_pieces/presentation/pages/my_pieces_page.dart`](../../lib/features/my_pieces/presentation/pages/my_pieces_page.dart)                     | AppBar(DailyPiece + 월 라벨 + 종 아이콘) + 풀폭 카드 피드 + FAB(+) → New Piece 시트                               |
 | 07 New Piece      | **NewPieceSheet** (시트)  | [`features/new_piece/presentation/widgets/new_piece_sheet.dart`](../../lib/features/new_piece/presentation/widgets/new_piece_sheet.dart)               | `showModalBottomSheet`. 라우트 없음 — FAB / Calendar 빈칸 탭 / EmptyView CTA에서 호출. `forDate` 옵션 prefill 지원 |
@@ -105,8 +105,10 @@ flowchart TD
 | `/sign-up`                    | SignUpPage                                                                              | 미인증 only    |
 | `/reset-password`             | ResetPasswordPage                                                                       | 미인증 only    |
 | `/my-pieces`                  | MyPiecesPage (shell branch 1)                                                           | 인증 only      |
-| `/my-pieces/:pieceId`         | PieceDetailPage                                                                         | 인증 only      |
-| `/my-pieces/:pieceId/edit`    | EditPiecePage                                                                           | 인증 only      |
+| `/my-pieces/:pieceId`         | PieceDetailPage (My Pieces 탭 내부 진입 경로)                                           | 인증 only      |
+| `/my-pieces/:pieceId/edit`    | EditPiecePage (My Pieces 탭 내부 진입 경로)                                             | 인증 only      |
+| `/piece/:pieceId`             | PieceDetailPage (공용 상세 경로: Calendar/Search에서 탭 유지)                           | 인증 only      |
+| `/piece/:pieceId/edit`        | EditPiecePage (공용 상세 경로의 편집 하위 경로)                                         | 인증 only      |
 | `/calendar`                   | CalendarPage (shell branch 2)                                                           | 인증 only      |
 | `/search`                     | SearchPage (shell branch 3)                                                             | 인증 only      |
 | `/profile`                    | ProfilePage (shell branch 4)                                                            | 인증 only      |
