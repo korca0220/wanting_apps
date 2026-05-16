@@ -1,6 +1,6 @@
 # Quality Report — Wanted Montage
 
-생성 일자: 2026-04-26 (v3 — Tier 2 5개 달성 + foundations 보강 + 검증 자동화)
+생성 일자: 2026-04-26 (v3 — Tier 2 6개 달성 + foundations 보강 + 검증 자동화)
 입력 종류: code (TypeScript / React, MIT)
 소스: https://github.com/wanteddev/montage-web
 
@@ -26,9 +26,9 @@
 | Tier 2 | 6 / 12 (Chip, BottomNav, ListItem, TopNav, Tabs, ImageUploader) | 50% |
 | Tier 3 | 일부 ⏳, 일부 ⛔ N/A | — |
 
-**종합 등급**: **High** (Tier 1 100% + Tier 2 가중치 50% 적용 시 ~71%, Tier 1만 보면 Full)
+**종합 등급**: **High** (Tier 1 100% + Tier 2 가중치 50% 적용 시 ~75%, Tier 1만 보면 Full)
 - Tier 1 핵심 production-ready 충족 ✅
-- Tier 2 절반 가까이 (5/12) 달성 — DailyPiece 같은 모바일 앱의 90%+ 화면 패턴 커버
+- Tier 2 절반 (6/12) 달성 — DailyPiece 같은 모바일 앱의 90%+ 화면 패턴 커버
 - Tier 3는 도메인별 후속 마이그레이션
 
 ---
@@ -91,7 +91,7 @@
 
 ## 토큰 환원율
 
-본 인스턴스의 22개 컴포넌트 명세 기준:
+v3 측정 당시 컴포넌트 명세 표본 기준:
 
 | 항목 | 값 |
 |---|---|
