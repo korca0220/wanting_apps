@@ -1,10 +1,10 @@
 # Component Index
 
-이 문서는 [component_checklist.md](../../../skills/design-system-gen/references/component_checklist.md)의 표준 카탈로그에 대한 본 인스턴스의 결정 결과 보고입니다.
+이 문서는 외부 스킬 `../design-system-gen/skills/design-system-gen/references/component_checklist.md`의 표준 카탈로그에 대한 본 인스턴스의 결정 결과 보고입니다.
 
 ## 📊 요약
 - **Tier 1 (필수)**: 21 / 21 ✅ Documented
-- **Tier 2 (권장)**: 5 / 12 ✅ Documented + 1 합성 (Chip, BottomNavigation, ListItem, TopNavigation, Tabs, **ImageUploader**)
+- **Tier 2 (권장)**: 6 / 12 ✅ Documented (Chip, BottomNavigation, ListItem, TopNavigation, Tabs, **ImageUploader**)
 - **Tier 3 (선택)**: 모두 ⛔ N/A 또는 ⏳ Pending
 
 ---
@@ -83,7 +83,7 @@ wds 원본에 존재하는 도메인 특화 컴포넌트:
 
 본 카탈로그 내 결정 가능한 항목 기준:
 - Tier 1: 21 / 21 = 100%
-- Tier 2: 1 / 12 = 8% (Chip만 ✅, 나머지 11 ⏳)
+- Tier 2: 6 / 12 = 50% (Chip, BottomNavigation, ListItem, TopNavigation, Tabs, ImageUploader ✅, 나머지 6 ⏳)
 - Tier 3 (분모 제외 항목): N/A 4개를 분모에서 제외, 나머지 ⏳
 
 종합 (Tier 1만 가중치 100%, Tier 2를 50%로 가중치 적용 시): **~75%**
