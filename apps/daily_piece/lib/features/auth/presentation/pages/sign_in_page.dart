@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/data/repositories/auth_repository_impl.dart';
 import '../../../../core/domain/exceptions/auth_exceptions.dart';
+import '../widgets/google_sign_in_button.dart';
 
 class SignInPage extends ConsumerStatefulWidget {
   const SignInPage({super.key});
@@ -137,9 +138,8 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                 child: const Text('Sign In'),
               ),
               SizedBox(height: spacing.componentMd),
-              OutlinedButton(
+              GoogleSignInButton(
                 onPressed: _busy ? null : _signInWithGoogle,
-                child: const Text('Sign in with Google'),
               ),
               SizedBox(height: spacing.componentLg),
               Row(

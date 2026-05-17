@@ -49,6 +49,7 @@
 - **DIP**: 도메인은 `repositories/` 아래 abstract 인터페이스만 둠. 데이터 레이어가 구현 + Riverpod provider를 노출하고, 프레젠테이션은 abstract 타입으로 받는다. 인터페이스 mock이 필요하기 전엔 fake provider override로 충분.
 - **Use case 클래스는 미도입**. Riverpod provider가 use case 역할을 하므로 trivial wrapper UseCase는 만들지 않는다. 도메인 규칙이 여러 provider에 걸쳐 흐트러질 때 도입을 재평가.
 - **위젯 1파일 1클래스 + 빈 줄 그루핑** — [`apps/AGENTS.md`의 코드 컨벤션 섹션](../AGENTS.md#-코드-컨벤션-모든-앱)에서 상속.
+- **private widget class 금지(강제)**: `_Foo extends StatelessWidget/ConsumerWidget/...` 형태는 `pages/` 파일 내부에 두지 않고 반드시 `presentation/widgets/*.dart`로 분리. (`_FooPageState` 같은 state 보일러플레이트만 예외)
 
 현 스켈레톤:
 
@@ -145,6 +146,9 @@ melos exec -c 1 --scope=daily_piece -- "flutter run"
 # 분석/테스트
 melos exec -c 1 --scope=daily_piece -- "flutter analyze"
 melos exec -c 1 --scope=daily_piece -- "flutter test"
+
+# private widget class 점검 (state class 제외 규칙은 리뷰에서 판정)
+rg -n "class\\s+_\\w+\\s+extends\\s+(StatelessWidget|StatefulWidget|ConsumerWidget|ConsumerStatefulWidget)" lib
 
 # 화면 명세 검증
 python3 ../../../design-system-gen/skills/screen-spec-gen/scripts/validate_screen.py \

@@ -42,6 +42,7 @@ dependencies:
   riverpod_annotation: ^2.6.1
   go_router: ^14.6.2
   supabase_flutter: ^2.8.0
+  flutter_svg: ^2.2.0
   envied: ^1.1.1
 
   # Today flow — see ADR 0004.
@@ -79,6 +80,8 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  assets:
+    - assets/icons/google_g_logo.svg
 
   # To add assets to your application, add an assets section, like this:
   # assets:

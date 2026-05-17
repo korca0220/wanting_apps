@@ -39,6 +39,15 @@ features/<feature>/presentation/
 
 같은 이름의 위젯이 여러 피처에 등장(예: 피처별 `ErrorView`)해도 OK. 진짜 중복이 보이면 그때 `lib/core/`로 promote 또는 design system 합류 검토.
 
+강제 규칙:
+- `class _Xxx extends StatelessWidget/ConsumerWidget/StatefulWidget/ConsumerStatefulWidget` 형태의 **private widget class를 페이지/스캐폴드 파일 안에 두지 않는다**.
+- 예외는 Flutter state 보일러플레이트(`_FooPageState extends State<FooPage>`)만 허용한다.
+
+점검 명령:
+```bash
+rg -n "class\\s+_\\w+\\s+extends\\s+(StatelessWidget|StatefulWidget|ConsumerWidget|ConsumerStatefulWidget)" apps/{app}/lib
+```
+
 ### 2. 빈 줄 그루핑
 
 가까운 관계의 코드 라인은 붙여 쓰고, 관계가 약해지는 지점에 **빈 줄 1개**로 시각적 그루핑을 만든다. dart format은 빈 줄을 손대지 않으므로 사람이 의식해서 넣어야 한다.
