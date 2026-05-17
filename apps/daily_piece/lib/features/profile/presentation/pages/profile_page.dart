@@ -14,7 +14,7 @@ class ProfilePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.wdsColors;
     final spacing = context.wdsSpacing;
-    final user = ref.watch(currentUserProvider);
+    final userAsync = ref.watch(currentUserProvider);
 
     return Scaffold(
       backgroundColor: colors.backgroundNormalNormal,
@@ -25,7 +25,12 @@ class ProfilePage extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (user != null) ProfileCard(user: user),
+              userAsync.when(
+                loading: () => const Center(child: WdsSpinner()),
+                error: (_, _) => const SizedBox.shrink(),
+                data: (user) =>
+                    user == null ? const SizedBox.shrink() : ProfileCard(user: user),
+              ),
               SizedBox(height: spacing.componentXl),
               const SettingsCard(),
               SizedBox(height: spacing.componentXl),

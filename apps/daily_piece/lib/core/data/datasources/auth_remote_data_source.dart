@@ -25,6 +25,35 @@ class AuthRemoteDataSource {
 
   User? get currentUser => _client.auth.currentUser;
 
+  Future<void> upsertCurrentUserProfile() async {
+    final user = _client.auth.currentUser;
+    if (user == null) return;
+
+    final meta = user.userMetadata;
+    final email = user.email ?? '';
+    final localPart = email.contains('@') ? email.split('@').first : null;
+    final displayName = _metadataString(meta?['name']) ?? localPart;
+    final avatarUrl =
+        _metadataString(meta?['avatar_url']) ?? _metadataString(meta?['picture']);
+
+    await _client.from('profiles').upsert({
+      'user_id': user.id,
+      'display_name': displayName,
+      'avatar_url': avatarUrl,
+    }, onConflict: 'user_id');
+  }
+
+  Future<Map<String, dynamic>?> fetchCurrentUserProfileRow() async {
+    final user = _client.auth.currentUser;
+    if (user == null) return null;
+
+    return _client
+        .from('profiles')
+        .select('display_name, avatar_url')
+        .eq('user_id', user.id)
+        .maybeSingle();
+  }
+
   Future<AuthResponse> signInWithPassword({
     required String email,
     required String password,
@@ -57,4 +86,12 @@ class AuthRemoteDataSource {
   Future<void> resetPasswordForEmail(String email) {
     return _client.auth.resetPasswordForEmail(email);
   }
+}
+
+String? _metadataString(dynamic value) {
+  if (value is String) {
+    final trimmed = value.trim();
+    return trimmed.isEmpty ? null : trimmed;
+  }
+  return null;
 }

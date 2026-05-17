@@ -11,24 +11,48 @@ part 'current_user_provider.g.dart';
 /// entity yet, and the renewal scope intentionally avoids inventing one.
 @immutable
 class CurrentUser {
-  const CurrentUser({this.name, required this.email, required this.joinedAt});
+  const CurrentUser({
+    this.name,
+    this.avatarUrl,
+    required this.email,
+    required this.joinedAt,
+  });
 
   final String? name;
+  final String? avatarUrl;
   final String email;
   final DateTime joinedAt;
 }
 
 @Riverpod(keepAlive: false)
-CurrentUser? currentUser(Ref ref) {
+Future<CurrentUser?> currentUser(Ref ref) async {
   final user = ref.watch(authRemoteDataSourceProvider).currentUser;
   if (user == null) return null;
 
   final created = user.createdAt;
   final joinedAt = DateTime.tryParse(created) ?? DateTime.now();
+  final meta = user.userMetadata;
+  final remote = ref.read(authRemoteDataSourceProvider);
+  await remote.upsertCurrentUserProfile();
+  final profile = await remote.fetchCurrentUserProfileRow();
 
   return CurrentUser(
-    name: user.userMetadata?['name'] as String?,
+    name:
+        _metadataString(profile?['display_name']) ??
+        _metadataString(meta?['name']),
+    avatarUrl:
+        _metadataString(profile?['avatar_url']) ??
+        _metadataString(meta?['avatar_url']) ??
+        _metadataString(meta?['picture']),
     email: user.email ?? '',
     joinedAt: joinedAt,
   );
+}
+
+String? _metadataString(dynamic value) {
+  if (value is String) {
+    final trimmed = value.trim();
+    return trimmed.isEmpty ? null : trimmed;
+  }
+  return null;
 }

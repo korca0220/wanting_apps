@@ -50,11 +50,22 @@ class ProfileCard extends StatelessWidget {
                   shape: BoxShape.circle,
                   border: Border.all(color: colors.primaryNormal, width: 2),
                 ),
-                child: Icon(
-                  Icons.person,
-                  size: 40,
-                  color: colors.primaryNormal,
-                ),
+                clipBehavior: Clip.antiAlias,
+                child: user.avatarUrl != null
+                    ? Image.network(
+                        user.avatarUrl!,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, _, _) => Icon(
+                          Icons.person,
+                          size: 40,
+                          color: colors.primaryNormal,
+                        ),
+                      )
+                    : Icon(
+                        Icons.person,
+                        size: 40,
+                        color: colors.primaryNormal,
+                      ),
               ),
               SizedBox(width: spacing.componentLg),
               Expanded(

@@ -205,6 +205,7 @@ python3 ../../../design-system-gen/skills/screen-spec-gen/scripts/validate_scree
 | Supabase client bootstrap | ✅ | `main.dart`에서 `Supabase.initialize` |
 | `pieces` 테이블 + RLS | ✅ | [`supabase/migrations/0001`](supabase/migrations/0001_create_pieces_table.sql). dev 프로젝트에 적용됨 |
 | `pieces` Storage bucket + policies | ✅ | [`supabase/migrations/0002`](supabase/migrations/0002_create_pieces_bucket.sql). private, owner-only |
+| `profiles` 테이블 + RLS | ✅ | [`supabase/migrations/0003`](supabase/migrations/0003_create_profiles_table.sql). `display_name`, `avatar_url` 보관 |
 | Sign in / Sign up (이름 저장 포함) | ✅ 코드 | `authRepository` 경유. `AuthFailure(message)`로 도메인 예외 단일화. 회원가입 시 이름 → user metadata 저장 |
 | Welcome / WelcomeBack / Reset Password | ✅ 코드 | `/welcome` 비인증 진입점. `/sign-in`, `/sign-up`, `/reset-password` |
 | My Pieces 피드 | ✅ 코드 | `date desc` keyset 페이지네이션, 전체 너비 카드, 빈 상태 CTA, FAB → NewPieceSheet |
@@ -213,7 +214,7 @@ python3 ../../../design-system-gen/skills/screen-spec-gen/scripts/validate_scree
 | Search 화면 | ✅ 코드 | 서버사이드 caption ilike + month 범위 필터. `pieceMonths`로 month 칩 렌더링 |
 | Piece detail 화면 | ✅ 코드 | `/piece/:pieceId`(공용) + `/my-pieces/:pieceId`(탭 내부). `pieceByIdProvider(family)` → 큰 사진 + 코멘트 + 날짜. 없는 row → "찾을 수 없어요" CTA |
 | Edit Piece 화면 | ✅ 코드 | `/piece/:pieceId/edit`(공용) + `/my-pieces/:pieceId/edit`(탭 내부). 사진 교체 + 코멘트 수정. 날짜 변경은 deferred (UNIQUE 제약) |
-| Profile 화면 | ✅ 코드 | 프로필 카드(이름/이메일) + 테마(System/Light/Dark) + 로그아웃. 테마는 `SharedPreferences` 영속 |
+| Profile 화면 | ✅ 코드 | 프로필 카드(이름/이메일/아바타) + 테마(System/Light/Dark) + 로그아웃. 이름/아바타는 `profiles` 우선 조회, 없으면 auth metadata 폴백 |
 | Bottom navigation (My Pieces / Calendar / Search / Profile) | ✅ 코드 | `StatefulShellRoute.indexedStack` 4-탭. 탭 재탭 시 브랜치 루트로 pop |
 | 카메라 캡처 | ✅ 코드, ❌ 실기 미검증 | 갤러리/카메라 chooser 바텀시트. iOS `NSCameraUsageDescription` + Android `CAMERA` permission. 헬퍼: [`core/data/media/photo_picker.dart`](lib/core/data/media/photo_picker.dart) |
 | 오류 snackbar 통일 | ✅ | `WdsSnackbar`로 transport 에러 단일 노출 |

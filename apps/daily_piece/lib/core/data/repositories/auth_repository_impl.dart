@@ -31,6 +31,7 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<void> signIn({required String email, required String password}) async {
     try {
       await _remote.signInWithPassword(email: email, password: password);
+      await _remote.upsertCurrentUserProfile();
     } on AuthException catch (e) {
       throw AuthFailure(e.message);
     }
@@ -40,6 +41,10 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<void> signInWithGoogle() async {
     try {
       await _remote.signInWithGoogle();
+      // When OAuth callback has already completed, this syncs immediately.
+      // If not yet completed, it's a no-op and Profile sync happens when
+      // currentUserProvider reads auth state next.
+      await _remote.upsertCurrentUserProfile();
     } on AuthException catch (e) {
       throw AuthFailure(e.message);
     }
@@ -60,6 +65,10 @@ class AuthRepositoryImpl implements AuthRepository {
             ? {'name': trimmed}
             : null,
       );
+
+      if (res.session != null) {
+        await _remote.upsertCurrentUserProfile();
+      }
 
       return res.session != null;
     } on AuthException catch (e) {
