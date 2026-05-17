@@ -54,6 +54,24 @@ class _SignInPageState extends ConsumerState<SignInPage> {
     }
   }
 
+  Future<void> _signInWithGoogle() async {
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
+
+    try {
+      await ref.read(authRepositoryProvider).signInWithGoogle();
+      // OAuth callback completes session; router redirect handles navigation.
+    } on AuthFailure catch (e) {
+      if (mounted) setState(() => _error = e.message);
+    } catch (_) {
+      if (mounted) setState(() => _error = 'Google 로그인에 실패했어요. 잠시 후 다시 시도해주세요.');
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.wdsColors;
@@ -117,6 +135,11 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                 onPressed: _busy ? null : _submit,
                 loading: _busy,
                 child: const Text('Sign In'),
+              ),
+              SizedBox(height: spacing.componentMd),
+              OutlinedButton(
+                onPressed: _busy ? null : _signInWithGoogle,
+                child: const Text('Sign in with Google'),
               ),
               SizedBox(height: spacing.componentLg),
               Row(

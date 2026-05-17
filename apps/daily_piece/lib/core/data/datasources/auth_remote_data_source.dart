@@ -4,6 +4,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 part 'auth_remote_data_source.g.dart';
 
+const _oauthRedirectTo = 'wantingdailypiece://login-callback/';
+
 @Riverpod(keepAlive: true)
 AuthRemoteDataSource authRemoteDataSource(Ref ref) =>
     AuthRemoteDataSource(Supabase.instance.client);
@@ -28,6 +30,14 @@ class AuthRemoteDataSource {
     required String password,
   }) {
     return _client.auth.signInWithPassword(email: email, password: password);
+  }
+
+  Future<bool> signInWithGoogle() {
+    return _client.auth.signInWithOAuth(
+      OAuthProvider.google,
+      redirectTo: _oauthRedirectTo,
+      authScreenLaunchMode: LaunchMode.externalApplication,
+    );
   }
 
   Future<AuthResponse> signUp({

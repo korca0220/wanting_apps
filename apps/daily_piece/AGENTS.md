@@ -96,7 +96,7 @@ lib/
 | 카테고리 | 현 상태 |
 |---|---|
 | 백엔드 / DB / 스토리지 | **Supabase** ([ADR 0003](docs/adr/0003-backend.md)) — Postgres + Auth + Storage. SDK: `supabase_flutter`. |
-| 인증 | Supabase Auth — 이메일/비밀번호 (OAuth 미적용). 세션은 `sessionProvider` (`@Riverpod(keepAlive: true)` Stream). dev 프로젝트는 **Confirm email = OFF** (가입 즉시 세션 발급), 운영은 ON 예정. |
+| 인증 | Supabase Auth — 이메일/비밀번호 + Google OAuth. 세션은 `sessionProvider` (`@Riverpod(keepAlive: true)` Stream). dev 프로젝트는 **Confirm email = OFF** (가입 즉시 세션 발급), 운영은 ON 예정. |
 | 미디어 스토리지 (사진) | Supabase Storage (`pieces` 버킷, `{user_id}/{piece_id}.jpg`). 클라이언트 파이프라인: 긴 변 1080px / JPEG q80 / EXIF 전체 제거 — [ADR 0004](docs/adr/0004-media-client-policy.md). 라이브러리: `flutter_image_compress`. |
 | 로컬 캐시 / 오프라인 | In-memory signed URL 캐시 + Flutter `ImageCache`에 위임 — [ADR 0005](docs/adr/0005-local-cache-policy.md). 디스크 캐시 / 로컬 DB / 재시도 큐는 통증 보고되기 전까지 도입하지 않음. |
 | 분석/크래시 리포팅 | TBD |

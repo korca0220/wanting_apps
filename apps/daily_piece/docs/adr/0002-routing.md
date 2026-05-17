@@ -19,16 +19,19 @@ DailyPiece의 화면 토폴로지는 단순하다 — 진입(인증), 오늘의 
 ## Consequences
 
 **Pros**
+
 - Flutter 팀이 유지보수 — Material/Navigator 2.0 변화에 빠르게 대응
 - URL 기반 → 딥링크/웹 무료
 - redirect 패턴이 인증 가드를 한 곳에 집약
 - `ShellRoute`로 BottomNav 같은 nested navigation 표현 명확
 
 **Cons**
+
 - typed-routes가 codegen 필요 (`auto_route`보다 형식 안전성 약간 약함, codegen 미도입 시)
 - 깊은 중첩 네비게이션은 학습 곡선 있음
 
 **대안 기각 사유**
+
 - **auto_route**: typed routes는 매력적이지만 추가 codegen + 학습 비용. DailyPiece 화면 수가 적어 ROI 낮음.
 - **Navigator 1.0**: 딥링크/redirect 가드를 직접 구현해야 함. 미래의 웹 빌드/푸시 알림을 막음.
 

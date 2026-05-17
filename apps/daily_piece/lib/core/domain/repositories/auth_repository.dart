@@ -13,6 +13,10 @@ abstract class AuthRepository {
 
   Future<void> signIn({required String email, required String password});
 
+  /// Starts Google OAuth. Supabase routes to Google in the browser and
+  /// returns via the app deep link callback.
+  Future<void> signInWithGoogle();
+
   /// `true` when the project has Confirm email = OFF (session granted
   /// immediately). `false` when a confirmation email was sent — the UI should
   /// then show a "check your inbox" state.
