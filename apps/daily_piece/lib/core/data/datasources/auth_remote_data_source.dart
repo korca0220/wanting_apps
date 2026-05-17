@@ -18,7 +18,13 @@ class AuthRemoteDataSource {
   final SupabaseClient _client;
 
   Stream<Session?> sessionStream() {
-    return _client.auth.onAuthStateChange.map((event) => event.session);
+    return _client.auth.onAuthStateChange.asyncMap((event) async {
+      final session = event.session;
+      if (session != null) {
+        await upsertCurrentUserProfile();
+      }
+      return session;
+    });
   }
 
   Session? get currentSession => _client.auth.currentSession;

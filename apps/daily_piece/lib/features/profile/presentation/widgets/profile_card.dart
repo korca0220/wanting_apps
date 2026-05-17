@@ -48,40 +48,24 @@ class ProfileCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: colors.primarySubtle,
                   shape: BoxShape.circle,
-                  border: Border.all(color: colors.primaryNormal, width: 2),
                 ),
                 clipBehavior: Clip.antiAlias,
                 child: user.avatarUrl != null
                     ? Image.network(
                         user.avatarUrl!,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, _, _) => Icon(
-                          Icons.person,
-                          size: 40,
-                          color: colors.primaryNormal,
-                        ),
+                        errorBuilder: (_, _, _) => Icon(Icons.person, size: 40, color: colors.primaryNormal),
                       )
-                    : Icon(
-                        Icons.person,
-                        size: 40,
-                        color: colors.primaryNormal,
-                      ),
+                    : Icon(Icons.person, size: 40, color: colors.primaryNormal),
               ),
               SizedBox(width: spacing.componentLg),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    WdsText(
-                      user.name ?? user.email.split('@').first,
-                      style: WdsTextStyle.heading1,
-                    ),
+                    WdsText(user.name ?? user.email.split('@').first, style: WdsTextStyle.heading1),
                     SizedBox(height: spacing.componentXs),
-                    WdsText(
-                      user.email,
-                      style: WdsTextStyle.body2,
-                      color: WdsTextColor.alternative,
-                    ),
+                    WdsText(user.email, style: WdsTextStyle.body2, color: WdsTextColor.alternative),
                   ],
                 ),
               ),
@@ -93,11 +77,7 @@ class ProfileCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const WdsText(
-                'Member since',
-                style: WdsTextStyle.body2,
-                color: WdsTextColor.alternative,
-              ),
+              const WdsText('Member since', style: WdsTextStyle.body2, color: WdsTextColor.alternative),
               WdsText(memberSince, style: WdsTextStyle.label1),
             ],
           ),

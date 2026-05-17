@@ -44,7 +44,7 @@ class AuthRepositoryImpl implements AuthRepository {
       // When OAuth callback has already completed, this syncs immediately.
       // If not yet completed, it's a no-op and Profile sync happens when
       // currentUserProvider reads auth state next.
-      await _remote.upsertCurrentUserProfile();
+    await _remote.upsertCurrentUserProfile();
     } on AuthException catch (e) {
       throw AuthFailure(e.message);
     }
