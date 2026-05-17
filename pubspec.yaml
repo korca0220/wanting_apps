@@ -8,6 +8,7 @@ workspace:
   - packages/design_system
   - packages/design_system/example
   - apps/daily_piece
+  - apps/one_line_day
 
 dev_dependencies:
   melos: ^7.5.1
@@ -53,6 +54,10 @@ melos:
     run:dp:
       description: Run DailyPiece app
       run: melos exec -c 1 --scope=daily_piece -- "flutter run"
+
+    run:ol:
+      description: Run OneLine Day app
+      run: melos exec -c 1 --scope=one_line_day -- "flutter run"
 
     run:ds-example:
       description: Run design_system showcase example
