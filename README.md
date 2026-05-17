@@ -7,7 +7,7 @@ Flutter 모노레포. 1개의 디자인 시스템 위에 여러 앱이 올라간
 | 경로 | 내용 |
 |---|---|
 | [`packages/design_system/`](packages/design_system/) | 모든 앱이 공유하는 DS (Wanted Montage 기반 fork). `package:design_system`으로 import. |
-| [`apps/`](apps/) | 개별 Flutter 앱. 현재 [`daily_piece`](apps/daily_piece/) 1개. |
+| [`apps/`](apps/) | 개별 Flutter 앱. 현재 구현 앱은 [`daily_piece`](apps/daily_piece/), 문서화 우선 기획 앱은 [`one_line_day`](apps/one_line_day/). |
 
 운영은 **pub workspaces + Melos**.
 
@@ -27,4 +27,5 @@ melos run run:ds-example   # DS 쇼케이스 실행
 
 - **에이전트/기여자 진입점**: [`AGENTS.md`](AGENTS.md) — 디렉토리 맵, 작업 흐름, 불변 규칙
 - **앱 트리 공통 규약**: [`apps/AGENTS.md`](apps/AGENTS.md)
+- **OneLine Day 기획/화면 명세**: [`apps/one_line_day/docs/screens/00-INDEX.md`](apps/one_line_day/docs/screens/00-INDEX.md)
 - **디자인 시스템**: [`packages/design_system/AGENTS.md`](packages/design_system/AGENTS.md)
