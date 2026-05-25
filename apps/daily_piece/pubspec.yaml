@@ -54,6 +54,8 @@ dependencies:
   # deferred — see ADR 0005.
   shared_preferences: ^2.3.5
 
+  url_launcher: ^6.3.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -7,6 +7,7 @@ import '../../../../core/data/repositories/auth_repository_impl.dart';
 import '../../../../core/domain/exceptions/auth_exceptions.dart';
 import '../widgets/confirmation_sent_view.dart';
 import '../widgets/google_sign_in_button.dart';
+import '../widgets/legal_text.dart';
 
 class SignUpPage extends ConsumerStatefulWidget {
   const SignUpPage({super.key});
@@ -208,11 +209,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
         ),
         SizedBox(height: spacing.componentXl),
         const Center(
-          child: WdsText(
-            'By creating an account, you agree to our Terms of Service and Privacy Policy',
-            style: WdsTextStyle.caption1,
-            color: WdsTextColor.alternative,
-          ),
+          child: LegalText(prefix: 'By creating an account, you agree to our'),
         ),
       ],
     );

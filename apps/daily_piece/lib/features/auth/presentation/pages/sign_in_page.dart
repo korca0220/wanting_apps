@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/data/repositories/auth_repository_impl.dart';
 import '../../../../core/domain/exceptions/auth_exceptions.dart';
 import '../widgets/google_sign_in_button.dart';
+import '../widgets/legal_text.dart';
 
 class SignInPage extends ConsumerStatefulWidget {
   const SignInPage({super.key});
@@ -165,11 +166,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
               ),
               SizedBox(height: spacing.componentXl),
               const Center(
-                child: WdsText(
-                  'By signing in, you agree to our Terms of Service and Privacy Policy',
-                  style: WdsTextStyle.caption1,
-                  color: WdsTextColor.alternative,
-                ),
+                child: LegalText(prefix: 'By signing in, you agree to our'),
               ),
             ],
           ),
