@@ -26,7 +26,7 @@ Future<Uint8List?> pickAndProcessPhoto(BuildContext context) async {
                 Icons.camera_alt_outlined,
                 color: colors.labelNormal,
               ),
-              title: const Text('사진 찍기'),
+              title: const Text('Take Photo'),
               onTap: () => Navigator.of(ctx).pop(ImageSource.camera),
             ),
             ListTile(
@@ -34,7 +34,7 @@ Future<Uint8List?> pickAndProcessPhoto(BuildContext context) async {
                 Icons.photo_library_outlined,
                 color: colors.labelNormal,
               ),
-              title: const Text('갤러리에서 고르기'),
+              title: const Text('Choose from Library'),
               onTap: () => Navigator.of(ctx).pop(ImageSource.gallery),
             ),
           ],

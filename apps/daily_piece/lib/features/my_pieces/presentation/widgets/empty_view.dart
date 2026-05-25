@@ -16,17 +16,17 @@ class EmptyView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const WdsText('아직 Piece가 없어요.', style: WdsTextStyle.headline2),
+            const WdsText('No pieces yet', style: WdsTextStyle.headline2),
             SizedBox(height: spacing.componentSm),
             const WdsText(
-              '오늘의 첫 Piece를 만들어보세요.',
+              "Create today's first piece.",
               style: WdsTextStyle.body2,
               color: WdsTextColor.alternative,
             ),
             SizedBox(height: spacing.componentXl),
             WdsButton(
               onPressed: () => showNewPieceSheet(context),
-              child: const Text('첫 Piece 만들기'),
+              child: const Text('Create First Piece'),
             ),
           ],
         ),

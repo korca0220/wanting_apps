@@ -40,15 +40,15 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
     final confirm = _confirmPassword.text;
 
     if (email.isEmpty || password.isEmpty) {
-      setState(() => _error = '이메일과 비밀번호를 입력해주세요.');
+      setState(() => _error = 'Please enter your email and password.');
       return;
     }
     if (password.length < 8) {
-      setState(() => _error = '비밀번호는 8자 이상이어야 해요.');
+      setState(() => _error = 'Password must be at least 8 characters.');
       return;
     }
     if (password != confirm) {
-      setState(() => _error = '비밀번호가 일치하지 않아요.');
+      setState(() => _error = 'Passwords do not match.');
       return;
     }
 
@@ -60,15 +60,11 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
     try {
       final immediate = await ref
           .read(authRepositoryProvider)
-          .signUp(
-            email: email,
-            password: password,
-            name: _name.text,
-          );
+          .signUp(email: email, password: password, name: _name.text);
       if (!mounted) return;
 
       if (immediate) {
-        // Confirm email = OFF: signedInStream → router redirect로 이어짐.
+        // Confirm email = OFF: signedInStream handles the router redirect.
         return;
       }
 
@@ -76,7 +72,11 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
     } on AuthFailure catch (e) {
       if (mounted) setState(() => _error = e.message);
     } catch (_) {
-      if (mounted) setState(() => _error = '가입에 실패했어요. 잠시 후 다시 시도해주세요.');
+      if (mounted) {
+        setState(
+          () => _error = "We couldn't create your account. Please try again.",
+        );
+      }
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -94,7 +94,9 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
     } on AuthFailure catch (e) {
       if (mounted) setState(() => _error = e.message);
     } catch (_) {
-      if (mounted) setState(() => _error = 'Google 로그인에 실패했어요. 잠시 후 다시 시도해주세요.');
+      if (mounted) {
+        setState(() => _error = 'Google sign-in failed. Please try again.');
+      }
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -111,7 +113,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
         leading: IconButton(
           onPressed: () => context.pop(),
           icon: const Icon(Icons.chevron_left),
-          tooltip: '뒤로',
+          tooltip: 'Back',
         ),
       ),
       body: SafeArea(
@@ -183,9 +185,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
           child: const Text('Create Account'),
         ),
         SizedBox(height: spacing.componentMd),
-        GoogleSignInButton(
-          onPressed: _busy ? null : _signInWithGoogle,
-        ),
+        GoogleSignInButton(onPressed: _busy ? null : _signInWithGoogle),
         SizedBox(height: spacing.componentLg),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,

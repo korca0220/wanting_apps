@@ -73,7 +73,7 @@ class _NewPieceSheetState extends ConsumerState<NewPieceSheet> {
         setState(() => _busy = false);
         WdsSnackbar.show(
           context: context,
-          message: '사진 처리에 실패했어요.',
+          message: 'Photo processing failed.',
           variant: WdsSnackbarVariant.error,
         );
       }
@@ -86,7 +86,7 @@ class _NewPieceSheetState extends ConsumerState<NewPieceSheet> {
 
     final comment = _comment.text.trim();
     if (comment.isEmpty) {
-      setState(() => _error = '코멘트를 입력해주세요.');
+      setState(() => _error = 'Please enter a caption.');
       return;
     }
 
@@ -98,25 +98,19 @@ class _NewPieceSheetState extends ConsumerState<NewPieceSheet> {
     try {
       await ref
           .read(pieceRepositoryProvider)
-          .create(
-            photoBytes: bytes,
-            comment: comment,
-            date: widget.forDate,
-          );
+          .create(photoBytes: bytes, comment: comment, date: widget.forDate);
 
       final date = widget.forDate ?? DateTime.now();
       ref.invalidate(myPiecesFeedProvider);
       ref.invalidate(pieceMonthsProvider);
       ref.invalidate(searchResultsProvider);
-      ref.invalidate(
-        monthPiecesProvider(year: date.year, month: date.month),
-      );
+      ref.invalidate(monthPiecesProvider(year: date.year, month: date.month));
 
       if (mounted) Navigator.of(context).pop();
     } on PieceAlreadyExistsToday {
       if (mounted) {
         setState(() {
-          _error = '해당 날짜의 Piece가 이미 저장돼있어요.';
+          _error = 'A piece already exists for this date.';
           _busy = false;
         });
       }
@@ -125,7 +119,7 @@ class _NewPieceSheetState extends ConsumerState<NewPieceSheet> {
         setState(() => _busy = false);
         WdsSnackbar.show(
           context: context,
-          message: '저장에 실패했어요. 잠시 후 다시 시도해주세요.',
+          message: 'Save failed. Please try again.',
           variant: WdsSnackbarVariant.error,
         );
       }
@@ -147,9 +141,7 @@ class _NewPieceSheetState extends ConsumerState<NewPieceSheet> {
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: colors.backgroundNormalNormal,
-          borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(24),
-          ),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         ),
         child: SafeArea(
           top: false,
@@ -168,7 +160,7 @@ class _NewPieceSheetState extends ConsumerState<NewPieceSheet> {
                           ? null
                           : () => Navigator.of(context).pop(),
                       icon: const Icon(Icons.close),
-                      tooltip: '닫기',
+                      tooltip: 'Close',
                     ),
                   ],
                 ),

@@ -68,7 +68,7 @@ class _EditPieceFormState extends ConsumerState<EditPieceForm> {
       setState(() => _busy = false);
       WdsSnackbar.show(
         context: context,
-        message: '사진 처리에 실패했어요.',
+        message: 'Photo processing failed.',
         variant: WdsSnackbarVariant.error,
       );
     }
@@ -77,7 +77,7 @@ class _EditPieceFormState extends ConsumerState<EditPieceForm> {
   Future<void> _save() async {
     final next = _commentCtrl.text.trim();
     if (next.isEmpty) {
-      setState(() => _error = '코멘트를 입력해주세요.');
+      setState(() => _error = 'Please enter a caption.');
       return;
     }
 
@@ -119,7 +119,7 @@ class _EditPieceFormState extends ConsumerState<EditPieceForm> {
       setState(() => _busy = false);
       WdsSnackbar.show(
         context: context,
-        message: '저장에 실패했어요. 잠시 후 다시 시도해주세요.',
+        message: 'Save failed. Please try again.',
         variant: WdsSnackbarVariant.error,
       );
     }

@@ -10,8 +10,8 @@ class EmptyResults extends StatelessWidget {
   Widget build(BuildContext context) {
     final spacing = context.wdsSpacing;
     final msg = query.isEmpty
-        ? '아직 저장된 piece가 없어요.'
-        : "'$query'에 대한 결과가 없어요.";
+        ? 'No pieces saved yet.'
+        : "No results for '$query'.";
 
     return Center(
       child: Padding(

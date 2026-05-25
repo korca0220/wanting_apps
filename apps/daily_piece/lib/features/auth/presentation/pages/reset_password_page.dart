@@ -29,7 +29,7 @@ class _ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
   Future<void> _submit() async {
     final email = _email.text.trim();
     if (email.isEmpty) {
-      setState(() => _error = '이메일을 입력해주세요.');
+      setState(() => _error = 'Please enter your email.');
       return;
     }
 
@@ -46,7 +46,7 @@ class _ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
       if (mounted) setState(() => _sent = true);
     } catch (_) {
       if (mounted) {
-        setState(() => _error = '재설정 요청에 실패했어요. 잠시 후 다시 시도해주세요.');
+        setState(() => _error = 'Reset request failed. Please try again.');
       }
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -64,7 +64,7 @@ class _ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
         leading: IconButton(
           onPressed: () => context.pop(),
           icon: const Icon(Icons.chevron_left),
-          tooltip: '뒤로',
+          tooltip: 'Back',
         ),
       ),
       body: SafeArea(
@@ -76,10 +76,7 @@ class _ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const WdsText(
-                      'Reset Password',
-                      style: WdsTextStyle.title1,
-                    ),
+                    const WdsText('Reset Password', style: WdsTextStyle.title1),
                     SizedBox(height: spacing.componentSm),
                     const WdsText(
                       'Enter your email to receive a reset link',

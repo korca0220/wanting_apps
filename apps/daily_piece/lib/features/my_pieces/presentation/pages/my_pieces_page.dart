@@ -58,12 +58,22 @@ class _MyPiecesPageState extends ConsumerState<MyPiecesPage> {
     }
   }
 
+  bool _isSameLocalDate(DateTime a, DateTime b) {
+    return a.year == b.year && a.month == b.month && a.day == b.day;
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.wdsColors;
     final feed = ref.watch(myPiecesFeedProvider);
     final now = DateTime.now();
     final monthLabel = '${_monthsLong[now.month - 1]} ${now.year}';
+    final showCreateButton = feed.maybeWhen(
+      data: (state) {
+        return !state.items.any((piece) => _isSameLocalDate(piece.date, now));
+      },
+      orElse: () => false,
+    );
 
     return Scaffold(
       backgroundColor: colors.backgroundNormalNormal,
@@ -80,11 +90,6 @@ class _MyPiecesPageState extends ConsumerState<MyPiecesPage> {
               ),
             ),
           ),
-          const IconButton(
-            onPressed: null,
-            icon: Icon(Icons.notifications_none_outlined),
-            tooltip: '알림',
-          ),
         ],
       ),
       body: SafeArea(
@@ -99,10 +104,12 @@ class _MyPiecesPageState extends ConsumerState<MyPiecesPage> {
               : CardFeed(state: state, controller: _scroll),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => showNewPieceSheet(context),
-        child: const Icon(Icons.add),
-      ),
+      floatingActionButton: showCreateButton
+          ? FloatingActionButton(
+              onPressed: () => showNewPieceSheet(context),
+              child: const Icon(Icons.add),
+            )
+          : null,
     );
   }
 }

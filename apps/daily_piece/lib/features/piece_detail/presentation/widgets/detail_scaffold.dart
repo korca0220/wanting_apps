@@ -12,7 +12,20 @@ import '../../../search/presentation/providers/search_providers.dart';
 import 'action_tile.dart';
 import '../providers/piece_by_id_provider.dart';
 
-const _months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const _months = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
 
 /// Read-only Piece detail. Photo + caption + meta + Edit / Delete tiles.
 /// Edit pushes `.../:id/edit` (separate screen). Delete confirms
@@ -52,11 +65,17 @@ class _DetailScaffoldState extends ConsumerState<DetailScaffold> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Piece를 삭제할까요?'),
-        content: const Text('한 번 지우면 되돌릴 수 없어요.'),
+        title: const Text('Delete this piece?'),
+        content: const Text("This can't be undone."),
         actions: [
-          TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: const Text('취소')),
-          TextButton(onPressed: () => Navigator.of(ctx).pop(true), child: const Text('삭제')),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Delete'),
+          ),
         ],
       ),
     );
@@ -66,7 +85,9 @@ class _DetailScaffoldState extends ConsumerState<DetailScaffold> {
     setState(() => _busy = true);
 
     try {
-      await ref.read(pieceRepositoryProvider).delete(id: widget.piece.id, photoPath: widget.piece.photoPath);
+      await ref
+          .read(pieceRepositoryProvider)
+          .delete(id: widget.piece.id, photoPath: widget.piece.photoPath);
 
       final d = widget.piece.date;
       ref.read(signedUrlCacheProvider).invalidate(widget.piece.photoPath);
@@ -80,7 +101,11 @@ class _DetailScaffoldState extends ConsumerState<DetailScaffold> {
     } catch (_) {
       if (mounted) {
         setState(() => _busy = false);
-        WdsSnackbar.show(context: context, message: '삭제에 실패했어요. 잠시 후 다시 시도해주세요.', variant: WdsSnackbarVariant.error);
+        WdsSnackbar.show(
+          context: context,
+          message: 'Delete failed. Please try again.',
+          variant: WdsSnackbarVariant.error,
+        );
       }
     }
   }
@@ -95,7 +120,11 @@ class _DetailScaffoldState extends ConsumerState<DetailScaffold> {
     return Scaffold(
       backgroundColor: colors.backgroundNormalNormal,
       appBar: AppBar(
-        leading: IconButton(onPressed: () => context.pop(), icon: const Icon(Icons.chevron_left), tooltip: '뒤로'),
+        leading: IconButton(
+          onPressed: () => context.pop(),
+          icon: const Icon(Icons.chevron_left),
+          tooltip: 'Back',
+        ),
         title: const Text('Piece'),
         centerTitle: true,
       ),
@@ -128,9 +157,17 @@ class _DetailScaffoldState extends ConsumerState<DetailScaffold> {
               SizedBox(height: spacing.componentSm),
               Row(
                 children: [
-                  Icon(Icons.calendar_today_outlined, size: 14, color: colors.labelAlternative),
+                  Icon(
+                    Icons.calendar_today_outlined,
+                    size: 14,
+                    color: colors.labelAlternative,
+                  ),
                   const SizedBox(width: 6),
-                  WdsText(dateLabel, style: WdsTextStyle.caption1, color: WdsTextColor.alternative),
+                  WdsText(
+                    dateLabel,
+                    style: WdsTextStyle.caption1,
+                    color: WdsTextColor.alternative,
+                  ),
                 ],
               ),
               SizedBox(height: spacing.componentXl),

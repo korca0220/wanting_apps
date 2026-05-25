@@ -19,15 +19,15 @@ class _AccountCardState extends ConsumerState<AccountCard> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('로그아웃할까요?'),
+        title: const Text('Sign out?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('취소'),
+            child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('로그아웃'),
+            child: const Text('Sign Out'),
           ),
         ],
       ),

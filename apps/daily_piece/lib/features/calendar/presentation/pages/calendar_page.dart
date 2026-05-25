@@ -109,10 +109,7 @@ class _CalendarPageState extends ConsumerState<CalendarPage> {
     final monthLabel =
         '${_monthsLong[_visibleMonth.month - 1]} ${_visibleMonth.year}';
     final asyncMap = ref.watch(
-      monthPiecesProvider(
-        year: _visibleMonth.year,
-        month: _visibleMonth.month,
-      ),
+      monthPiecesProvider(year: _visibleMonth.year, month: _visibleMonth.month),
     );
 
     return Scaffold(
@@ -123,7 +120,7 @@ class _CalendarPageState extends ConsumerState<CalendarPage> {
             IconButton(
               onPressed: _prev,
               icon: const Icon(Icons.chevron_left),
-              tooltip: '이전 달',
+              tooltip: 'Previous Month',
             ),
             Expanded(
               child: Center(
@@ -133,15 +130,12 @@ class _CalendarPageState extends ConsumerState<CalendarPage> {
             IconButton(
               onPressed: _next,
               icon: const Icon(Icons.chevron_right),
-              tooltip: '다음 달',
+              tooltip: 'Next Month',
             ),
           ],
         ),
         actions: [
-          TextButton(
-            onPressed: _jumpToToday,
-            child: const Text('Today'),
-          ),
+          TextButton(onPressed: _jumpToToday, child: const Text('Today')),
         ],
       ),
       body: SafeArea(

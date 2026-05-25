@@ -32,7 +32,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
     final email = _email.text.trim();
     final password = _password.text;
     if (email.isEmpty || password.isEmpty) {
-      setState(() => _error = '이메일과 비밀번호를 입력해주세요.');
+      setState(() => _error = 'Please enter your email and password.');
       return;
     }
 
@@ -45,11 +45,13 @@ class _SignInPageState extends ConsumerState<SignInPage> {
       await ref
           .read(authRepositoryProvider)
           .signIn(email: email, password: password);
-      // signedInStream → router redirect가 /my-pieces로 보냄.
+      // signedInStream handles the router redirect to /my-pieces.
     } on AuthFailure catch (e) {
       if (mounted) setState(() => _error = e.message);
     } catch (_) {
-      if (mounted) setState(() => _error = '로그인에 실패했어요. 잠시 후 다시 시도해주세요.');
+      if (mounted) {
+        setState(() => _error = "We couldn't sign you in. Please try again.");
+      }
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -67,7 +69,9 @@ class _SignInPageState extends ConsumerState<SignInPage> {
     } on AuthFailure catch (e) {
       if (mounted) setState(() => _error = e.message);
     } catch (_) {
-      if (mounted) setState(() => _error = 'Google 로그인에 실패했어요. 잠시 후 다시 시도해주세요.');
+      if (mounted) {
+        setState(() => _error = 'Google sign-in failed. Please try again.');
+      }
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -84,7 +88,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
         leading: IconButton(
           onPressed: () => context.pop(),
           icon: const Icon(Icons.chevron_left),
-          tooltip: '뒤로',
+          tooltip: 'Back',
         ),
       ),
       body: SafeArea(
@@ -138,9 +142,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                 child: const Text('Sign In'),
               ),
               SizedBox(height: spacing.componentMd),
-              GoogleSignInButton(
-                onPressed: _busy ? null : _signInWithGoogle,
-              ),
+              GoogleSignInButton(onPressed: _busy ? null : _signInWithGoogle),
               SizedBox(height: spacing.componentLg),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,

@@ -17,7 +17,10 @@ class ErrorView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const WdsText('Piece를 불러오지 못했어요.', style: WdsTextStyle.headline2),
+            const WdsText(
+              'Unable to load this piece',
+              style: WdsTextStyle.headline2,
+            ),
             SizedBox(height: spacing.componentSm),
             WdsText(
               '$error',
@@ -25,7 +28,7 @@ class ErrorView extends StatelessWidget {
               color: WdsTextColor.alternative,
             ),
             SizedBox(height: spacing.componentXl),
-            WdsButton(onPressed: onRetry, child: const Text('다시 시도')),
+            WdsButton(onPressed: onRetry, child: const Text('Try Again')),
           ],
         ),
       ),

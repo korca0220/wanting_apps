@@ -15,17 +15,17 @@ class MissingView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const WdsText('Piece를 찾을 수 없어요.', style: WdsTextStyle.headline2),
+            const WdsText('Piece not found', style: WdsTextStyle.headline2),
             SizedBox(height: spacing.componentSm),
             const WdsText(
-              '이미 삭제됐거나 접근 권한이 없어요.',
+              "It may have been deleted, or you don't have access.",
               style: WdsTextStyle.body2,
               color: WdsTextColor.alternative,
             ),
             SizedBox(height: spacing.componentXl),
             WdsButton(
               onPressed: () => context.go('/my-pieces'),
-              child: const Text('My Pieces로'),
+              child: const Text('Go to My Pieces'),
             ),
           ],
         ),
