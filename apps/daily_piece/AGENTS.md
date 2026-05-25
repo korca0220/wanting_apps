@@ -216,6 +216,10 @@ python3 ../../../design-system-gen/skills/screen-spec-gen/scripts/validate_scree
 | Edit Piece 화면 | ✅ 코드 | `/piece/:pieceId/edit`(공용) + `/my-pieces/:pieceId/edit`(탭 내부). 사진 교체 + 코멘트 수정. 날짜 변경은 deferred (UNIQUE 제약) |
 | Profile 화면 | ✅ 코드 | 프로필 카드(이름/이메일/아바타) + 테마(System/Light/Dark) + 로그아웃. 이름/아바타는 `profiles` 우선 조회, 없으면 auth metadata 폴백 |
 | Bottom navigation (My Pieces / Calendar / Search / Profile) | ✅ 코드 | `StatefulShellRoute.indexedStack` 4-탭. 탭 재탭 시 브랜치 루트로 pop |
+| Google OAuth (Sign in with Google) | ✅ 코드 | Sign In / Sign Up 화면. `google_sign_in_button.dart` + `google_mark.dart` 위젯 분리. |
+| OAuth 콜백 딥링크 (iOS / Android) | ✅ | `apps/daily_piece/ios/Runner/Info.plist` URL Scheme + `AndroidManifest.xml` intent-filter 등록. Supabase OAuth redirect 처리. |
+| 앱 아이콘 (iOS / Android) | ✅ | iOS: `AppIcon.appiconset` 전 사이즈. Android: adaptive icon (`ic_launcher_foreground.png` + `ic_launcher.xml`). 소스: `assets/app_icon/`. |
+| UI 언어 | ✅ 영문화 완료 | 모든 화면 텍스트·에러 메시지 영어로 통일 (2026-05-25). 한국어 리터럴 제거. |
 | 카메라 캡처 | ✅ 코드, ❌ 실기 미검증 | 갤러리/카메라 chooser 바텀시트. iOS `NSCameraUsageDescription` + Android `CAMERA` permission. 헬퍼: [`core/data/media/photo_picker.dart`](lib/core/data/media/photo_picker.dart) |
 | 오류 snackbar 통일 | ✅ | `WdsSnackbar`로 transport 에러 단일 노출 |
 | 위젯 테스트 | 🟡 router redirect 2개만 | feature 단위 테스트 추가 필요 |
