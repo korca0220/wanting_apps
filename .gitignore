@@ -91,3 +91,6 @@ coverage/
 
 # Melos
 .melos_tool/
+
+# Supabase
+**/supabase/.temp/
