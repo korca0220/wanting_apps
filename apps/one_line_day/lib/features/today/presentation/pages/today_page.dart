@@ -157,43 +157,40 @@ class _FilledToday extends StatelessWidget {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: onTap,
-      child: Padding(
+      child: SingleChildScrollView(
         padding: EdgeInsets.all(spacing.componentLg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: spacing.componentLg),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 3,
-                  height: 72,
-                  decoration: BoxDecoration(
-                    color: colors.primaryNormal,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-                const SizedBox(width: WdsSpacing.s16),
-                Expanded(
-                  child: Text(
-                    entry.text,
-                    style: context.wdsType.title3.copyWith(
-                      color: colors.labelNormal,
-                      height: 1.55,
+            IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Container(
+                    width: 3,
+                    decoration: BoxDecoration(
+                      color: colors.primaryNormal,
+                      borderRadius: BorderRadius.circular(2),
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(width: WdsSpacing.s16),
+                  Expanded(
+                    child: Text(
+                      entry.text,
+                      style: context.wdsType.title3.copyWith(
+                        color: colors.labelNormal,
+                        height: 1.55,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
             SizedBox(height: spacing.componentLg),
             Row(
               children: [
-                Icon(
-                  Icons.edit_outlined,
-                  size: 14,
-                  color: colors.labelAssistive,
-                ),
+                Icon(Icons.edit_outlined, size: 14, color: colors.labelAssistive),
                 const SizedBox(width: WdsSpacing.s4),
                 WdsText(
                   'Tap to edit',
