@@ -24,6 +24,25 @@ OneLine Day는 **하루에 한 줄**만 기록하는 개인용 데일리 로그 
 3. 화면 명세는 framework-neutral하게 유지한다.
 4. 구현 단계에서는 `apps/AGENTS.md`의 앱 공통 규약을 따른다.
 
+## 구현 상태
+
+| 영역 | 상태 | 비고 |
+|---|---|---|
+| Core domain (Entry entity + repository interface) | ✅ | `core/domain/` |
+| Hive CE 저장소 구현 | ✅ | `core/data/` — key: `yyyy-MM-dd`, `entries` / `settings` box |
+| Riverpod AllEntries notifier (save/delete) | ✅ | `core/providers/all_entries_provider.dart` |
+| ThemeModeController | ✅ | Hive `settings` box 영속 |
+| 5-탭 라우터 + MainShellPage | ✅ | `app/router.dart`, `app/shell/` |
+| Today 화면 | ✅ 코드 | 오늘 기록 있음/없음 분기, EditEntry 시트 진입 |
+| EditEntry 시트 | ✅ 코드 | 저장/삭제/취소. WdsAlert 삭제 확인 |
+| Calendar 화면 | ✅ 코드 | 월 그리드 + dot map + 날짜 탭 → EditEntry 시트 |
+| Entries 화면 | ✅ 코드 | 전체 기록 최신순 목록 |
+| Search 화면 | ✅ 코드 | 클라이언트 사이드 키워드 검색 |
+| Settings 화면 | ✅ 코드 | System/Light/Dark 테마 선택 |
+| 실기 검증 | ❌ | golden path 미검증 |
+| AdMob 광고 슬롯 | ❌ TBD | Today + Entries 하단 배너 예정 |
+| 앱 아이콘 | ❌ | 플레이스홀더 |
+
 ## 현재 구조
 
 ```text
@@ -31,8 +50,23 @@ apps/one_line_day/
 ├── docs/screens/        # 화면 명세
 ├── android/             # Android 기본 프로젝트
 ├── ios/                 # iOS 기본 프로젝트
-├── lib/                 # Flutter 구현
-└── test/                # 위젯 테스트
+├── lib/
+│   ├── main.dart
+│   ├── app/             # app.dart, router.dart, shell/
+│   ├── core/
+│   │   ├── domain/      # Entry entity + EntryRepository interface
+│   │   ├── data/        # EntryRecord (Hive), HiveEntryRepository
+│   │   ├── providers/   # AllEntries notifier
+│   │   ├── theme/       # ThemeModeController
+│   │   └── utils/       # dateKey()
+│   └── features/
+│       ├── today/        # TodayPage + providers
+│       ├── edit_entry/   # EditEntrySheet (바텀시트)
+│       ├── calendar/     # CalendarPage + providers
+│       ├── entries/      # EntriesPage
+│       ├── search/       # SearchPage + providers
+│       └── settings/     # SettingsPage
+└── test/
 ```
 
 ## 명령어
