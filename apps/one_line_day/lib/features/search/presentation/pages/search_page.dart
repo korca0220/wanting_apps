@@ -18,8 +18,18 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   String _query = '';
 
   static const _monthsShort = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
   ];
   static const _weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
@@ -86,24 +96,24 @@ class _SearchPageState extends ConsumerState<SearchPage> {
               child: !hasQuery
                   ? _SearchHint()
                   : results.isEmpty
-                      ? WdsFallbackView(
-                          title: 'No results',
-                          description: 'Nothing matched "$_query".',
-                        )
-                      : ListView.separated(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: spacing.componentLg,
-                            vertical: WdsSpacing.s16,
-                          ),
-                          itemCount: results.length,
-                          separatorBuilder: (_, _) =>
-                              const SizedBox(height: WdsSpacing.s8),
-                          itemBuilder: (context, i) => _SearchResultCard(
-                            entry: results[i],
-                            dateLabel: _cardDate(results[i].date),
-                            query: _query,
-                          ),
-                        ),
+                  ? WdsFallbackView(
+                      title: 'No results',
+                      description: 'Nothing matched "$_query".',
+                    )
+                  : ListView.separated(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: spacing.componentLg,
+                        vertical: WdsSpacing.s16,
+                      ),
+                      itemCount: results.length,
+                      separatorBuilder: (_, _) =>
+                          const SizedBox(height: WdsSpacing.s8),
+                      itemBuilder: (context, i) => _SearchResultCard(
+                        entry: results[i],
+                        dateLabel: _cardDate(results[i].date),
+                        query: _query,
+                      ),
+                    ),
             ),
           ],
         ),
@@ -156,7 +166,8 @@ class _SearchResultCard extends StatelessWidget {
     final colors = context.wdsColors;
 
     return GestureDetector(
-      onTap: () => showEditEntrySheet(context, date: entry.date, existing: entry),
+      onTap: () =>
+          showEditEntrySheet(context, date: entry.date, existing: entry),
       child: Container(
         decoration: BoxDecoration(
           color: colors.backgroundElevatedNormal,
@@ -211,15 +222,20 @@ class _HighlightedText extends StatelessWidget {
     if (idx < 0) return Text(text, style: baseStyle);
 
     return Text.rich(
-      TextSpan(children: [
-        if (idx > 0) TextSpan(text: text.substring(0, idx), style: baseStyle),
-        TextSpan(
-          text: text.substring(idx, idx + query.length),
-          style: highlightStyle,
-        ),
-        if (idx + query.length < text.length)
-          TextSpan(text: text.substring(idx + query.length), style: baseStyle),
-      ]),
+      TextSpan(
+        children: [
+          if (idx > 0) TextSpan(text: text.substring(0, idx), style: baseStyle),
+          TextSpan(
+            text: text.substring(idx, idx + query.length),
+            style: highlightStyle,
+          ),
+          if (idx + query.length < text.length)
+            TextSpan(
+              text: text.substring(idx + query.length),
+              style: baseStyle,
+            ),
+        ],
+      ),
     );
   }
 }

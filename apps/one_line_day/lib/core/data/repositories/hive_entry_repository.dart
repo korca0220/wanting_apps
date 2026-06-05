@@ -50,12 +50,12 @@ class _HiveEntryRepository implements EntryRepository {
 
 extension on EntryRecord {
   Entry toEntry() => Entry(
-        id: id,
-        date: date,
-        text: text,
-        createdAt: createdAt,
-        updatedAt: updatedAt,
-      );
+    id: id,
+    date: date,
+    text: text,
+    createdAt: createdAt,
+    updatedAt: updatedAt,
+  );
 }
 
 const _uuid = Uuid();

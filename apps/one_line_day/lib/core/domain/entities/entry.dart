@@ -14,10 +14,10 @@ class Entry {
   final DateTime updatedAt;
 
   Entry copyWith({String? text, DateTime? updatedAt}) => Entry(
-        id: id,
-        date: date,
-        text: text ?? this.text,
-        createdAt: createdAt,
-        updatedAt: updatedAt ?? this.updatedAt,
-      );
+    id: id,
+    date: date,
+    text: text ?? this.text,
+    createdAt: createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
 }

@@ -15,21 +15,37 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       StatefulShellRoute.indexedStack(
         builder: (_, _, shell) => MainShellPage(navigationShell: shell),
         branches: [
-          StatefulShellBranch(routes: [
-            GoRoute(path: '/today', builder: (_, _) => const TodayPage()),
-          ]),
-          StatefulShellBranch(routes: [
-            GoRoute(path: '/calendar', builder: (_, _) => const CalendarPage()),
-          ]),
-          StatefulShellBranch(routes: [
-            GoRoute(path: '/entries', builder: (_, _) => const EntriesPage()),
-          ]),
-          StatefulShellBranch(routes: [
-            GoRoute(path: '/search', builder: (_, _) => const SearchPage()),
-          ]),
-          StatefulShellBranch(routes: [
-            GoRoute(path: '/settings', builder: (_, _) => const SettingsPage()),
-          ]),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(path: '/today', builder: (_, _) => const TodayPage()),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/calendar',
+                builder: (_, _) => const CalendarPage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(path: '/entries', builder: (_, _) => const EntriesPage()),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(path: '/search', builder: (_, _) => const SearchPage()),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/settings',
+                builder: (_, _) => const SettingsPage(),
+              ),
+            ],
+          ),
         ],
       ),
     ],

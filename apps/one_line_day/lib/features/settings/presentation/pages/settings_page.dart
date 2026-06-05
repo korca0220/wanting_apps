@@ -19,14 +19,14 @@ class SettingsPage extends ConsumerWidget {
         child: ListView(
           padding: EdgeInsets.all(spacing.componentLg),
           children: [
-            Padding(
-              padding: const EdgeInsets.only(
+            const Padding(
+              padding: EdgeInsets.only(
                 bottom: WdsSpacing.s20,
                 left: WdsSpacing.s4,
               ),
               child: WdsText('Settings', style: WdsTextStyle.title2),
             ),
-            _SectionLabel(label: 'Appearance'),
+            const _SectionLabel(label: 'Appearance'),
             const SizedBox(height: WdsSpacing.s8),
             _SectionCard(
               children: [
@@ -56,12 +56,10 @@ class SettingsPage extends ConsumerWidget {
               ],
             ),
             const SizedBox(height: WdsSpacing.s24),
-            _SectionLabel(label: 'About'),
+            const _SectionLabel(label: 'About'),
             const SizedBox(height: WdsSpacing.s8),
-            _SectionCard(
-              children: [
-                _InfoRow(label: 'Version', value: '1.0.0'),
-              ],
+            const _SectionCard(
+              children: [_InfoRow(label: 'Version', value: '1.0.0')],
             ),
           ],
         ),
@@ -134,9 +132,7 @@ class _ThemeOption extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Expanded(
-              child: WdsText(label, style: WdsTextStyle.body1),
-            ),
+            Expanded(child: WdsText(label, style: WdsTextStyle.body1)),
             if (selected)
               Icon(Icons.check_rounded, size: 20, color: colors.primaryNormal),
           ],

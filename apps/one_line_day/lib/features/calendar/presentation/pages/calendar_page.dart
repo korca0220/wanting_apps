@@ -19,8 +19,18 @@ class _CalendarPageState extends ConsumerState<CalendarPage> {
   late DateTime _focusedMonth;
 
   static const _monthNames = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December',
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
   ];
   static const _dayLabels = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
@@ -32,10 +42,12 @@ class _CalendarPageState extends ConsumerState<CalendarPage> {
   }
 
   void _prevMonth() => setState(
-      () => _focusedMonth = DateTime(_focusedMonth.year, _focusedMonth.month - 1));
+    () => _focusedMonth = DateTime(_focusedMonth.year, _focusedMonth.month - 1),
+  );
 
   void _nextMonth() => setState(
-      () => _focusedMonth = DateTime(_focusedMonth.year, _focusedMonth.month + 1));
+    () => _focusedMonth = DateTime(_focusedMonth.year, _focusedMonth.month + 1),
+  );
 
   bool get _isCurrentMonth {
     final now = DateTime.now();
@@ -50,15 +62,21 @@ class _CalendarPageState extends ConsumerState<CalendarPage> {
     final allEntries = ref.watch(allEntriesProvider).valueOrNull ?? [];
     final todayKey = dateKey(DateTime.now());
 
-    final daysInMonth =
-        DateTime(_focusedMonth.year, _focusedMonth.month + 1, 0).day;
+    final daysInMonth = DateTime(
+      _focusedMonth.year,
+      _focusedMonth.month + 1,
+      0,
+    ).day;
     final startWeekday =
         DateTime(_focusedMonth.year, _focusedMonth.month, 1).weekday % 7;
 
     final monthEntryCount = datesWithEntries
-        .where((d) => d.startsWith(
+        .where(
+          (d) => d.startsWith(
             '${_focusedMonth.year.toString().padLeft(4, '0')}-'
-            '${_focusedMonth.month.toString().padLeft(2, '0')}'))
+            '${_focusedMonth.month.toString().padLeft(2, '0')}',
+          ),
+        )
         .length;
 
     return Scaffold(
@@ -113,15 +131,17 @@ class _CalendarPageState extends ConsumerState<CalendarPage> {
               SizedBox(height: spacing.componentMd),
               Row(
                 children: _dayLabels
-                    .map((d) => Expanded(
-                          child: Center(
-                            child: WdsText(
-                              d,
-                              style: WdsTextStyle.caption2,
-                              color: WdsTextColor.assistive,
-                            ),
+                    .map(
+                      (d) => Expanded(
+                        child: Center(
+                          child: WdsText(
+                            d,
+                            style: WdsTextStyle.caption2,
+                            color: WdsTextColor.assistive,
                           ),
-                        ))
+                        ),
+                      ),
+                    )
                     .toList(),
               ),
               const SizedBox(height: WdsSpacing.s8),
@@ -138,7 +158,10 @@ class _CalendarPageState extends ConsumerState<CalendarPage> {
 
                   final day = index - startWeekday + 1;
                   final date = DateTime(
-                      _focusedMonth.year, _focusedMonth.month, day);
+                    _focusedMonth.year,
+                    _focusedMonth.month,
+                    day,
+                  );
                   final key = dateKey(date);
                   final hasEntry = datesWithEntries.contains(key);
                   final isToday = key == todayKey;
@@ -154,11 +177,8 @@ class _CalendarPageState extends ConsumerState<CalendarPage> {
                   }
 
                   return GestureDetector(
-                    onTap: () => showEditEntrySheet(
-                      context,
-                      date: key,
-                      existing: entry,
-                    ),
+                    onTap: () =>
+                        showEditEntrySheet(context, date: key, existing: entry),
                     child: Center(
                       child: _CalendarCell(
                         day: day,
@@ -212,16 +232,15 @@ class _CalendarCell extends StatelessWidget {
     return Container(
       width: 34,
       height: 34,
-      decoration: BoxDecoration(
-        color: bg,
-        shape: BoxShape.circle,
-      ),
+      decoration: BoxDecoration(color: bg, shape: BoxShape.circle),
       child: Center(
         child: Text(
           '$day',
           style: type.body2.copyWith(
             color: textColor,
-            fontWeight: (isToday || hasEntry) ? FontWeight.w700 : FontWeight.w400,
+            fontWeight: (isToday || hasEntry)
+                ? FontWeight.w700
+                : FontWeight.w400,
           ),
         ),
       ),

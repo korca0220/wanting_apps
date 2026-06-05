@@ -11,12 +11,32 @@ class EntriesPage extends ConsumerWidget {
 
   static const _weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   static const _months = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December',
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
   ];
   static const _monthsShort = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
   ];
 
   String _cardDate(String dateStr) {
@@ -125,7 +145,9 @@ class EntriesPage extends ConsumerWidget {
                     ),
                   ),
                 ],
-                const SliverToBoxAdapter(child: SizedBox(height: WdsSpacing.s32)),
+                const SliverToBoxAdapter(
+                  child: SizedBox(height: WdsSpacing.s32),
+                ),
               ],
             );
           },
@@ -152,7 +174,8 @@ class _EntryCard extends StatelessWidget {
     final colors = context.wdsColors;
 
     return GestureDetector(
-      onTap: () => showEditEntrySheet(context, date: entry.date, existing: entry),
+      onTap: () =>
+          showEditEntrySheet(context, date: entry.date, existing: entry),
       child: Container(
         decoration: BoxDecoration(
           color: colors.backgroundElevatedNormal,
@@ -177,11 +200,7 @@ class _EntryCard extends StatelessWidget {
               ),
             ),
             const SizedBox(width: WdsSpacing.s8),
-            Icon(
-              Icons.chevron_right,
-              size: 18,
-              color: colors.labelAssistive,
-            ),
+            Icon(Icons.chevron_right, size: 18, color: colors.labelAssistive),
           ],
         ),
       ),
