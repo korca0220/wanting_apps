@@ -220,21 +220,25 @@ python3 ../../../design-system-gen/skills/screen-spec-gen/scripts/validate_scree
 | OAuth 콜백 딥링크 (iOS / Android) | ✅ | `apps/daily_piece/ios/Runner/Info.plist` URL Scheme + `AndroidManifest.xml` intent-filter 등록. Supabase OAuth redirect 처리. |
 | 앱 아이콘 (iOS / Android) | ✅ | iOS: `AppIcon.appiconset` 전 사이즈. Android: adaptive icon (`ic_launcher_foreground.png` + `ic_launcher.xml`). 소스: `assets/app_icon/`. |
 | UI 언어 | ✅ 영문화 완료 | 모든 화면 텍스트·에러 메시지 영어로 통일 (2026-05-25). 한국어 리터럴 제거. |
-| 카메라 캡처 | ✅ 코드, ❌ 실기 미검증 | 갤러리/카메라 chooser 바텀시트. iOS `NSCameraUsageDescription` + Android `CAMERA` permission. 헬퍼: [`core/data/media/photo_picker.dart`](lib/core/data/media/photo_picker.dart) |
+| 카메라 캡처 | ✅ 실기 검증 완료 | 갤러리/카메라 chooser 바텀시트. iOS `NSCameraUsageDescription`만 선언. Android는 권한 불요 — image_picker가 `ACTION_IMAGE_CAPTURE`로 카메라 앱에 위임하므로 `CAMERA` permission 제거. 헬퍼: [`core/data/media/photo_picker.dart`](lib/core/data/media/photo_picker.dart) |
+| Android 갤러리 권한 | ✅ 권한 불요 확정 | image_picker가 시스템 Photo Picker / `ACTION_GET_CONTENT`로 위임 → `READ_MEDIA_IMAGES` 불필요. 매니페스트 권한은 `INTERNET` 단일. |
 | 오류 snackbar 통일 | ✅ | `WdsSnackbar`로 transport 에러 단일 노출 |
-| 위젯 테스트 | 🟡 router redirect 2개만 | feature 단위 테스트 추가 필요 |
+| 위젯 테스트 | 🟡 router redirect 2개만 | feature 단위 테스트는 의도적 미도입 (출시 범위 제외) |
 | ADR 0005 (캐시 정책) | ✅ Accepted | [ADR 0005](docs/adr/0005-local-cache-policy.md). `signedUrlCacheProvider` 1h TTL → ImageCache 히트. 디스크 캐시/로컬 DB/재시도 큐는 보류 |
 
 ### 데이터 레이어 정책 (현 시점)
 [ADR 0005](docs/adr/0005-local-cache-policy.md). Piece 메타데이터는 Riverpod in-memory provider가 watch되는 동안 유지. 사진은 path 기준 signed URL 캐시(1h TTL, `signedUrlCacheProvider`) → Flutter ImageCache가 같은 URL = 같은 키로 히트. Calendar는 `monthPiecesProvider(keepAlive: true)`로 ±1개월 warm 유지. 디스크 캐시 / 로컬 DB / 오프라인 큐는 추가 통증 보고되기 전까지 보류.
 
-### 다음 합리적 단계 (권장 순서)
+### 출시 상태
 
-1. **전체 흐름 실기 sweep** — 가입 → My Pieces → New Piece(갤러리/카메라) → Calendar → Search → Edit/Delete → Profile 탭 순서로 golden path 검증.
-2. **분석/크래시 리포팅** — 운영 시작 전 결정 (Sentry / Firebase Crashlytics 등).
-3. **딥링크 매니페스트** — iOS Universal Links / Android App Links. ADR 0002 후속으로 분리.
+전체 흐름 실기 sweep(가입 → My Pieces → New Piece 갤러리/카메라 → Calendar → Search → Edit/Delete → Profile)을 실기기에서 검증 완료. **v1 출시 범위 기능은 완료.**
 
-### 선택
+**의도적 출시 범위 제외** (필요 시점에 재평가):
+- **크래시 리포팅 / 분석** (Sentry / Firebase Crashlytics 등) — v1 미도입.
+- **feature 단위 테스트** — v1은 router redirect smoke 2개만 유지.
+
+### 선택 (출시 후여도 됨)
+- **딥링크 매니페스트** — iOS Universal Links / Android App Links. OAuth 콜백 딥링크는 이미 동작, 콘텐츠 딥링크는 별개. ADR 0002 후속으로 분리.
 - **Supabase CLI 부트스트랩** — `supabase init/link/db pull`로 SQL-파일 기반 마이그레이션 관리. (현재는 MCP `apply_migration` + 수동 `supabase/migrations/*.sql` 보관 중.)
 
 ---
