@@ -12,16 +12,32 @@ class TodayPage extends ConsumerWidget {
   const TodayPage({super.key});
 
   static const _weekdays = [
-    'Monday', 'Tuesday', 'Wednesday', 'Thursday',
-    'Friday', 'Saturday', 'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday',
   ];
   static const _months = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December',
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
   ];
 
   String _weekday(DateTime d) => _weekdays[d.weekday - 1];
-  String _dateLabel(DateTime d) => '${_months[d.month - 1]} ${d.day}, ${d.year}';
+  String _dateLabel(DateTime d) =>
+      '${_months[d.month - 1]} ${d.day}, ${d.year}';
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -154,16 +170,15 @@ class _FilledToday extends StatelessWidget {
     final colors = context.wdsColors;
     final spacing = context.wdsSpacing;
 
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: onTap,
-      child: SingleChildScrollView(
-        padding: EdgeInsets.all(spacing.componentLg),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: spacing.componentLg),
-            IntrinsicHeight(
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(spacing.componentLg),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(height: spacing.componentLg),
+          GestureDetector(
+            onTap: onTap,
+            child: IntrinsicHeight(
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -187,8 +202,11 @@ class _FilledToday extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(height: spacing.componentLg),
-            Row(
+          ),
+          SizedBox(height: spacing.componentMd),
+          GestureDetector(
+            onTap: onTap,
+            child: Row(
               children: [
                 Icon(Icons.edit_outlined, size: 14, color: colors.labelAssistive),
                 const SizedBox(width: WdsSpacing.s4),
@@ -199,8 +217,8 @@ class _FilledToday extends StatelessWidget {
                 ),
               ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
