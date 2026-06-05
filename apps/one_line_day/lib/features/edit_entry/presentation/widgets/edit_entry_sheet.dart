@@ -30,28 +30,50 @@ class _EditEntrySheet extends ConsumerStatefulWidget {
 
 class _EditEntrySheetState extends ConsumerState<_EditEntrySheet> {
   late final TextEditingController _controller;
+  late final FocusNode _focusNode;
   bool _saving = false;
+
+  static const _weekdays = [
+    'Monday', 'Tuesday', 'Wednesday', 'Thursday',
+    'Friday', 'Saturday', 'Sunday',
+  ];
+  static const _months = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December',
+  ];
 
   @override
   void initState() {
     super.initState();
     _controller = TextEditingController(text: widget.existing?.text ?? '');
+    _focusNode = FocusNode();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _focusNode.requestFocus();
+    });
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
-  String get _dateLabel {
+  String get _dateHeader {
     final parts = widget.date.split('-');
-    return '${parts[0]}. ${parts[1]}. ${parts[2]}';
+    final d = DateTime(
+      int.parse(parts[0]),
+      int.parse(parts[1]),
+      int.parse(parts[2]),
+    );
+    return '${_weekdays[d.weekday - 1]}, ${_months[d.month - 1]} ${d.day}';
   }
 
+  int get _charCount => _controller.text.trim().length;
+  bool get _overLimit => _charCount > 200;
   bool get _isDirty {
-    final current = _controller.text.trim();
-    return current.isNotEmpty && current != (widget.existing?.text ?? '');
+    final t = _controller.text.trim();
+    return t.isNotEmpty && t != (widget.existing?.text ?? '');
   }
 
   Future<void> _save() async {
@@ -94,11 +116,11 @@ class _EditEntrySheetState extends ConsumerState<_EditEntrySheet> {
     return Container(
       decoration: BoxDecoration(
         color: colors.backgroundNormalNormal,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       padding: EdgeInsets.fromLTRB(
         spacing.componentLg,
-        spacing.componentMd,
+        WdsSpacing.s12,
         spacing.componentLg,
         spacing.componentLg + bottom,
       ),
@@ -116,33 +138,34 @@ class _EditEntrySheetState extends ConsumerState<_EditEntrySheet> {
               ),
             ),
           ),
-          SizedBox(height: spacing.componentMd),
-          WdsText(_dateLabel, style: WdsTextStyle.heading2),
-          SizedBox(height: spacing.componentMd),
+          const SizedBox(height: WdsSpacing.s20),
+          WdsText(_dateHeader, style: WdsTextStyle.headline1),
+          const SizedBox(height: WdsSpacing.s16),
           WdsTextarea(
             controller: _controller,
-            placeholder: 'How was today?',
+            focusNode: _focusNode,
+            placeholder: 'Write one line about today…',
             minLines: 3,
             maxLines: 6,
             onChanged: (_) => setState(() {}),
           ),
-          SizedBox(height: spacing.componentXs),
-          Align(
-            alignment: Alignment.centerRight,
-            child: Text(
-              '${_controller.text.trim().length}/200',
-              style: context.wdsType.caption1.copyWith(
-                color: _controller.text.trim().length > 200
-                    ? context.wdsColors.statusNegative
-                    : context.wdsColors.labelAlternative,
+          const SizedBox(height: WdsSpacing.s6),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Text(
+                '$_charCount / 200',
+                style: context.wdsType.caption1.copyWith(
+                  color: _overLimit
+                      ? colors.statusNegative
+                      : colors.labelAssistive,
+                ),
               ),
-            ),
+            ],
           ),
-          SizedBox(height: spacing.componentMd),
+          const SizedBox(height: WdsSpacing.s16),
           WdsButton(
-            onPressed: (_saving || !_isDirty || _controller.text.trim().length > 200)
-                ? null
-                : _save,
+            onPressed: (_saving || !_isDirty || _overLimit) ? null : _save,
             child: _saving
                 ? const SizedBox(
                     width: 20,
@@ -151,29 +174,21 @@ class _EditEntrySheetState extends ConsumerState<_EditEntrySheet> {
                   )
                 : const Text('Save'),
           ),
+          const SizedBox(height: WdsSpacing.s8),
+          WdsButton(
+            variant: WdsButtonVariant.outlined,
+            color: WdsButtonColor.assistive,
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
           if (widget.existing != null) ...[
-            SizedBox(height: spacing.componentSm),
-            WdsButton(
-              variant: WdsButtonVariant.outlined,
-              color: WdsButtonColor.assistive,
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
-            ),
-            SizedBox(height: spacing.componentSm),
+            const SizedBox(height: WdsSpacing.s4),
             TextButton(
               onPressed: _delete,
               child: Text(
                 'Delete entry',
-                style: TextStyle(color: context.wdsColors.statusNegative),
+                style: TextStyle(color: colors.statusNegative),
               ),
-            ),
-          ] else ...[
-            SizedBox(height: spacing.componentSm),
-            WdsButton(
-              variant: WdsButtonVariant.outlined,
-              color: WdsButtonColor.assistive,
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
             ),
           ],
         ],
