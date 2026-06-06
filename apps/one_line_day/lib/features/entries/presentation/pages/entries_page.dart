@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/domain/entities/entry.dart';
 import '../../../../core/providers/all_entries_provider.dart';
-import '../../../edit_entry/presentation/widgets/edit_entry_sheet.dart';
+import '../widgets/entry_card.dart';
 
 class EntriesPage extends ConsumerWidget {
   const EntriesPage({super.key});
@@ -77,13 +77,13 @@ class EntriesPage extends ConsumerWidget {
       body: SafeArea(
         child: entriesAsync.when(
           loading: () => const Center(child: WdsSpinner()),
-          error: (_, _) => WdsFallbackView(
+          error: (_, _) => const WdsFallbackView(
             title: 'Something went wrong',
             description: 'Could not load entries.',
           ),
           data: (entries) {
             if (entries.isEmpty) {
-              return WdsFallbackView(
+              return const WdsFallbackView(
                 title: 'No entries yet',
                 description: 'Write your first line on the Today tab.',
               );
@@ -103,7 +103,7 @@ class EntriesPage extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.baseline,
                       textBaseline: TextBaseline.alphabetic,
                       children: [
-                        WdsText('Entries', style: WdsTextStyle.title2),
+                        const WdsText('Entries', style: WdsTextStyle.title2),
                         const SizedBox(width: WdsSpacing.s8),
                         WdsText(
                           '${entries.length}',
@@ -138,7 +138,7 @@ class EntriesPage extends ConsumerWidget {
                       padding: EdgeInsets.symmetric(
                         horizontal: spacing.componentLg,
                       ),
-                      child: _EntryCard(
+                      child: EntryCard(
                         entry: section.entries[i],
                         dateLabel: _cardDate(section.entries[i].date),
                       ),
@@ -159,51 +159,7 @@ class EntriesPage extends ConsumerWidget {
 
 class _Section {
   const _Section({required this.month, required this.entries});
+
   final String month;
   final List<Entry> entries;
-}
-
-class _EntryCard extends StatelessWidget {
-  const _EntryCard({required this.entry, required this.dateLabel});
-
-  final Entry entry;
-  final String dateLabel;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.wdsColors;
-
-    return GestureDetector(
-      onTap: () =>
-          showEditEntrySheet(context, date: entry.date, existing: entry),
-      child: Container(
-        decoration: BoxDecoration(
-          color: colors.backgroundElevatedNormal,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        padding: const EdgeInsets.all(WdsSpacing.s16),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  WdsText(
-                    dateLabel,
-                    style: WdsTextStyle.caption1,
-                    color: WdsTextColor.alternative,
-                  ),
-                  const SizedBox(height: WdsSpacing.s6),
-                  WdsText(entry.text, style: WdsTextStyle.body1),
-                ],
-              ),
-            ),
-            const SizedBox(width: WdsSpacing.s8),
-            Icon(Icons.chevron_right, size: 18, color: colors.labelAssistive),
-          ],
-        ),
-      ),
-    );
-  }
 }

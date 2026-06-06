@@ -7,6 +7,7 @@ import '../../../../core/providers/all_entries_provider.dart';
 import '../../../../core/utils/date_key.dart';
 import '../../../edit_entry/presentation/widgets/edit_entry_sheet.dart';
 import '../providers/calendar_providers.dart';
+import '../widgets/calendar_cell.dart';
 
 class CalendarPage extends ConsumerStatefulWidget {
   const CalendarPage({super.key});
@@ -48,11 +49,6 @@ class _CalendarPageState extends ConsumerState<CalendarPage> {
   void _nextMonth() => setState(
     () => _focusedMonth = DateTime(_focusedMonth.year, _focusedMonth.month + 1),
   );
-
-  bool get _isCurrentMonth {
-    final now = DateTime.now();
-    return _focusedMonth.year == now.year && _focusedMonth.month == now.month;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -180,7 +176,7 @@ class _CalendarPageState extends ConsumerState<CalendarPage> {
                     onTap: () =>
                         showEditEntrySheet(context, date: key, existing: entry),
                     child: Center(
-                      child: _CalendarCell(
+                      child: CalendarCell(
                         day: day,
                         isToday: isToday,
                         hasEntry: hasEntry,
@@ -191,56 +187,6 @@ class _CalendarPageState extends ConsumerState<CalendarPage> {
                 },
               ),
             ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _CalendarCell extends StatelessWidget {
-  const _CalendarCell({
-    required this.day,
-    required this.isToday,
-    required this.hasEntry,
-    required this.colors,
-  });
-
-  final int day;
-  final bool isToday;
-  final bool hasEntry;
-  final WdsColorScheme colors;
-
-  @override
-  Widget build(BuildContext context) {
-    final type = context.wdsType;
-
-    Color bg;
-    Color textColor;
-
-    if (isToday) {
-      bg = colors.primaryNormal;
-      textColor = colors.onPrimary;
-    } else if (hasEntry) {
-      bg = colors.primaryNormal.withValues(alpha: 0.12);
-      textColor = colors.primaryNormal;
-    } else {
-      bg = Colors.transparent;
-      textColor = colors.labelNormal;
-    }
-
-    return Container(
-      width: 34,
-      height: 34,
-      decoration: BoxDecoration(color: bg, shape: BoxShape.circle),
-      child: Center(
-        child: Text(
-          '$day',
-          style: type.body2.copyWith(
-            color: textColor,
-            fontWeight: (isToday || hasEntry)
-                ? FontWeight.w700
-                : FontWeight.w400,
           ),
         ),
       ),

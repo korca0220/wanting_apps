@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/theme_mode_controller.dart';
+import '../widgets/settings_info_row.dart';
+import '../widgets/settings_section_card.dart';
+import '../widgets/settings_section_label.dart';
+import '../widgets/settings_theme_option.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
@@ -26,11 +30,11 @@ class SettingsPage extends ConsumerWidget {
               ),
               child: WdsText('Settings', style: WdsTextStyle.title2),
             ),
-            const _SectionLabel(label: 'Appearance'),
+            const SettingsSectionLabel(label: 'Appearance'),
             const SizedBox(height: WdsSpacing.s8),
-            _SectionCard(
+            SettingsSectionCard(
               children: [
-                _ThemeOption(
+                SettingsThemeOption(
                   label: 'System',
                   selected: themeMode == ThemeMode.system,
                   onTap: () => ref
@@ -38,7 +42,7 @@ class SettingsPage extends ConsumerWidget {
                       .set(ThemeMode.system),
                 ),
                 const WdsDivider(),
-                _ThemeOption(
+                SettingsThemeOption(
                   label: 'Light',
                   selected: themeMode == ThemeMode.light,
                   onTap: () => ref
@@ -46,7 +50,7 @@ class SettingsPage extends ConsumerWidget {
                       .set(ThemeMode.light),
                 ),
                 const WdsDivider(),
-                _ThemeOption(
+                SettingsThemeOption(
                   label: 'Dark',
                   selected: themeMode == ThemeMode.dark,
                   onTap: () => ref
@@ -56,115 +60,13 @@ class SettingsPage extends ConsumerWidget {
               ],
             ),
             const SizedBox(height: WdsSpacing.s24),
-            const _SectionLabel(label: 'About'),
+            const SettingsSectionLabel(label: 'About'),
             const SizedBox(height: WdsSpacing.s8),
-            const _SectionCard(
-              children: [_InfoRow(label: 'Version', value: '1.0.0')],
+            const SettingsSectionCard(
+              children: [SettingsInfoRow(label: 'Version', value: '1.0.0')],
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _SectionLabel extends StatelessWidget {
-  const _SectionLabel({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: WdsSpacing.s4),
-      child: WdsText(
-        label.toUpperCase(),
-        style: WdsTextStyle.caption1,
-        color: WdsTextColor.alternative,
-      ),
-    );
-  }
-}
-
-class _SectionCard extends StatelessWidget {
-  const _SectionCard({required this.children});
-
-  final List<Widget> children;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.wdsColors;
-    return Container(
-      decoration: BoxDecoration(
-        color: colors.backgroundNormalNormal,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      clipBehavior: Clip.hardEdge,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: children,
-      ),
-    );
-  }
-}
-
-class _ThemeOption extends StatelessWidget {
-  const _ThemeOption({
-    required this.label,
-    required this.selected,
-    required this.onTap,
-  });
-
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.wdsColors;
-
-    return InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: WdsSpacing.s16,
-          vertical: WdsSpacing.s14,
-        ),
-        child: Row(
-          children: [
-            Expanded(child: WdsText(label, style: WdsTextStyle.body1)),
-            if (selected)
-              Icon(Icons.check_rounded, size: 20, color: colors.primaryNormal),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _InfoRow extends StatelessWidget {
-  const _InfoRow({required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.wdsColors;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: WdsSpacing.s16,
-        vertical: WdsSpacing.s14,
-      ),
-      child: Row(
-        children: [
-          Expanded(child: WdsText(label, style: WdsTextStyle.body1)),
-          Text(
-            value,
-            style: context.wdsType.body2.copyWith(color: colors.labelAssistive),
-          ),
-        ],
       ),
     );
   }

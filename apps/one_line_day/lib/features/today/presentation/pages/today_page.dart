@@ -2,11 +2,12 @@ import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/domain/entities/entry.dart';
 import '../../../../core/providers/all_entries_provider.dart';
 import '../../../../core/utils/date_key.dart';
 import '../../../edit_entry/presentation/widgets/edit_entry_sheet.dart';
 import '../providers/today_providers.dart';
+import '../widgets/today_empty.dart';
+import '../widgets/today_filled.dart';
 
 class TodayPage extends ConsumerWidget {
   const TodayPage({super.key});
@@ -82,12 +83,12 @@ class TodayPage extends ConsumerWidget {
             Expanded(
               child: entriesAsync.when(
                 loading: () => const Center(child: WdsSpinner()),
-                error: (_, _) => WdsFallbackView(
+                error: (_, _) => const WdsFallbackView(
                   title: 'Something went wrong',
                   description: 'Could not load today\'s entry.',
                 ),
                 data: (_) => entry != null
-                    ? _FilledToday(
+                    ? TodayFilled(
                         entry: entry,
                         onTap: () => showEditEntrySheet(
                           context,
@@ -95,130 +96,14 @@ class TodayPage extends ConsumerWidget {
                           existing: entry,
                         ),
                       )
-                    : _EmptyToday(
-                        onTap: () => showEditEntrySheet(context, date: today),
+                    : TodayEmpty(
+                        onTap: () =>
+                            showEditEntrySheet(context, date: today),
                       ),
               ),
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _EmptyToday extends StatelessWidget {
-  const _EmptyToday({required this.onTap});
-
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.wdsColors;
-    final spacing = context.wdsSpacing;
-
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: onTap,
-      child: Center(
-        child: Padding(
-          padding: EdgeInsets.all(spacing.componentLg),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: colors.backgroundNormalAlternative,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.edit_outlined,
-                  color: colors.labelAlternative,
-                  size: 22,
-                ),
-              ),
-              const SizedBox(height: WdsSpacing.s16),
-              WdsText(
-                'How was today?',
-                style: WdsTextStyle.headline1,
-                color: WdsTextColor.neutral,
-              ),
-              const SizedBox(height: WdsSpacing.s8),
-              WdsText(
-                'Tap to write one line',
-                style: WdsTextStyle.body2,
-                color: WdsTextColor.disable,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _FilledToday extends StatelessWidget {
-  const _FilledToday({required this.entry, required this.onTap});
-
-  final Entry entry;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.wdsColors;
-    final spacing = context.wdsSpacing;
-
-    return SingleChildScrollView(
-      padding: EdgeInsets.all(spacing.componentLg),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(height: spacing.componentLg),
-          GestureDetector(
-            onTap: onTap,
-            child: IntrinsicHeight(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Container(
-                    width: 3,
-                    decoration: BoxDecoration(
-                      color: colors.primaryNormal,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                  const SizedBox(width: WdsSpacing.s16),
-                  Expanded(
-                    child: Text(
-                      entry.text,
-                      style: context.wdsType.title3.copyWith(
-                        color: colors.labelNormal,
-                        height: 1.55,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          SizedBox(height: spacing.componentMd),
-          GestureDetector(
-            onTap: onTap,
-            child: Row(
-              children: [
-                Icon(Icons.edit_outlined, size: 14, color: colors.labelAssistive),
-                const SizedBox(width: WdsSpacing.s4),
-                WdsText(
-                  'Tap to edit',
-                  style: WdsTextStyle.caption1,
-                  color: WdsTextColor.assistive,
-                ),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }
